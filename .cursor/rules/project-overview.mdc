@@ -1,0 +1,20 @@
+---
+description: Core project context for Pilldue
+alwaysApply: true
+---
+
+# Pilldue
+
+Medication refill tracker. Log therapy schedules and know when each med needs a refill.
+
+## Current state
+
+- Early repository scaffold only — no application project yet.
+- UI approach is undecided: console TUI vs WPF. Do not assume either.
+- Application source will live under `src/` once a project type is chosen.
+
+## Conventions
+
+- Prefer updating `docs/` when repository structure or decisions change.
+- Keep Cursor guidance in `.cursor/rules/` and project skills in `.cursor/skills/`.
+- Do not scaffold a .NET solution or lock UI tech unless the user asks.
