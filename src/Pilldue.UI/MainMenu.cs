@@ -87,7 +87,7 @@ internal static class MainMenu
                 await SkipDoseForm.RunAsync(app, cancellationToken).ConfigureAwait(false);
                 break;
             case Calendar:
-                ShowNotImplemented("Calendar (last covered day + prescription end)");
+                await CalendarScreen.RunAsync(app, cancellationToken).ConfigureAwait(false);
                 break;
         }
     }
