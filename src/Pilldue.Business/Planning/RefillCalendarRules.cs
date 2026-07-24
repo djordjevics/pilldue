@@ -59,4 +59,39 @@ public static class RefillCalendarRules
         ArgumentNullException.ThrowIfNull(config);
         return medication.RefillDayOfMonthOverride ?? config.DefaultRefillDayOfMonth;
     }
+
+    /// <summary>
+    /// Refill date in a given month for <paramref name="dayOfMonth"/>,
+    /// clamping invalid days to the month's last day via <see cref="ClampDayOfMonth"/>.
+    /// </summary>
+    public static DateOnly RefillDateInMonth(int year, int month, int dayOfMonth)
+    {
+        var day = ClampDayOfMonth(year, month, dayOfMonth);
+        return new DateOnly(year, month, day);
+    }
+
+    /// <summary>
+    /// Next and second upcoming refill dates on or after <paramref name="today"/>
+    /// for the given day-of-month (clamped per month).
+    /// </summary>
+    public static (DateOnly Next, DateOnly Second) NextAndSecondRefillDates(DateOnly today, int dayOfMonth)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(dayOfMonth, 1);
+
+        var candidate = RefillDateInMonth(today.Year, today.Month, dayOfMonth);
+        DateOnly next;
+        if (candidate >= today)
+        {
+            next = candidate;
+        }
+        else
+        {
+            var following = new DateOnly(today.Year, today.Month, 1).AddMonths(1);
+            next = RefillDateInMonth(following.Year, following.Month, dayOfMonth);
+        }
+
+        var monthAfterNext = new DateOnly(next.Year, next.Month, 1).AddMonths(1);
+        var second = RefillDateInMonth(monthAfterNext.Year, monthAfterNext.Month, dayOfMonth);
+        return (next, second);
+    }
 }
