@@ -64,7 +64,7 @@ User flags a skipped/missed dose → increase stock by the dose amount (typicall
 - Next refill date / second refill date from “today” + day-of-month rule (clamp invalid days to month end)
 - **Days in gap** = calendar days from one refill date to the next (month length sensitive)
 - **Last covered date (inclusive):** `asOfDate + floor(stock / dailyDosage) - 1` days when floor > 0; otherwise none. Locked in `RefillCalendarRules`.
-- Prescription end from start + duration
+- **Prescription end:** `PrescriptionStartDate.AddMonths(PrescriptionDurationMonths)` (default 6); locked in `RefillCalendarRules`
 - **Pills short** / **packages to buy** = `ceil(pillsShort / packageSize)` for flow 1 shortfalls (see 31-day / 28-pill example above)
 
 ## Out of scope (v1)

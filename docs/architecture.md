@@ -62,7 +62,7 @@ flowchart TB
 - **Data** implements ports with **EF Core + SQLite** (and config file for app settings)
 - **UI** is the composition root and wires implementations
 
-Shared planning formulas live in `RefillCalendarRules` (day clamp, packages-to-buy, inclusive last-covered rule). Full query implementations are tracked in business issues C1–C9.
+Shared planning formulas live in `RefillCalendarRules` (day clamp, packages-to-buy, inclusive last-covered rule, prescription end = start + duration months). Full query implementations are tracked in business issues C1–C9.
 
 ## Tests
 

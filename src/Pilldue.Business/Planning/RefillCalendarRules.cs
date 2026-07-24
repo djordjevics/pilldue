@@ -113,4 +113,31 @@ public static class RefillCalendarRules
 
         return asOfDate.AddDays(daysCovered - 1);
     }
+
+    /// <summary>
+    /// Prescription end date: <c>startDate.AddMonths(durationMonths)</c>
+    /// (default duration is <see cref="Medication.PrescriptionDurationMonths"/> = 6).
+    /// Day-of-month clamps when the target month is shorter (e.g. 31 Jan + 1 month → 28/29 Feb).
+    /// </summary>
+    public const string PrescriptionEndRule =
+        "endDate = PrescriptionStartDate.AddMonths(PrescriptionDurationMonths); default duration is 6 months.";
+
+    /// <summary>
+    /// End of prescription validity from start date and duration in months.
+    /// </summary>
+    public static DateOnly PrescriptionEndDate(DateOnly startDate, int durationMonths)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(durationMonths, 1);
+        return startDate.AddMonths(durationMonths);
+    }
+
+    /// <summary>
+    /// End of prescription validity for a medication
+    /// (<see cref="Medication.PrescriptionStartDate"/> + <see cref="Medication.PrescriptionDurationMonths"/>).
+    /// </summary>
+    public static DateOnly PrescriptionEndDate(Medication medication)
+    {
+        ArgumentNullException.ThrowIfNull(medication);
+        return PrescriptionEndDate(medication.PrescriptionStartDate, medication.PrescriptionDurationMonths);
+    }
 }
