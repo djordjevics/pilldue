@@ -17,9 +17,10 @@ Personal local medication refill tracker (.NET 10, Spectre.Console, SQLite).
 
 ## Solution
 
-- Projects: `Pilldue.Business` (domain + ports), `Pilldue.Data` (SQLite/config impl), `Pilldue.UI` (composition + TUI).
+- Projects: `Pilldue.Business` (domain + ports), `Pilldue.Data` (**EF Core + SQLite** migrations + config file), `Pilldue.UI` (composition + TUI).
 - Target deps: UI → Business, UI → Data, Data → Business (DIP). Scaffold may still show Business → Data until contracts PR.
 - Tests under `tests/`; integration tests = multi-step scenarios, no UI.
+- Persistence: EF Core only for v1 DB access — no Dapper/ADO.
 
 ## Conventions
 

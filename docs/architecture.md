@@ -27,10 +27,17 @@ Pilldue helps you track medications against a **monthly refill day**, package-ba
 |-------|--------|
 | Delivery | Local small published exe |
 | UI | Spectre.Console |
-| Persistence | SQLite |
-| Config | File (default refill day) |
+| Persistence | **SQLite via EF Core** (migrations for schema) |
+| Config | File (default refill day) — not EF |
 | .NET | .NET 10 (`net10.0`) |
 | Solution | [Pilldue.slnx](../Pilldue.slnx) |
+
+### Schema and data access
+
+- Use **EF Core** + SQLite in `Pilldue.Data` for tables and repository implementations.
+- Manage schema with **EF migrations**; apply on startup (or explicit migrate in tests with temp DB).
+- Do **not** use Dapper or hand-rolled ADO for v1.
+- Config file stays a simple file store (JSON or similar), separate from EF.
 
 ## Solution layout and dependencies
 
@@ -38,7 +45,7 @@ Pilldue helps you track medications against a **monthly refill day**, package-ba
 Pilldue.slnx
 src/
   Pilldue.Business/    # domain, ports, pure logic, app services
-  Pilldue.Data/        # SQLite + config file implementations of ports
+  Pilldue.Data/        # EF Core + SQLite (migrations) + config file implementations of ports
   Pilldue.UI/          # Spectre.Console composition root
 ```
 
@@ -52,7 +59,7 @@ flowchart TB
 ```
 
 - Ports and entities live in **Business**
-- **Data** implements ports (SQLite, config file)
+- **Data** implements ports with **EF Core + SQLite** (and config file for app settings)
 - **UI** wires implementations and screens
 
 Today’s scaffold still has `Business → Data` until the contracts PR flips it.
