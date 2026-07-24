@@ -19,6 +19,13 @@ public static class SqliteDatabasePaths
         return Path.Combine(root, "Pilldue", FileName);
     }
 
+    /// <summary>Default JSON config path: <c>%LocalAppData%/Pilldue/config.json</c>.</summary>
+    public static string GetDefaultConfigPath()
+    {
+        var root = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        return Path.Combine(root, "Pilldue", "config.json");
+    }
+
     /// <summary>Builds a SQLite connection string for the given database file path.</summary>
     public static string CreateConnectionString(string databasePath) =>
         $"Data Source={databasePath}";

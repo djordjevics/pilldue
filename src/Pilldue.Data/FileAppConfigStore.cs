@@ -27,20 +27,14 @@ public sealed class FileAppConfigStore : IAppConfigStore
     {
         if (!File.Exists(_path))
         {
-            return new AppConfig
-            {
-                DefaultRefillDayOfMonth = AppConfig.DefaultRefillDayOfMonthValue,
-            };
+            return CreateDefault();
         }
 
         await using var stream = File.OpenRead(_path);
         var config = await JsonSerializer.DeserializeAsync<AppConfig>(stream, JsonOptions, cancellationToken)
             .ConfigureAwait(false);
 
-        return config ?? new AppConfig
-        {
-            DefaultRefillDayOfMonth = AppConfig.DefaultRefillDayOfMonthValue,
-        };
+        return config ?? CreateDefault();
     }
 
     public async Task SaveAsync(AppConfig config, CancellationToken cancellationToken = default)
@@ -57,4 +51,10 @@ public sealed class FileAppConfigStore : IAppConfigStore
         await JsonSerializer.SerializeAsync(stream, config, JsonOptions, cancellationToken)
             .ConfigureAwait(false);
     }
+
+    private static AppConfig CreateDefault() => new()
+    {
+        DefaultRefillDayOfMonth = AppConfig.DefaultRefillDayOfMonthValue,
+        UiLanguage = string.Empty,
+    };
 }

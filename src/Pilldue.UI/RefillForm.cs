@@ -1,5 +1,6 @@
 using Spectre.Console;
 using Pilldue.Business;
+using Pilldue.UI.Localization;
 
 namespace Pilldue.UI;
 
@@ -12,39 +13,39 @@ internal static class RefillForm
     {
         ArgumentNullException.ThrowIfNull(app);
 
-        AnsiConsole.MarkupLine("[bold]Log refill[/]");
+        AnsiConsole.MarkupLine($"[bold]{UiLocalizer.Get("Refill.Title").EscapeMarkup()}[/]");
         AnsiConsole.WriteLine();
 
         var medications = await app.ListMedicationsAsync(cancellationToken).ConfigureAwait(false);
         if (medications.Count == 0)
         {
-            AnsiConsole.MarkupLine("[yellow]No medications to refill. Add one first.[/]");
+            AnsiConsole.MarkupLine($"[yellow]{UiLocalizer.Get("Refill.Empty").EscapeMarkup()}[/]");
             return;
         }
 
         var selected = AnsiConsole.Prompt(
             new SelectionPrompt<Medication>()
-                .Title("Select a medication")
+                .Title(UiLocalizer.Get("Common.SelectMedication"))
                 .PageSize(10)
-                .UseConverter(m => $"{m.Name} (stock: {m.CurrentStockPills})")
+                .UseConverter(m => UiLocalizer.Format("Common.StockSuffix", m.Name, m.CurrentStockPills))
                 .AddChoices(medications));
 
         var packageCount = AnsiConsole.Prompt(
-            new TextPrompt<int>("Packages obtained:")
+            new TextPrompt<int>(UiLocalizer.Get("Refill.Packages"))
                 .DefaultValue(selected.PrescribedPackageCount > 0 ? selected.PrescribedPackageCount : 1)
                 .Validate(v =>
                     v > 0
                         ? ValidationResult.Success()
-                        : ValidationResult.Error("Must be at least 1.")));
+                        : ValidationResult.Error(UiLocalizer.Get("Common.MustBeAtLeast1"))));
 
         var today = DateOnly.FromDateTime(DateTime.Today);
         var dateRaw = AnsiConsole.Prompt(
-            new TextPrompt<string>("Refill date (yyyy-MM-dd):")
+            new TextPrompt<string>(UiLocalizer.Get("Refill.Date"))
                 .DefaultValue(today.ToString("yyyy-MM-dd"))
                 .Validate(value =>
                     DateOnly.TryParseExact(value.Trim(), "yyyy-MM-dd", out _)
                         ? ValidationResult.Success()
-                        : ValidationResult.Error("Use yyyy-MM-dd.")));
+                        : ValidationResult.Error(UiLocalizer.Get("Common.UseDateFormat"))));
         var date = DateOnly.ParseExact(dateRaw.Trim(), "yyyy-MM-dd");
 
         try
@@ -53,13 +54,18 @@ internal static class RefillForm
             var updated = (await app.ListMedicationsAsync(cancellationToken).ConfigureAwait(false))
                 .First(m => m.Id == selected.Id);
             AnsiConsole.MarkupLine(
-                $"[green]Refilled[/] {updated.Name.EscapeMarkup()}: " +
-                $"stock [bold]{selected.CurrentStockPills}[/] → [bold]{updated.CurrentStockPills}[/] " +
-                $"([grey]+{packageCount} × {selected.PackageSizePills}[/]).");
+                $"[green]{UiLocalizer.Format(
+                    "Refill.Done",
+                    updated.Name,
+                    selected.CurrentStockPills,
+                    updated.CurrentStockPills,
+                    packageCount,
+                    selected.PackageSizePills).EscapeMarkup()}[/]");
         }
         catch (Exception ex)
         {
-            AnsiConsole.MarkupLine($"[red]Could not log refill:[/] {ex.Message.EscapeMarkup()}");
+            AnsiConsole.MarkupLine(
+                $"[red]{UiLocalizer.Format("Refill.Failed", ex.Message).EscapeMarkup()}[/]");
         }
     }
 }

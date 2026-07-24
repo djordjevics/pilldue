@@ -1,22 +1,25 @@
 using Spectre.Console;
 using Pilldue.Business;
+using Pilldue.UI.Localization;
 
 namespace Pilldue.UI;
 
 /// <summary>
-/// Spectre main menu shell for v1 flows. Screens call <see cref="IPilldueApp"/> only;
-/// unfinished flows show a placeholder (no domain math in UI).
+/// Spectre main menu shell for v1 flows. Screens call <see cref="IPilldueApp"/> only.
 /// </summary>
 internal static class MainMenu
 {
-    private const string ListMedications = "List medications";
-    private const string PlanningQueries = "Planning queries (stock vs refill days)";
-    private const string AddMedication = "Add medication";
-    private const string EditMedication = "Edit medication";
-    private const string LogRefill = "Log refill";
-    private const string SkipDose = "Skip dose";
-    private const string Calendar = "Calendar";
-    private const string Exit = "Exit";
+    private const string IdList = "list";
+    private const string IdPlanning = "planning";
+    private const string IdAdd = "add";
+    private const string IdEdit = "edit";
+    private const string IdRefill = "refill";
+    private const string IdSkip = "skip";
+    private const string IdCalendar = "calendar";
+    private const string IdLanguage = "language";
+    private const string IdExit = "exit";
+
+    private sealed record MenuItem(string Id, string Label);
 
     public static async Task RunAsync(IPilldueApp app, CancellationToken cancellationToken = default)
     {
@@ -27,67 +30,78 @@ internal static class MainMenu
             AnsiConsole.Clear();
             await WriteHeaderAsync(app, cancellationToken).ConfigureAwait(false);
 
+            var items = BuildMenu();
             var choice = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                    .Title("[bold]Main menu[/]")
-                    .PageSize(10)
-                    .AddChoices(
-                        ListMedications,
-                        PlanningQueries,
-                        AddMedication,
-                        EditMedication,
-                        LogRefill,
-                        SkipDose,
-                        Calendar,
-                        Exit));
+                new SelectionPrompt<MenuItem>()
+                    .Title($"[bold]{UiLocalizer.Get("Menu.Title").EscapeMarkup()}[/]")
+                    .PageSize(12)
+                    .UseConverter(i => i.Label)
+                    .AddChoices(items));
 
-            if (choice == Exit)
+            if (choice.Id == IdExit)
             {
-                AnsiConsole.MarkupLine("[grey]Goodbye.[/]");
+                AnsiConsole.MarkupLine($"[grey]{UiLocalizer.Get("Common.Goodbye").EscapeMarkup()}[/]");
                 return;
             }
 
-            await HandleAsync(app, choice, cancellationToken).ConfigureAwait(false);
+            await HandleAsync(app, choice.Id, cancellationToken).ConfigureAwait(false);
             Pause();
         }
     }
 
+    private static List<MenuItem> BuildMenu() =>
+    [
+        new(IdList, UiLocalizer.Get("Menu.List")),
+        new(IdPlanning, UiLocalizer.Get("Menu.Planning")),
+        new(IdAdd, UiLocalizer.Get("Menu.Add")),
+        new(IdEdit, UiLocalizer.Get("Menu.Edit")),
+        new(IdRefill, UiLocalizer.Get("Menu.Refill")),
+        new(IdSkip, UiLocalizer.Get("Menu.Skip")),
+        new(IdCalendar, UiLocalizer.Get("Menu.Calendar")),
+        new(IdLanguage, UiLocalizer.Get("Menu.Language")),
+        new(IdExit, UiLocalizer.Get("Menu.Exit")),
+    ];
+
     private static async Task WriteHeaderAsync(IPilldueApp app, CancellationToken cancellationToken)
     {
         var settings = await app.GetConfigAsync(cancellationToken).ConfigureAwait(false);
-        AnsiConsole.MarkupLine("[bold blue]Pilldue[/] — medication refill tracker");
         AnsiConsole.MarkupLine(
-            $"[grey]Default refill day: {settings.DefaultRefillDayOfMonth}. In-memory store.[/]");
+            $"[bold blue]Pilldue[/] — {UiLocalizer.Get("App.Tagline").EscapeMarkup()}");
+        AnsiConsole.MarkupLine(
+            $"[grey]{UiLocalizer.Format("App.HeaderMeta", settings.DefaultRefillDayOfMonth, UiLocalizer.Language).EscapeMarkup()}[/]");
         AnsiConsole.WriteLine();
     }
 
     private static async Task HandleAsync(
         IPilldueApp app,
-        string choice,
+        string choiceId,
         CancellationToken cancellationToken)
     {
-        switch (choice)
+        switch (choiceId)
         {
-            case ListMedications:
+            case IdList:
                 await ShowMedicationListAsync(app, cancellationToken).ConfigureAwait(false);
                 break;
-            case PlanningQueries:
+            case IdPlanning:
                 await PlanningQueriesScreen.RunAsync(app, cancellationToken).ConfigureAwait(false);
                 break;
-            case AddMedication:
+            case IdAdd:
                 await MedicationForm.AddAsync(app, cancellationToken).ConfigureAwait(false);
                 break;
-            case EditMedication:
+            case IdEdit:
                 await MedicationForm.EditAsync(app, cancellationToken).ConfigureAwait(false);
                 break;
-            case LogRefill:
+            case IdRefill:
                 await RefillForm.RunAsync(app, cancellationToken).ConfigureAwait(false);
                 break;
-            case SkipDose:
+            case IdSkip:
                 await SkipDoseForm.RunAsync(app, cancellationToken).ConfigureAwait(false);
                 break;
-            case Calendar:
+            case IdCalendar:
                 await CalendarScreen.RunAsync(app, cancellationToken).ConfigureAwait(false);
+                break;
+            case IdLanguage:
+                await LanguageScreen.RunAsync(app, cancellationToken).ConfigureAwait(false);
                 break;
         }
     }
@@ -99,16 +113,16 @@ internal static class MainMenu
         var medications = await app.ListMedicationsAsync(cancellationToken).ConfigureAwait(false);
         if (medications.Count == 0)
         {
-            AnsiConsole.MarkupLine("[yellow]No medications yet.[/]");
+            AnsiConsole.MarkupLine($"[yellow]{UiLocalizer.Get("List.Empty").EscapeMarkup()}[/]");
             return;
         }
 
         var table = new Table()
             .Border(TableBorder.Rounded)
-            .AddColumn("Name")
-            .AddColumn("Stock")
-            .AddColumn("Daily dose")
-            .AddColumn("Package size");
+            .AddColumn(UiLocalizer.Get("List.ColName"))
+            .AddColumn(UiLocalizer.Get("List.ColStock"))
+            .AddColumn(UiLocalizer.Get("List.ColDaily"))
+            .AddColumn(UiLocalizer.Get("List.ColPackage"));
 
         foreach (var med in medications)
         {
@@ -122,15 +136,10 @@ internal static class MainMenu
         AnsiConsole.Write(table);
     }
 
-    private static void ShowNotImplemented(string screen)
-    {
-        AnsiConsole.MarkupLine($"[yellow]Not implemented yet:[/] {screen.EscapeMarkup()}");
-    }
-
     private static void Pause()
     {
         AnsiConsole.WriteLine();
-        AnsiConsole.MarkupLine("[grey]Press Enter to return to the menu…[/]");
+        AnsiConsole.MarkupLine($"[grey]{UiLocalizer.Get("Common.PressEnterMenu").EscapeMarkup()}[/]");
         Console.ReadLine();
     }
 }

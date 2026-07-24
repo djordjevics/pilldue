@@ -18,6 +18,7 @@ public class FileAppConfigStoreTests
 
             Assert.Equal(AppConfig.DefaultRefillDayOfMonthValue, config.DefaultRefillDayOfMonth);
             Assert.Equal(5, config.DefaultRefillDayOfMonth);
+            Assert.Equal(string.Empty, config.UiLanguage);
         }
         finally
         {
@@ -36,14 +37,20 @@ public class FileAppConfigStoreTests
         {
             var store = new FileAppConfigStore(path);
 
-            await store.SaveAsync(new AppConfig { DefaultRefillDayOfMonth = 12 });
+            await store.SaveAsync(new AppConfig
+            {
+                DefaultRefillDayOfMonth = 12,
+                UiLanguage = AppConfig.SerbianLanguage,
+            });
             var loaded = await store.LoadAsync();
 
             Assert.Equal(12, loaded.DefaultRefillDayOfMonth);
+            Assert.Equal(AppConfig.SerbianLanguage, loaded.UiLanguage);
 
             // Fresh store instance still sees persisted value
             var reloaded = await new FileAppConfigStore(path).LoadAsync();
             Assert.Equal(12, reloaded.DefaultRefillDayOfMonth);
+            Assert.Equal(AppConfig.SerbianLanguage, reloaded.UiLanguage);
         }
         finally
         {
