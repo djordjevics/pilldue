@@ -30,4 +30,17 @@ Personal local medication refill tracker (.NET 10, Spectre.Console, SQLite).
 - UI thin: call Business only; no SQL or refill math in UI.
 - Persistence and config file I/O only in Data.
 - Prefer small PRs mapped to GitHub issues; do not change port signatures without a contracts follow-up.
-- Do not push/commit directly to `main`; open a PR. Merge with `gh pr merge --admin` only when the user asks.
+- Do not push/commit directly to `main`; open a PR. Merge with `gh pr merge --admin` only when the user asks (or when a multitask parent prompt explicitly authorizes merge for that wave).
+
+## Parallel agents — model selection
+
+When spinning Task / background agents, **mix models by issue difficulty** (do not default every worker to the strongest/most expensive model):
+
+| Prefer cheaper / faster (e.g. Composer 2.5 Fast) | Prefer stronger (e.g. Grok 4.5 high fast, Sonnet) |
+|--------------------------------------------------|--------------------------------------------------|
+| Pure helpers + unit tests | EF Core schema / migrations |
+| Thin UI screens / menu stubs | Cross-layer wiring, facade orchestration |
+| Config file / small isolated Data CRUD | Rebases with non-trivial conflicts |
+| Well-spec’d `good-first-agent` issues | Agent already failed twice on a cheaper model |
+
+Also: one issue per agent; rebase onto `origin/main` before PR/merge if peers landed first.
