@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Pilldue.Business\Pilldue.Business.csproj" />
+    <ProjectReference Include="..\Pilldue.Data\Pilldue.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>
