@@ -13,6 +13,12 @@ See [.cursor/skills/README.md](../.cursor/skills/README.md) for how to add skill
 
 When structure or decisions change, update the relevant files under `docs/` and keep links in the root [README](../README.md) accurate.
 
+## Git workflow
+
+- Branch from `main` using the issue id as prefix: `3-sqlite-bootstrap`, `11-shortfall-query`.
+- Open a PR into `main` (do not push commits directly to `main`).
+- Prefer one issue per PR when practical.
+
 ## Layering
 
 DIP: **UI → Business**, **UI → Data**, **Data → Business**. Persistence stays inside Data.
