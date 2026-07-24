@@ -72,7 +72,7 @@ internal static class MainMenu
                 await ShowMedicationListAsync(app, cancellationToken).ConfigureAwait(false);
                 break;
             case PlanningQueries:
-                ShowNotImplemented("Planning queries (covers until next refill / short list / need extra for second refill)");
+                await PlanningQueriesScreen.RunAsync(app, cancellationToken).ConfigureAwait(false);
                 break;
             case AddMedication:
                 await MedicationForm.AddAsync(app, cancellationToken).ConfigureAwait(false);
