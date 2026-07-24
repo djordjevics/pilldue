@@ -49,7 +49,7 @@ src/
   Pilldue.UI/          # Spectre.Console composition root
 ```
 
-Target dependency direction (contracts / DIP — to be applied in the interfaces issue):
+Target dependency direction:
 
 ```mermaid
 flowchart TB
@@ -58,11 +58,11 @@ flowchart TB
   Data --> Business
 ```
 
-- Ports and entities live in **Business**
+- Ports and entities live in **Business** (plus in-memory fakes for tests/UI until EF lands)
 - **Data** implements ports with **EF Core + SQLite** (and config file for app settings)
-- **UI** wires implementations and screens
+- **UI** is the composition root and wires implementations
 
-Today’s scaffold still has `Business → Data` until the contracts PR flips it.
+Shared planning formulas live in `RefillCalendarRules` (day clamp, packages-to-buy, inclusive last-covered rule). Full query implementations are tracked in business issues C1–C9.
 
 ## Tests
 
