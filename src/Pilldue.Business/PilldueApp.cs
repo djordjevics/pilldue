@@ -25,6 +25,12 @@ public sealed class PilldueApp : IPilldueApp
     public Task<AppConfig> GetConfigAsync(CancellationToken cancellationToken = default)
         => _config.LoadAsync(cancellationToken);
 
+    public Task SaveConfigAsync(AppConfig config, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(config);
+        return _config.SaveAsync(config, cancellationToken);
+    }
+
     public Task<IReadOnlyList<Medication>> ListMedicationsAsync(CancellationToken cancellationToken = default)
         => _medications.ListAsync(cancellationToken);
 

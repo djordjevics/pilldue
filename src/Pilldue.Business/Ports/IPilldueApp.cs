@@ -8,6 +8,8 @@ public interface IPilldueApp
 {
     Task<AppConfig> GetConfigAsync(CancellationToken cancellationToken = default);
 
+    Task SaveConfigAsync(AppConfig config, CancellationToken cancellationToken = default);
+
     Task<IReadOnlyList<Medication>> ListMedicationsAsync(CancellationToken cancellationToken = default);
 
     Task<Medication> AddMedicationAsync(Medication medication, CancellationToken cancellationToken = default);

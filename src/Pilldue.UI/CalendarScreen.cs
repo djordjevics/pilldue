@@ -1,5 +1,6 @@
 using Spectre.Console;
 using Pilldue.Business;
+using Pilldue.UI.Localization;
 
 namespace Pilldue.UI;
 
@@ -12,19 +13,19 @@ internal static class CalendarScreen
     {
         ArgumentNullException.ThrowIfNull(app);
 
-        AnsiConsole.MarkupLine("[bold]Calendar[/]");
+        AnsiConsole.MarkupLine($"[bold]{UiLocalizer.Get("Cal.Title").EscapeMarkup()}[/]");
         AnsiConsole.WriteLine();
 
         var today = DateOnly.FromDateTime(DateTime.Today);
-        var rangeStart = PromptDate("Range start (yyyy-MM-dd):", today.AddDays(1 - today.Day));
-        var rangeEnd = PromptDate("Range end (yyyy-MM-dd):", rangeStart.AddMonths(1).AddDays(-1));
+        var rangeStart = PromptDate(UiLocalizer.Get("Cal.RangeStart"), today.AddDays(1 - today.Day));
+        var rangeEnd = PromptDate(UiLocalizer.Get("Cal.RangeEnd"), rangeStart.AddMonths(1).AddDays(-1));
         if (rangeEnd < rangeStart)
         {
-            AnsiConsole.MarkupLine("[red]Range end must be on or after range start.[/]");
+            AnsiConsole.MarkupLine($"[red]{UiLocalizer.Get("Cal.RangeInvalid").EscapeMarkup()}[/]");
             return;
         }
 
-        var asOf = PromptDate("As-of date for stock coverage (yyyy-MM-dd):", today);
+        var asOf = PromptDate(UiLocalizer.Get("Cal.AsOf"), today);
         AnsiConsole.WriteLine();
 
         try
@@ -35,16 +36,23 @@ internal static class CalendarScreen
             if (entries.Count == 0)
             {
                 AnsiConsole.MarkupLine(
-                    $"[yellow]No medications with last-covered or prescription end in {rangeStart:yyyy-MM-dd}…{rangeEnd:yyyy-MM-dd}.[/]");
+                    $"[yellow]{UiLocalizer.Format(
+                        "Cal.Empty",
+                        rangeStart.ToString("yyyy-MM-dd"),
+                        rangeEnd.ToString("yyyy-MM-dd")).EscapeMarkup()}[/]");
                 return;
             }
 
             var table = new Table()
                 .Border(TableBorder.Rounded)
-                .Title($"Calendar {rangeStart:yyyy-MM-dd} → {rangeEnd:yyyy-MM-dd} (as of {asOf:yyyy-MM-dd})")
-                .AddColumn("Name")
-                .AddColumn("Last covered")
-                .AddColumn("Prescription end");
+                .Title(UiLocalizer.Format(
+                    "Cal.TableTitle",
+                    rangeStart.ToString("yyyy-MM-dd"),
+                    rangeEnd.ToString("yyyy-MM-dd"),
+                    asOf.ToString("yyyy-MM-dd")))
+                .AddColumn(UiLocalizer.Get("List.ColName"))
+                .AddColumn(UiLocalizer.Get("Cal.ColLast"))
+                .AddColumn(UiLocalizer.Get("Cal.ColRxEnd"));
 
             foreach (var entry in entries)
             {
@@ -58,7 +66,8 @@ internal static class CalendarScreen
         }
         catch (Exception ex)
         {
-            AnsiConsole.MarkupLine($"[red]Could not load calendar:[/] {ex.Message.EscapeMarkup()}");
+            AnsiConsole.MarkupLine(
+                $"[red]{UiLocalizer.Format("Cal.Failed", ex.Message).EscapeMarkup()}[/]");
         }
     }
 
@@ -70,7 +79,7 @@ internal static class CalendarScreen
                 .Validate(value =>
                     DateOnly.TryParseExact(value.Trim(), "yyyy-MM-dd", out _)
                         ? ValidationResult.Success()
-                        : ValidationResult.Error("Use yyyy-MM-dd.")));
+                        : ValidationResult.Error(UiLocalizer.Get("Common.UseDateFormat"))));
         return DateOnly.ParseExact(raw.Trim(), "yyyy-MM-dd");
     }
 }

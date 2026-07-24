@@ -52,6 +52,16 @@ Integration tests drive Business (+ Data) like a scripted session: add med, skip
 
 Pending feature tests use `[Fact(Skip = "...")]` until implemented so CI stays green.
 
+## UI strings (i18n)
+
+User-facing Spectre copy lives in `src/Pilldue.UI/Localization/UiLocalizer.cs` (English + Serbian Latin catalogs).
+
+1. Add the same key to **both** `English` and `Serbian` dictionaries.
+2. Call `UiLocalizer.Get("Your.Key")` / `Format(...)` from UI screens (never hardcode English in menus/prompts).
+3. Language is stored as `AppConfig.UiLanguage` (`en` / `sr`, empty = detect OS) via the JSON config file (`%LocalAppData%/Pilldue/config.json`). Changing language in the menu applies immediately; no reinstall needed.
+
+`tests/Pilldue.UI.Tests` asserts every English key exists in Serbian.
+
 ## Build and run
 
 ```bash

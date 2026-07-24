@@ -1,5 +1,6 @@
 using Spectre.Console;
 using Pilldue.Business;
+using Pilldue.UI.Localization;
 
 namespace Pilldue.UI;
 
@@ -8,10 +9,12 @@ namespace Pilldue.UI;
 /// </summary>
 internal static class PlanningQueriesScreen
 {
-    private const string Coverage = "Stock covers until next refill?";
-    private const string ShortBefore = "Short before next refill";
-    private const string NeedExtra = "Need extra packages for second refill";
-    private const string Back = "Back";
+    private const string IdCoverage = "coverage";
+    private const string IdShort = "short";
+    private const string IdExtra = "extra";
+    private const string IdBack = "back";
+
+    private sealed record QueryItem(string Id, string Label);
 
     public static async Task RunAsync(IPilldueApp app, CancellationToken cancellationToken = default)
     {
@@ -20,15 +23,24 @@ internal static class PlanningQueriesScreen
         while (!cancellationToken.IsCancellationRequested)
         {
             AnsiConsole.Clear();
-            AnsiConsole.MarkupLine("[bold]Planning queries[/]");
+            AnsiConsole.MarkupLine($"[bold]{UiLocalizer.Get("Plan.Title").EscapeMarkup()}[/]");
             AnsiConsole.WriteLine();
 
-            var choice = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                    .Title("Choose a query")
-                    .AddChoices(Coverage, ShortBefore, NeedExtra, Back));
+            var items = new[]
+            {
+                new QueryItem(IdCoverage, UiLocalizer.Get("Plan.Coverage")),
+                new QueryItem(IdShort, UiLocalizer.Get("Plan.Short")),
+                new QueryItem(IdExtra, UiLocalizer.Get("Plan.Extra")),
+                new QueryItem(IdBack, UiLocalizer.Get("Common.Back")),
+            };
 
-            if (choice == Back)
+            var choice = AnsiConsole.Prompt(
+                new SelectionPrompt<QueryItem>()
+                    .Title(UiLocalizer.Get("Plan.Choose"))
+                    .UseConverter(i => i.Label)
+                    .AddChoices(items));
+
+            if (choice.Id == IdBack)
             {
                 return;
             }
@@ -36,21 +48,21 @@ internal static class PlanningQueriesScreen
             var asOf = PromptAsOfDate();
             AnsiConsole.WriteLine();
 
-            switch (choice)
+            switch (choice.Id)
             {
-                case Coverage:
+                case IdCoverage:
                     await ShowCoverageAsync(app, asOf, cancellationToken).ConfigureAwait(false);
                     break;
-                case ShortBefore:
+                case IdShort:
                     await ShowShortBeforeAsync(app, asOf, cancellationToken).ConfigureAwait(false);
                     break;
-                case NeedExtra:
+                case IdExtra:
                     await ShowNeedExtraAsync(app, asOf, cancellationToken).ConfigureAwait(false);
                     break;
             }
 
             AnsiConsole.WriteLine();
-            AnsiConsole.MarkupLine("[grey]Press Enter to continue…[/]");
+            AnsiConsole.MarkupLine($"[grey]{UiLocalizer.Get("Common.PressEnterContinue").EscapeMarkup()}[/]");
             Console.ReadLine();
         }
     }
@@ -59,12 +71,12 @@ internal static class PlanningQueriesScreen
     {
         var today = DateOnly.FromDateTime(DateTime.Today);
         var raw = AnsiConsole.Prompt(
-            new TextPrompt<string>("As-of date (yyyy-MM-dd):")
+            new TextPrompt<string>(UiLocalizer.Get("Plan.AsOf"))
                 .DefaultValue(today.ToString("yyyy-MM-dd"))
                 .Validate(value =>
                     DateOnly.TryParseExact(value.Trim(), "yyyy-MM-dd", out _)
                         ? ValidationResult.Success()
-                        : ValidationResult.Error("Use yyyy-MM-dd.")));
+                        : ValidationResult.Error(UiLocalizer.Get("Common.UseDateFormat"))));
         return DateOnly.ParseExact(raw.Trim(), "yyyy-MM-dd");
     }
 
@@ -76,19 +88,19 @@ internal static class PlanningQueriesScreen
         var results = await app.GetStockCoverageAsync(asOf, cancellationToken).ConfigureAwait(false);
         if (results.Count == 0)
         {
-            AnsiConsole.MarkupLine("[yellow]No medications.[/]");
+            AnsiConsole.MarkupLine($"[yellow]{UiLocalizer.Get("Plan.EmptyMeds").EscapeMarkup()}[/]");
             return;
         }
 
         var table = new Table()
             .Border(TableBorder.Rounded)
-            .Title($"Stock coverage as of {asOf:yyyy-MM-dd}")
-            .AddColumn("Name")
-            .AddColumn("Next refill")
-            .AddColumn("Last covered")
-            .AddColumn("Covers?")
-            .AddColumn("Pills short")
-            .AddColumn("Packages to buy");
+            .Title(UiLocalizer.Format("Plan.CoverageTitle", asOf.ToString("yyyy-MM-dd")))
+            .AddColumn(UiLocalizer.Get("List.ColName"))
+            .AddColumn(UiLocalizer.Get("Plan.ColNext"))
+            .AddColumn(UiLocalizer.Get("Plan.ColLast"))
+            .AddColumn(UiLocalizer.Get("Plan.ColCovers"))
+            .AddColumn(UiLocalizer.Get("Plan.ColPillsShort"))
+            .AddColumn(UiLocalizer.Get("Plan.ColPackages"));
 
         foreach (var r in results)
         {
@@ -96,7 +108,9 @@ internal static class PlanningQueriesScreen
                 r.Medication.Name.EscapeMarkup(),
                 r.NextRefillDate.ToString("yyyy-MM-dd"),
                 r.LastCoveredDate?.ToString("yyyy-MM-dd") ?? "—",
-                r.CoversUntilNextRefill ? "[green]yes[/]" : "[red]no[/]",
+                r.CoversUntilNextRefill
+                    ? $"[green]{UiLocalizer.Get("Common.Yes")}[/]"
+                    : $"[red]{UiLocalizer.Get("Common.No")}[/]",
                 r.PillsShort.ToString(),
                 r.PackagesToBuy.ToString());
         }
@@ -112,18 +126,18 @@ internal static class PlanningQueriesScreen
         var results = await app.ListShortBeforeNextRefillAsync(asOf, cancellationToken).ConfigureAwait(false);
         if (results.Count == 0)
         {
-            AnsiConsole.MarkupLine("[green]No medications are short before the next refill.[/]");
+            AnsiConsole.MarkupLine($"[green]{UiLocalizer.Get("Plan.ShortEmpty").EscapeMarkup()}[/]");
             return;
         }
 
         var table = new Table()
             .Border(TableBorder.Rounded)
-            .Title($"Short before next refill (as of {asOf:yyyy-MM-dd})")
-            .AddColumn("Name")
-            .AddColumn("Next refill")
-            .AddColumn("Last covered")
-            .AddColumn("Pills short")
-            .AddColumn("Packages to buy");
+            .Title(UiLocalizer.Format("Plan.ShortTitle", asOf.ToString("yyyy-MM-dd")))
+            .AddColumn(UiLocalizer.Get("List.ColName"))
+            .AddColumn(UiLocalizer.Get("Plan.ColNext"))
+            .AddColumn(UiLocalizer.Get("Plan.ColLast"))
+            .AddColumn(UiLocalizer.Get("Plan.ColPillsShort"))
+            .AddColumn(UiLocalizer.Get("Plan.ColPackages"));
 
         foreach (var r in results)
         {
@@ -146,18 +160,18 @@ internal static class PlanningQueriesScreen
         var results = await app.ListNeedExtraForSecondRefillAsync(asOf, cancellationToken).ConfigureAwait(false);
         if (results.Count == 0)
         {
-            AnsiConsole.MarkupLine("[green]No medications need extra packages for the second refill day.[/]");
+            AnsiConsole.MarkupLine($"[green]{UiLocalizer.Get("Plan.ExtraEmpty").EscapeMarkup()}[/]");
             return;
         }
 
         var table = new Table()
             .Border(TableBorder.Rounded)
-            .Title($"Need extra for second refill (as of {asOf:yyyy-MM-dd})")
-            .AddColumn("Name")
-            .AddColumn("Second refill")
-            .AddColumn("Packages needed")
-            .AddColumn("Prescribed")
-            .AddColumn("Extra");
+            .Title(UiLocalizer.Format("Plan.ExtraTitle", asOf.ToString("yyyy-MM-dd")))
+            .AddColumn(UiLocalizer.Get("List.ColName"))
+            .AddColumn(UiLocalizer.Get("Plan.ColSecond"))
+            .AddColumn(UiLocalizer.Get("Plan.ColNeeded"))
+            .AddColumn(UiLocalizer.Get("Plan.ColPrescribed"))
+            .AddColumn(UiLocalizer.Get("Plan.ColExtra"));
 
         foreach (var r in results)
         {

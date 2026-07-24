@@ -9,6 +9,7 @@ public sealed class InMemoryAppConfigStore : IAppConfigStore
         return Task.FromResult(new AppConfig
         {
             DefaultRefillDayOfMonth = _config.DefaultRefillDayOfMonth,
+            UiLanguage = _config.UiLanguage,
         });
     }
 
@@ -18,6 +19,7 @@ public sealed class InMemoryAppConfigStore : IAppConfigStore
         _config = new AppConfig
         {
             DefaultRefillDayOfMonth = config.DefaultRefillDayOfMonth,
+            UiLanguage = config.UiLanguage,
         };
         return Task.CompletedTask;
     }

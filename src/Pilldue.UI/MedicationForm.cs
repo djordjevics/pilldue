@@ -1,5 +1,6 @@
 using Spectre.Console;
 using Pilldue.Business;
+using Pilldue.UI.Localization;
 
 namespace Pilldue.UI;
 
@@ -12,7 +13,7 @@ internal static class MedicationForm
     {
         ArgumentNullException.ThrowIfNull(app);
 
-        AnsiConsole.MarkupLine("[bold]Add medication[/]");
+        AnsiConsole.MarkupLine($"[bold]{UiLocalizer.Get("Med.AddTitle").EscapeMarkup()}[/]");
         AnsiConsole.WriteLine();
 
         var medication = PromptFields(existing: null);
@@ -20,11 +21,12 @@ internal static class MedicationForm
         {
             var saved = await app.AddMedicationAsync(medication, cancellationToken).ConfigureAwait(false);
             AnsiConsole.MarkupLine(
-                $"[green]Added[/] {saved.Name.EscapeMarkup()} ([grey]{saved.Id}[/]).");
+                $"[green]{UiLocalizer.Format("Med.Added", saved.Name, saved.Id).EscapeMarkup()}[/]");
         }
         catch (Exception ex)
         {
-            AnsiConsole.MarkupLine($"[red]Could not add medication:[/] {ex.Message.EscapeMarkup()}");
+            AnsiConsole.MarkupLine(
+                $"[red]{UiLocalizer.Format("Med.AddFailed", ex.Message).EscapeMarkup()}[/]");
         }
     }
 
@@ -32,25 +34,26 @@ internal static class MedicationForm
     {
         ArgumentNullException.ThrowIfNull(app);
 
-        AnsiConsole.MarkupLine("[bold]Edit medication[/]");
+        AnsiConsole.MarkupLine($"[bold]{UiLocalizer.Get("Med.EditTitle").EscapeMarkup()}[/]");
         AnsiConsole.WriteLine();
 
         var medications = await app.ListMedicationsAsync(cancellationToken).ConfigureAwait(false);
         if (medications.Count == 0)
         {
-            AnsiConsole.MarkupLine("[yellow]No medications to edit.[/]");
+            AnsiConsole.MarkupLine($"[yellow]{UiLocalizer.Get("Med.EditNone").EscapeMarkup()}[/]");
             return;
         }
 
         var selected = AnsiConsole.Prompt(
             new SelectionPrompt<Medication>()
-                .Title("Select a medication")
+                .Title(UiLocalizer.Get("Common.SelectMedication"))
                 .PageSize(10)
                 .UseConverter(m => m.Name)
                 .AddChoices(medications));
 
         AnsiConsole.WriteLine();
-        AnsiConsole.MarkupLine($"Editing [bold]{selected.Name.EscapeMarkup()}[/]");
+        AnsiConsole.MarkupLine(
+            UiLocalizer.Format("Med.Editing", $"[bold]{selected.Name.EscapeMarkup()}[/]"));
         AnsiConsole.WriteLine();
 
         var updated = PromptFields(selected);
@@ -58,58 +61,59 @@ internal static class MedicationForm
         {
             var saved = await app.UpdateMedicationAsync(updated, cancellationToken).ConfigureAwait(false);
             AnsiConsole.MarkupLine(
-                $"[green]Updated[/] {saved.Name.EscapeMarkup()} ([grey]{saved.Id}[/]).");
+                $"[green]{UiLocalizer.Format("Med.Updated", saved.Name, saved.Id).EscapeMarkup()}[/]");
         }
         catch (Exception ex)
         {
-            AnsiConsole.MarkupLine($"[red]Could not update medication:[/] {ex.Message.EscapeMarkup()}");
+            AnsiConsole.MarkupLine(
+                $"[red]{UiLocalizer.Format("Med.UpdateFailed", ex.Message).EscapeMarkup()}[/]");
         }
     }
 
     private static Medication PromptFields(Medication? existing)
     {
         var name = AnsiConsole.Prompt(
-            new TextPrompt<string>("Name:")
+            new TextPrompt<string>(UiLocalizer.Get("Med.Name"))
                 .DefaultValue(existing?.Name ?? string.Empty)
                 .Validate(value =>
                     string.IsNullOrWhiteSpace(value)
-                        ? ValidationResult.Error("Name is required.")
+                        ? ValidationResult.Error(UiLocalizer.Get("Common.NameRequired"))
                         : ValidationResult.Success()));
 
         var packageSize = AnsiConsole.Prompt(
-            new TextPrompt<int>("Package size (pills per package):")
+            new TextPrompt<int>(UiLocalizer.Get("Med.PackageSize"))
                 .DefaultValue(existing?.PackageSizePills is > 0 ? existing.PackageSizePills : 28)
                 .Validate(v =>
                     v > 0
                         ? ValidationResult.Success()
-                        : ValidationResult.Error("Must be greater than 0.")));
+                        : ValidationResult.Error(UiLocalizer.Get("Common.MustBeGreaterThan0"))));
 
         var prescribedPackages = AnsiConsole.Prompt(
-            new TextPrompt<int>("Prescribed package count (usual packages per refill):")
+            new TextPrompt<int>(UiLocalizer.Get("Med.Prescribed"))
                 .DefaultValue(existing?.PrescribedPackageCount is > 0 ? existing.PrescribedPackageCount : 1)
                 .Validate(v =>
                     v > 0
                         ? ValidationResult.Success()
-                        : ValidationResult.Error("Must be greater than 0.")));
+                        : ValidationResult.Error(UiLocalizer.Get("Common.MustBeGreaterThan0"))));
 
         var dailyDosage = AnsiConsole.Prompt(
-            new TextPrompt<int>("Daily dosage (pills per day):")
+            new TextPrompt<int>(UiLocalizer.Get("Med.Daily"))
                 .DefaultValue(existing?.DailyDosagePills is > 0 ? existing.DailyDosagePills : 1)
                 .Validate(v =>
                     v > 0
                         ? ValidationResult.Success()
-                        : ValidationResult.Error("Must be greater than 0.")));
+                        : ValidationResult.Error(UiLocalizer.Get("Common.MustBeGreaterThan0"))));
 
         var currentStock = AnsiConsole.Prompt(
-            new TextPrompt<int>("Current stock (pills on hand):")
+            new TextPrompt<int>(UiLocalizer.Get("Med.Stock"))
                 .DefaultValue(existing?.CurrentStockPills ?? 0)
                 .Validate(v =>
                     v >= 0
                         ? ValidationResult.Success()
-                        : ValidationResult.Error("Must be 0 or greater.")));
+                        : ValidationResult.Error(UiLocalizer.Get("Common.MustBeZeroOrGreater"))));
 
         var refillOverrideRaw = AnsiConsole.Prompt(
-            new TextPrompt<string>("Refill day override (1–31, or blank to inherit config default):")
+            new TextPrompt<string>(UiLocalizer.Get("Med.RefillOverride"))
                 .AllowEmpty()
                 .DefaultValue(existing?.RefillDayOfMonthOverride?.ToString() ?? string.Empty)
                 .Validate(value =>
@@ -121,7 +125,7 @@ internal static class MedicationForm
 
                     return int.TryParse(value.Trim(), out var day) && day is >= 1 and <= 31
                         ? ValidationResult.Success()
-                        : ValidationResult.Error("Enter a day 1–31, or leave blank.");
+                        : ValidationResult.Error(UiLocalizer.Get("Med.RefillOverrideInvalid"));
                 }));
 
         int? refillOverride = string.IsNullOrWhiteSpace(refillOverrideRaw)
@@ -130,22 +134,22 @@ internal static class MedicationForm
 
         var defaultStart = existing?.PrescriptionStartDate ?? DateOnly.FromDateTime(DateTime.Today);
         var prescriptionStart = AnsiConsole.Prompt(
-            new TextPrompt<string>("Prescription start date (yyyy-MM-dd):")
+            new TextPrompt<string>(UiLocalizer.Get("Med.RxStart"))
                 .DefaultValue(defaultStart.ToString("yyyy-MM-dd"))
                 .Validate(value =>
                     DateOnly.TryParseExact(value.Trim(), "yyyy-MM-dd", out _)
                         ? ValidationResult.Success()
-                        : ValidationResult.Error("Use yyyy-MM-dd.")));
+                        : ValidationResult.Error(UiLocalizer.Get("Common.UseDateFormat"))));
 
         var durationMonths = AnsiConsole.Prompt(
-            new TextPrompt<int>("Prescription duration (months):")
+            new TextPrompt<int>(UiLocalizer.Get("Med.RxDuration"))
                 .DefaultValue(existing?.PrescriptionDurationMonths is > 0
                     ? existing.PrescriptionDurationMonths
                     : 6)
                 .Validate(v =>
                     v > 0
                         ? ValidationResult.Success()
-                        : ValidationResult.Error("Must be greater than 0.")));
+                        : ValidationResult.Error(UiLocalizer.Get("Common.MustBeGreaterThan0"))));
 
         return new Medication
         {
