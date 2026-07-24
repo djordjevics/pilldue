@@ -19,6 +19,13 @@ When structure or decisions change, update the relevant files under `docs/` and 
 - Open a PR into `main` (do not push commits directly to `main`).
 - Prefer one issue per PR when practical.
 
+## Parallel agents
+
+- Prefer **cheaper/faster** models for pure helpers, thin UI, config, and well-scoped CRUD.
+- Prefer **stronger** models for EF migrations, facade/cross-layer work, and hard rebases.
+- If a cheap agent fails twice on the same issue, retry with a stronger model.
+- Details: `.cursor/rules/project-overview.mdc` (Parallel agents — model selection).
+
 ## Layering
 
 DIP: **UI → Business**, **UI → Data**, **Data → Business**. Persistence stays inside Data.
