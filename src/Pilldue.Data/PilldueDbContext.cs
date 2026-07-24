@@ -5,7 +5,6 @@ namespace Pilldue.Data;
 
 /// <summary>
 /// EF Core context for medications and related history tables.
-/// Repository CRUD is out of scope for B1; this maps schema only.
 /// </summary>
 public sealed class PilldueDbContext : DbContext
 {
