@@ -69,10 +69,19 @@ public sealed class PilldueApp : IPilldueApp
             .ToList();
     }
 
-    public Task<IReadOnlyList<ExtraPackagesNeeded>> ListNeedExtraForSecondRefillAsync(
+    public async Task<IReadOnlyList<ExtraPackagesNeeded>> ListNeedExtraForSecondRefillAsync(
         DateOnly asOfDate,
         CancellationToken cancellationToken = default)
-        => throw new NotImplementedException("Implement in business issue C5.");
+    {
+        var config = await _config.LoadAsync(cancellationToken).ConfigureAwait(false);
+        var medications = await _medications.ListAsync(cancellationToken).ConfigureAwait(false);
+
+        return medications
+            .Select(medication => ExtraPackagesQuery.Evaluate(medication, config, asOfDate))
+            .Where(result => result is not null)
+            .Select(result => result!)
+            .ToList();
+    }
 
     public async Task RefillAsync(
         Guid medicationId,
