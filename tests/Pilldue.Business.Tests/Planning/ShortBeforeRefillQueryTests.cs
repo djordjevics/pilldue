@@ -24,7 +24,7 @@ public class ShortBeforeRefillQueryTests
             PrescribedPackageCount = 1,
             DailyDosagePills = 1,
             CurrentStockPills = 28,
-            PrescriptionStartDate = new DateOnly(2026, 1, 1),
+            PrescriptionStartDate = new DateOnly(2026, 1, 5),
         });
         await app.AddMedicationAsync(new Medication
         {
@@ -33,7 +33,7 @@ public class ShortBeforeRefillQueryTests
             PrescribedPackageCount = 1,
             DailyDosagePills = 1,
             CurrentStockPills = 31,
-            PrescriptionStartDate = new DateOnly(2026, 1, 1),
+            PrescriptionStartDate = new DateOnly(2026, 1, 5),
         });
 
         var today = new DateOnly(2026, 5, 5);
@@ -58,7 +58,7 @@ public class ShortBeforeRefillQueryTests
             PrescribedPackageCount = 1,
             DailyDosagePills = 1,
             CurrentStockPills = 31,
-            PrescriptionStartDate = new DateOnly(2026, 1, 1),
+            PrescriptionStartDate = new DateOnly(2026, 1, 5),
         });
 
         var shortMeds = await app.ListShortBeforeNextRefillAsync(new DateOnly(2026, 5, 5));

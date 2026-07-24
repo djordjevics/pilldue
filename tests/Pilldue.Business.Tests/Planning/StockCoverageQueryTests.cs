@@ -17,7 +17,7 @@ public class StockCoverageQueryTests
             PrescribedPackageCount = 1,
             DailyDosagePills = 1,
             CurrentStockPills = 28,
-            PrescriptionStartDate = new DateOnly(2026, 1, 1),
+            PrescriptionStartDate = new DateOnly(2026, 1, 5),
         };
 
         var result = StockCoverageQuery.Evaluate(medication, DefaultConfig, today);
@@ -40,7 +40,7 @@ public class StockCoverageQueryTests
             PrescribedPackageCount = 1,
             DailyDosagePills = 1,
             CurrentStockPills = 31,
-            PrescriptionStartDate = new DateOnly(2026, 1, 1),
+            PrescriptionStartDate = new DateOnly(2026, 1, 5),
         };
 
         var result = StockCoverageQuery.Evaluate(medication, DefaultConfig, today);
@@ -53,7 +53,7 @@ public class StockCoverageQueryTests
     }
 
     [Fact]
-    public void Evaluate_uses_per_med_refill_day_override()
+    public void Evaluate_uses_prescription_start_day_as_refill_day()
     {
         var today = new DateOnly(2026, 5, 10);
         var medication = new Medication
@@ -63,8 +63,7 @@ public class StockCoverageQueryTests
             PrescribedPackageCount = 1,
             DailyDosagePills = 1,
             CurrentStockPills = 4,
-            RefillDayOfMonthOverride = 15,
-            PrescriptionStartDate = new DateOnly(2026, 1, 1),
+            PrescriptionStartDate = new DateOnly(2026, 1, 15),
         };
 
         var result = StockCoverageQuery.Evaluate(medication, DefaultConfig, today);
@@ -87,7 +86,7 @@ public class StockCoverageQueryTests
             PrescribedPackageCount = 1,
             DailyDosagePills = 1,
             CurrentStockPills = 2,
-            PrescriptionStartDate = new DateOnly(2026, 1, 1),
+            PrescriptionStartDate = new DateOnly(2026, 1, 5),
         };
 
         var result = StockCoverageQuery.Evaluate(medication, DefaultConfig, today);
@@ -108,7 +107,7 @@ public class StockCoverageQueryTests
             PrescribedPackageCount = 1,
             DailyDosagePills = 1,
             CurrentStockPills = 0,
-            PrescriptionStartDate = new DateOnly(2026, 1, 1),
+            PrescriptionStartDate = new DateOnly(2026, 1, 5),
         };
 
         var result = StockCoverageQuery.Evaluate(medication, DefaultConfig, today);
@@ -136,7 +135,7 @@ public class StockCoverageQueryTests
             PrescribedPackageCount = 1,
             DailyDosagePills = 1,
             CurrentStockPills = 28,
-            PrescriptionStartDate = new DateOnly(2026, 1, 1),
+            PrescriptionStartDate = new DateOnly(2026, 1, 5),
         });
 
         var today = new DateOnly(2026, 5, 5);

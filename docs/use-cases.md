@@ -6,9 +6,7 @@ Personal local refill tracker. One instance per person. No multi-user, no dose r
 
 | Key | Default | Storage |
 |-----|---------|---------|
-| Default refill day of month | **6** | Config file next to the app |
-
-Medications inherit this day unless overridden.
+| Default refill day of month | **6** | Config file — used for calendar range window |
 
 ## Medication definition
 
@@ -19,11 +17,10 @@ Medications inherit this day unless overridden.
 | Prescribed package count | Usual packages obtained each refill |
 | Daily dosage | Pills consumed per day |
 | Current stock | Pills on hand |
-| Refill day override | Nullable 1–31; `null` = use config default (6) |
-| Prescription start | Start of current prescription validity |
+| Prescription start | Start of current prescription validity; **day-of-month is this med’s refill day** |
 | Prescription duration | Default **6 months** (or explicit end date) |
 
-**Effective refill day** = override if set, else config default.
+**Effective refill day** = `PrescriptionStartDate.Day` (clamped per month when that day is invalid).
 
 **Edge case:** if day-of-month is invalid for a month (e.g. 31), clamp to last day of that month.
 
@@ -43,10 +40,10 @@ Queries:
 
 ## Flow 2 — Refill by packages
 
-User logs a refill with **N packages** →  
+User logs a refill with **N packages** (recorded as **today**) →  
 `currentStock += N × packageSize`.
 
-Record a refill history entry (date, med, package count).
+Record a refill history entry (today’s date, med, package count).
 
 ## Flow 3 — Calendar
 

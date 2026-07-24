@@ -37,6 +37,6 @@ public class PrescriptionEndScenarios
         var entry = Assert.Single(view.Entries);
         Assert.Equal(med.Id, entry.Medication.Id);
         Assert.Equal(expectedEnd, entry.PrescriptionEndDate);
-        Assert.Equal(new DateOnly(2026, 5, 6), entry.FirstRefillDate);
+        Assert.Equal(new DateOnly(2026, 5, 15), entry.FirstRefillDate);
     }
 }

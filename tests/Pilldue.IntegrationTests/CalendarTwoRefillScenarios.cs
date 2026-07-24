@@ -23,7 +23,7 @@ public class CalendarTwoRefillScenarios
             PrescribedPackageCount = 2,
             DailyDosagePills = 1,
             CurrentStockPills = 3,
-            PrescriptionStartDate = new DateOnly(2026, 1, 1),
+            PrescriptionStartDate = new DateOnly(2026, 1, 6),
         });
 
         var asOf = new DateOnly(2026, 5, 1);
@@ -56,7 +56,7 @@ public class CalendarTwoRefillScenarios
             PrescribedPackageCount = 1,
             DailyDosagePills = 1,
             CurrentStockPills = 90,
-            PrescriptionStartDate = new DateOnly(2026, 1, 1),
+            PrescriptionStartDate = new DateOnly(2026, 1, 6),
         });
 
         var view = await app.GetCalendarAsync(new DateOnly(2026, 5, 1));

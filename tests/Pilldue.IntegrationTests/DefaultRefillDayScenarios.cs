@@ -26,7 +26,7 @@ public class DefaultRefillDayScenarios
             PrescribedPackageCount = 1,
             DailyDosagePills = 1,
             CurrentStockPills = 28,
-            PrescriptionStartDate = new DateOnly(2026, 1, 1),
+            PrescriptionStartDate = new DateOnly(2026, 1, 6),
         });
 
         // On day 6, next refill is next month's 6th (31-day May→June gap from 6 May).

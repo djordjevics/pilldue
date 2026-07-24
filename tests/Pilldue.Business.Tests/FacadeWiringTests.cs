@@ -22,7 +22,7 @@ public class FacadeWiringTests
             PrescribedPackageCount = 1,
             DailyDosagePills = 1,
             CurrentStockPills = 0,
-            PrescriptionStartDate = new DateOnly(2026, 1, 1),
+            PrescriptionStartDate = new DateOnly(2026, 1, 5),
         });
 
         var coverage = Assert.Single(await app.GetStockCoverageAsync(asOf));

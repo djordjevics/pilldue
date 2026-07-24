@@ -112,26 +112,6 @@ internal static class MedicationForm
                         ? ValidationResult.Success()
                         : ValidationResult.Error(UiLocalizer.Get("Common.MustBeZeroOrGreater"))));
 
-        var refillOverrideRaw = AnsiConsole.Prompt(
-            new TextPrompt<string>(UiLocalizer.Get("Med.RefillOverride"))
-                .AllowEmpty()
-                .DefaultValue(existing?.RefillDayOfMonthOverride?.ToString() ?? string.Empty)
-                .Validate(value =>
-                {
-                    if (string.IsNullOrWhiteSpace(value))
-                    {
-                        return ValidationResult.Success();
-                    }
-
-                    return int.TryParse(value.Trim(), out var day) && day is >= 1 and <= 31
-                        ? ValidationResult.Success()
-                        : ValidationResult.Error(UiLocalizer.Get("Med.RefillOverrideInvalid"));
-                }));
-
-        int? refillOverride = string.IsNullOrWhiteSpace(refillOverrideRaw)
-            ? null
-            : int.Parse(refillOverrideRaw.Trim());
-
         var defaultStart = existing?.PrescriptionStartDate ?? DateOnly.FromDateTime(DateTime.Today);
         var prescriptionStart = AnsiConsole.Prompt(
             new TextPrompt<string>(UiLocalizer.Get("Med.RxStart"))
@@ -159,7 +139,7 @@ internal static class MedicationForm
             PrescribedPackageCount = prescribedPackages,
             DailyDosagePills = dailyDosage,
             CurrentStockPills = currentStock,
-            RefillDayOfMonthOverride = refillOverride,
+            RefillDayOfMonthOverride = null,
             PrescriptionStartDate = DateOnly.ParseExact(prescriptionStart.Trim(), "yyyy-MM-dd"),
             PrescriptionDurationMonths = durationMonths,
         };
