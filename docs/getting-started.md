@@ -31,6 +31,6 @@ dotnet run --project src/Pilldue.UI
 | `tests/Pilldue.Data.Tests` | Data unit tests |
 | `tests/Pilldue.Business.Tests` | Business unit tests |
 | `tests/Pilldue.IntegrationTests` | Multi-step scenario tests (no UI) |
-| `docs/` | Project documentation |
+| `docs/` | Project documentation ([use cases](use-cases.md)) |
 | `.cursor/` | Cursor rules and project skills |
 | `todo.md` | Decision questionnaire / notes |

@@ -5,25 +5,26 @@ alwaysApply: true
 
 # Pilldue
 
-Medication refill tracker. Log therapy schedules and know when each med needs a refill.
+Personal local medication refill tracker (.NET 10, Spectre.Console, SQLite).
 
-## Product
+## Product (v1)
 
-- **Personal local tool** — one instance per person; never multi-tenant / multi-user.
-- **v1 in:** meds + schedule, stock → refill-by date, log refill, refill history, flag skipped dose (increases stock).
-- **v1 out:** pharmacy/Rx/doctor, dose reminders.
+- Config default refill **day of month = 5**; per-med override in DB.
+- Med: package size, prescribed package count, daily dosage, stock, prescription ~6 months.
+- Flows: stock vs next/second refill day; refill by packages; skip-dose stock bump; calendar (last covered + prescription end).
+- Out: pharmacy/doctor contacts, dose reminders, multi-user/cloud.
+- Details: [docs/use-cases.md](docs/use-cases.md)
 
 ## Solution
 
-- **.NET 10** (`net10.0`), solution [Pilldue.slnx](Pilldue.slnx)
-- **Projects:** `src/Pilldue.Data` (SQLite), `src/Pilldue.Business`, `src/Pilldue.UI` (Spectre.Console exe)
-- **Tests:** `tests/Pilldue.Data.Tests`, `tests/Pilldue.Business.Tests`, `tests/Pilldue.IntegrationTests` (multi-step scenarios, no UI)
-- **Deps:** UI → Business → Data. Do not reverse those arrows.
-- Scaffold is empty; design and feature work come next. Prefer unit tests with features; integration tests for workflows.
+- Projects: `Pilldue.Business` (domain + ports), `Pilldue.Data` (**EF Core + SQLite** migrations + config file), `Pilldue.UI` (composition + TUI).
+- Target deps: UI → Business, UI → Data, Data → Business (DIP). Scaffold may still show Business → Data until contracts PR.
+- Tests under `tests/`; integration tests = multi-step scenarios, no UI.
+- Persistence: EF Core only for v1 DB access — no Dapper/ADO.
 
 ## Conventions
 
-- Prefer updating `docs/` and [todo.md](todo.md) when decisions change.
-- Keep Cursor guidance in `.cursor/rules/` and project skills in `.cursor/skills/`.
-- UI stays thin: call Business for stock/refill/skip-dose; no domain math in UI.
-- Persistence stays in Data only.
+- Update `docs/` when decisions change.
+- UI thin: call Business only; no SQL or refill math in UI.
+- Persistence and config file I/O only in Data.
+- Prefer small PRs mapped to GitHub issues; do not change port signatures without a contracts follow-up.

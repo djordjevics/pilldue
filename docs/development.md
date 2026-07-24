@@ -15,7 +15,9 @@ When structure or decisions change, update the relevant files under `docs/` and 
 
 ## Layering
 
-**UI → Business → Data**. Do not reference Data from UI, or UI from Business/Data. Persistence (SQLite) stays inside Data.
+Target DIP: **UI → Business**, **UI → Data**, **Data → Business**. Persistence stays inside Data.
+
+**SQLite access:** EF Core only (migrations for schema). No Dapper/ADO in v1. Config file I/O is separate from EF.
 
 ## Tests
 
