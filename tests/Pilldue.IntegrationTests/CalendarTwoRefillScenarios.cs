@@ -14,7 +14,7 @@ public class CalendarTwoRefillScenarios
             new InMemoryMedicationRepository(),
             new InMemoryRefillEventRepository(),
             new InMemorySkipDoseEventRepository(),
-            new InMemoryAppConfigStore(new AppConfig { DefaultRefillDayOfMonth = 6 }));
+            new InMemoryAppConfigStore());
 
         await app.AddMedicationAsync(new Medication
         {
@@ -47,7 +47,7 @@ public class CalendarTwoRefillScenarios
             new InMemoryMedicationRepository(),
             new InMemoryRefillEventRepository(),
             new InMemorySkipDoseEventRepository(),
-            new InMemoryAppConfigStore(new AppConfig { DefaultRefillDayOfMonth = 6 }));
+            new InMemoryAppConfigStore());
 
         await app.AddMedicationAsync(new Medication
         {

@@ -7,26 +7,25 @@ namespace Pilldue.Business;
 public static class CalendarProjection
 {
     /// <summary>
-    /// Builds the calendar view: range is <paramref name="asOfDate"/> through the second
-    /// upcoming occurrence of the config default refill day. Each medication is simulated
-    /// with its effective refill day and a restock of
+    /// Builds the calendar view: range is <paramref name="asOfDate"/> through the latest
+    /// second-refill date among medications (or as-of alone when there are none).
+    /// Each medication is simulated with its prescription-day refill and a restock of
     /// <c>PrescribedPackageCount × PackageSizePills</c> at its first refill date.
     /// </summary>
     public static CalendarView Build(
         IEnumerable<Medication> medications,
-        AppConfig config,
         DateOnly asOfDate)
     {
         ArgumentNullException.ThrowIfNull(medications);
-        ArgumentNullException.ThrowIfNull(config);
 
-        var (_, rangeEnd) = RefillCalendarRules.NextAndSecondRefillDates(
-            asOfDate,
-            config.DefaultRefillDayOfMonth);
-
-        var entries = medications
+        var list = medications as IList<Medication> ?? medications.ToList();
+        var entries = list
             .Select(medication => Evaluate(medication, asOfDate))
             .ToList();
+
+        var rangeEnd = entries.Count == 0
+            ? asOfDate
+            : entries.Max(e => e.SecondRefillDate);
 
         return new CalendarView
         {

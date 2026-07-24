@@ -11,10 +11,9 @@ public static class StockCoverageQuery
     /// When <paramref name="asOfDate"/> falls on a refill day, the target is the following month's
     /// refill (e.g. 5 May → 5 June = 31 days).
     /// </summary>
-    public static StockCoverageResult Evaluate(Medication medication, AppConfig config, DateOnly asOfDate)
+    public static StockCoverageResult Evaluate(Medication medication, DateOnly asOfDate)
     {
         ArgumentNullException.ThrowIfNull(medication);
-        ArgumentNullException.ThrowIfNull(config);
 
         var refillDay = RefillCalendarRules.EffectiveRefillDayOfMonth(medication);
         var (nextOnOrAfter, second) = RefillCalendarRules.NextAndSecondRefillDates(asOfDate, refillDay);

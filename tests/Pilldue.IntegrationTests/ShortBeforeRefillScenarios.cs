@@ -15,7 +15,7 @@ public class ShortBeforeRefillScenarios
             medications,
             new InMemoryRefillEventRepository(),
             new InMemorySkipDoseEventRepository(),
-            new InMemoryAppConfigStore(new AppConfig { DefaultRefillDayOfMonth = 5 }));
+            new InMemoryAppConfigStore());
 
         // Documented example: refill day 5, stock 28, dosage 1, package 28.
         // 5 May → 5 June = 31 days → 3 pills short → ceil(3/28)=1 package to close the gap

@@ -71,7 +71,7 @@ public static class UiLocalizer
     private static readonly Dictionary<string, string> English = new()
     {
         ["App.Tagline"] = "medication refill tracker",
-        ["App.HeaderMeta"] = "Default refill day: {0}. Language: {1}.",
+        ["App.HeaderMeta"] = "Language: {0}.",
         ["Menu.Title"] = "Main menu",
         ["Menu.List"] = "List medications",
         ["Menu.Planning"] = "Planning queries (stock vs refill days)",
@@ -172,7 +172,7 @@ public static class UiLocalizer
     private static readonly Dictionary<string, string> Serbian = new()
     {
         ["App.Tagline"] = "pracenje dopune lekova",
-        ["App.HeaderMeta"] = "Podrazumevani dan dopune: {0}. Jezik: {1}.",
+        ["App.HeaderMeta"] = "Jezik: {0}.",
         ["Menu.Title"] = "Glavni meni",
         ["Menu.List"] = "Lista lekova",
         ["Menu.Planning"] = "Planiranje (zaliha vs dani dopune)",

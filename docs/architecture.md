@@ -10,10 +10,10 @@ Pilldue helps you track medications against a **monthly refill day**, package-ba
 
 ### In
 
-- Config default refill **day of month** (6) for calendar range; per-med refill day = prescription start day-of-month
+- Per-med refill day = prescription start day-of-month (no global default refill day)
 - Med definition: package size, prescribed package count, daily dosage, stock, prescription window (~6 months)
 - Queries: stock vs next refill day; short list; need-extra-packages for second refill day
-- Refill by package count (logged as today); skip-dose stock bump; calendar (today → second refill; red stock-outs; assume first restock)
+- Refill by package count (logged as today); skip-dose stock bump; calendar (today → latest second refill; red stock-outs; assume first restock)
 
 ### Out
 
@@ -28,7 +28,7 @@ Pilldue helps you track medications against a **monthly refill day**, package-ba
 | Delivery | Local small published exe |
 | UI | Spectre.Console |
 | Persistence | **SQLite via EF Core** (migrations for schema) |
-| Config | File (default refill day) — not EF |
+| Config | File (UI language) — not EF |
 | .NET | .NET 10 (`net10.0`) |
 | Solution | [Pilldue.slnx](../Pilldue.slnx) |
 

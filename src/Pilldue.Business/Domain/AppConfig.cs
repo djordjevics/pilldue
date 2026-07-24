@@ -1,16 +1,11 @@
 namespace Pilldue.Business;
 
-/// <summary>Application settings. Default refill day is the 6th of each month.</summary>
+/// <summary>Application settings (UI language). Refill day is per medication from prescription start.</summary>
 public sealed class AppConfig
 {
-    public const int DefaultRefillDayOfMonthValue = 6;
-
     public const string EnglishLanguage = "en";
 
     public const string SerbianLanguage = "sr";
-
-    /// <summary>Day of month (1–31) used when a medication has no override.</summary>
-    public int DefaultRefillDayOfMonth { get; set; } = DefaultRefillDayOfMonthValue;
 
     /// <summary>
     /// UI language code: <c>en</c> or <c>sr</c> (Serbian Latin).

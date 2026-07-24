@@ -62,14 +62,16 @@ internal static class MainMenu
         new(IdExit, UiLocalizer.Get("Menu.Exit")),
     ];
 
-    private static async Task WriteHeaderAsync(IPilldueApp app, CancellationToken cancellationToken)
+    private static Task WriteHeaderAsync(IPilldueApp app, CancellationToken cancellationToken)
     {
-        var settings = await app.GetConfigAsync(cancellationToken).ConfigureAwait(false);
+        _ = app;
+        _ = cancellationToken;
         AnsiConsole.MarkupLine(
             $"[bold blue]Pilldue[/] — {UiLocalizer.Get("App.Tagline").EscapeMarkup()}");
         AnsiConsole.MarkupLine(
-            $"[grey]{UiLocalizer.Format("App.HeaderMeta", settings.DefaultRefillDayOfMonth, UiLocalizer.Language).EscapeMarkup()}[/]");
+            $"[grey]{UiLocalizer.Format("App.HeaderMeta", UiLocalizer.Language).EscapeMarkup()}[/]");
         AnsiConsole.WriteLine();
+        return Task.CompletedTask;
     }
 
     private static async Task HandleAsync(

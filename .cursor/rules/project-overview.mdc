@@ -9,9 +9,9 @@ Personal local medication refill tracker (.NET 10, Spectre.Console, SQLite).
 
 ## Product (v1)
 
-- Config default refill **day of month = 6** (calendar range window); per-med refill day = prescription start day-of-month.
+- Per-med refill day = prescription start day-of-month (no global default refill day).
 - Med: package size, prescribed package count, daily dosage, stock, prescription ~6 months.
-- Flows: stock vs next/second refill day; refill by packages (today); skip-dose stock bump; calendar (today → second refill, stock-outs with assumed first restock).
+- Flows: stock vs next/second refill day; refill by packages (today); skip-dose stock bump; calendar (today → latest second refill, stock-outs with assumed first restock).
 - Out: pharmacy/doctor contacts, dose reminders, multi-user/cloud.
 - Details: [docs/use-cases.md](docs/use-cases.md)
 
