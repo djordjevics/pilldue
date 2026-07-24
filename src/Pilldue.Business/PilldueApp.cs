@@ -59,10 +59,15 @@ public sealed class PilldueApp : IPilldueApp
             .ToList();
     }
 
-    public Task<IReadOnlyList<StockCoverageResult>> ListShortBeforeNextRefillAsync(
+    public async Task<IReadOnlyList<StockCoverageResult>> ListShortBeforeNextRefillAsync(
         DateOnly asOfDate,
         CancellationToken cancellationToken = default)
-        => throw new NotImplementedException("Implement in business issue C4.");
+    {
+        var coverage = await GetStockCoverageAsync(asOfDate, cancellationToken).ConfigureAwait(false);
+        return coverage
+            .Where(result => !result.CoversUntilNextRefill)
+            .ToList();
+    }
 
     public Task<IReadOnlyList<ExtraPackagesNeeded>> ListNeedExtraForSecondRefillAsync(
         DateOnly asOfDate,
