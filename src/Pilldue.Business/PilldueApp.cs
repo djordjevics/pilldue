@@ -2,7 +2,6 @@ namespace Pilldue.Business;
 
 /// <summary>
 /// Facade that persists meds/refills/skips via ports and runs planning queries.
-/// Remaining planning queries throw until business issues C4–C9 implement them.
 /// </summary>
 public sealed class PilldueApp : IPilldueApp
 {
@@ -129,10 +128,18 @@ public sealed class PilldueApp : IPilldueApp
             cancellationToken).ConfigureAwait(false);
     }
 
-    public Task<IReadOnlyList<MedicationCalendarEntry>> GetCalendarAsync(
+    public async Task<IReadOnlyList<MedicationCalendarEntry>> GetCalendarAsync(
         DateOnly rangeStart,
         DateOnly rangeEnd,
         DateOnly asOfDate,
         CancellationToken cancellationToken = default)
-        => throw new NotImplementedException("Implement in business issues C2/C8/C9.");
+    {
+        var medications = await _medications.ListAsync(cancellationToken).ConfigureAwait(false);
+
+        return medications
+            .Select(medication => CalendarProjection.Evaluate(medication, rangeStart, rangeEnd, asOfDate))
+            .Where(entry => entry is not null)
+            .Select(entry => entry!)
+            .ToList();
+    }
 }
