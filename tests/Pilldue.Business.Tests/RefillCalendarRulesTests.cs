@@ -84,4 +84,63 @@ public class RefillCalendarRulesTests
         Assert.Equal(new DateOnly(2026, 6, 5), second);
         Assert.Equal(31, second.DayNumber - next.DayNumber);
     }
+
+    [Fact]
+    public void PrescriptionEndDate_default_six_months_from_start()
+    {
+        var start = new DateOnly(2026, 1, 15);
+
+        var end = RefillCalendarRules.PrescriptionEndDate(start, durationMonths: 6);
+
+        Assert.Equal(new DateOnly(2026, 7, 15), end);
+    }
+
+    [Fact]
+    public void PrescriptionEndDate_uses_medication_default_duration_of_six_months()
+    {
+        var medication = new Medication
+        {
+            Name = "Test",
+            PackageSizePills = 28,
+            PrescribedPackageCount = 1,
+            DailyDosagePills = 1,
+            CurrentStockPills = 28,
+            PrescriptionStartDate = new DateOnly(2026, 3, 5),
+        };
+
+        Assert.Equal(6, medication.PrescriptionDurationMonths);
+
+        var end = RefillCalendarRules.PrescriptionEndDate(medication);
+
+        Assert.Equal(new DateOnly(2026, 9, 5), end);
+    }
+
+    [Fact]
+    public void PrescriptionEndDate_respects_explicit_duration()
+    {
+        var medication = new Medication
+        {
+            PrescriptionStartDate = new DateOnly(2026, 1, 1),
+            PrescriptionDurationMonths = 3,
+        };
+
+        var end = RefillCalendarRules.PrescriptionEndDate(medication);
+
+        Assert.Equal(new DateOnly(2026, 4, 1), end);
+    }
+
+    [Fact]
+    public void PrescriptionEndDate_clamps_day_when_target_month_is_shorter()
+    {
+        var end = RefillCalendarRules.PrescriptionEndDate(new DateOnly(2026, 1, 31), durationMonths: 1);
+
+        Assert.Equal(new DateOnly(2026, 2, 28), end);
+    }
+
+    [Fact]
+    public void PrescriptionEndDate_rejects_non_positive_duration()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(
+            () => RefillCalendarRules.PrescriptionEndDate(new DateOnly(2026, 1, 1), durationMonths: 0));
+    }
 }
