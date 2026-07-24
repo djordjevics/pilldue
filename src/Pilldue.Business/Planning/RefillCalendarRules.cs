@@ -52,12 +52,14 @@ public static class RefillCalendarRules
         return (pillsShort + packageSizePills - 1) / packageSizePills;
     }
 
-    /// <summary>Effective refill day: per-med override or config default.</summary>
-    public static int EffectiveRefillDayOfMonth(Medication medication, AppConfig config)
+    /// <summary>
+    /// Effective refill day-of-month for a medication: the day of
+    /// <see cref="Medication.PrescriptionStartDate"/> (clamped per month when applied).
+    /// </summary>
+    public static int EffectiveRefillDayOfMonth(Medication medication)
     {
         ArgumentNullException.ThrowIfNull(medication);
-        ArgumentNullException.ThrowIfNull(config);
-        return medication.RefillDayOfMonthOverride ?? config.DefaultRefillDayOfMonth;
+        return medication.PrescriptionStartDate.Day;
     }
 
     /// <summary>

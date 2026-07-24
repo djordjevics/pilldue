@@ -7,6 +7,7 @@ namespace Pilldue.UI;
 /// <summary>
 /// Spectre screen: select a medication, enter package count, call <see cref="IPilldueApp.RefillAsync"/>.
 /// User can cancel from the medication list or at the final confirmation.
+/// Refill is recorded as today (no date prompt).
 /// </summary>
 internal static class RefillForm
 {
@@ -53,19 +54,9 @@ internal static class RefillForm
                         ? ValidationResult.Success()
                         : ValidationResult.Error(UiLocalizer.Get("Common.MustBeAtLeast1"))));
 
-        var today = DateOnly.FromDateTime(DateTime.Today);
-        var dateRaw = AnsiConsole.Prompt(
-            new TextPrompt<string>(UiLocalizer.Get("Refill.Date"))
-                .DefaultValue(today.ToString("yyyy-MM-dd"))
-                .Validate(value =>
-                    DateOnly.TryParseExact(value.Trim(), "yyyy-MM-dd", out _)
-                        ? ValidationResult.Success()
-                        : ValidationResult.Error(UiLocalizer.Get("Common.UseDateFormat"))));
-        var date = DateOnly.ParseExact(dateRaw.Trim(), "yyyy-MM-dd");
-
         var confirm = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title(UiLocalizer.Format("Refill.Confirm", selected.Name, packageCount, date.ToString("yyyy-MM-dd")))
+                .Title(UiLocalizer.Format("Refill.Confirm", selected.Name, packageCount))
                 .AddChoices(UiLocalizer.Get("Common.Yes"), cancelLabel));
 
         if (RefillFormLogic.IsCancelSelection(confirm, cancelLabel))
@@ -74,9 +65,11 @@ internal static class RefillForm
             return;
         }
 
+        var today = DateOnly.FromDateTime(DateTime.Today);
+
         try
         {
-            await app.RefillAsync(selected.Id, packageCount, date, cancellationToken).ConfigureAwait(false);
+            await app.RefillAsync(selected.Id, packageCount, today, cancellationToken).ConfigureAwait(false);
             var updated = (await app.ListMedicationsAsync(cancellationToken).ConfigureAwait(false))
                 .First(m => m.Id == selected.Id);
             AnsiConsole.MarkupLine(

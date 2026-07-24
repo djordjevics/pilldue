@@ -16,7 +16,7 @@ public static class StockCoverageQuery
         ArgumentNullException.ThrowIfNull(medication);
         ArgumentNullException.ThrowIfNull(config);
 
-        var refillDay = RefillCalendarRules.EffectiveRefillDayOfMonth(medication, config);
+        var refillDay = RefillCalendarRules.EffectiveRefillDayOfMonth(medication);
         var (nextOnOrAfter, second) = RefillCalendarRules.NextAndSecondRefillDates(asOfDate, refillDay);
         // On the refill day itself, plan through the next occurrence (month gap).
         var nextRefillDate = nextOnOrAfter > asOfDate ? nextOnOrAfter : second;

@@ -10,10 +10,10 @@ Pilldue helps you track medications against a **monthly refill day**, package-ba
 
 ### In
 
-- Config default refill **day of month** (6), per-med override
+- Config default refill **day of month** (6) for calendar range; per-med refill day = prescription start day-of-month
 - Med definition: package size, prescribed package count, daily dosage, stock, prescription window (~6 months)
 - Queries: stock vs next refill day; short list; need-extra-packages for second refill day
-- Refill by package count; skip-dose stock bump; calendar (today → second refill; red stock-outs; assume first restock)
+- Refill by package count (logged as today); skip-dose stock bump; calendar (today → second refill; red stock-outs; assume first restock)
 
 ### Out
 

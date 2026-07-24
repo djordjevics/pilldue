@@ -15,7 +15,7 @@ public static class ExtraPackagesQuery
         ArgumentNullException.ThrowIfNull(medication);
         ArgumentNullException.ThrowIfNull(config);
 
-        var refillDay = RefillCalendarRules.EffectiveRefillDayOfMonth(medication, config);
+        var refillDay = RefillCalendarRules.EffectiveRefillDayOfMonth(medication);
         var (_, secondRefillDate) = RefillCalendarRules.NextAndSecondRefillDates(asOfDate, refillDay);
 
         var daysInGap = secondRefillDate.DayNumber - asOfDate.DayNumber;

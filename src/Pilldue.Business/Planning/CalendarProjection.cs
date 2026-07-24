@@ -25,7 +25,7 @@ public static class CalendarProjection
             config.DefaultRefillDayOfMonth);
 
         var entries = medications
-            .Select(medication => Evaluate(medication, config, asOfDate))
+            .Select(medication => Evaluate(medication, asOfDate))
             .ToList();
 
         return new CalendarView
@@ -38,16 +38,15 @@ public static class CalendarProjection
 
     /// <summary>
     /// Projects one medication: first/second refill dates and stock-out days with restock assumption.
+    /// Refill day-of-month is <see cref="Medication.PrescriptionStartDate"/>.Day.
     /// </summary>
     public static MedicationCalendarEntry Evaluate(
         Medication medication,
-        AppConfig config,
         DateOnly asOfDate)
     {
         ArgumentNullException.ThrowIfNull(medication);
-        ArgumentNullException.ThrowIfNull(config);
 
-        var refillDay = RefillCalendarRules.EffectiveRefillDayOfMonth(medication, config);
+        var refillDay = RefillCalendarRules.EffectiveRefillDayOfMonth(medication);
         var (first, second) = RefillCalendarRules.NextAndSecondRefillDates(asOfDate, refillDay);
         var stockOutDates = SimulateStockOutDates(medication, asOfDate, first, second);
         var prescriptionEnd = RefillCalendarRules.PrescriptionEndDate(medication);

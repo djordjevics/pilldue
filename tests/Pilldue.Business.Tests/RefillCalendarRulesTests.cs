@@ -24,14 +24,16 @@ public class RefillCalendarRulesTests
     }
 
     [Fact]
-    public void EffectiveRefillDay_uses_override_or_config_default()
+    public void EffectiveRefillDay_is_prescription_start_day_of_month()
     {
-        var config = new AppConfig { DefaultRefillDayOfMonth = 5 };
-        var inherited = new Medication { Name = "A" };
-        var overridden = new Medication { Name = "B", RefillDayOfMonthOverride = 12 };
+        var med = new Medication
+        {
+            Name = "A",
+            PrescriptionStartDate = new DateOnly(2026, 3, 15),
+            RefillDayOfMonthOverride = 1, // ignored
+        };
 
-        Assert.Equal(5, RefillCalendarRules.EffectiveRefillDayOfMonth(inherited, config));
-        Assert.Equal(12, RefillCalendarRules.EffectiveRefillDayOfMonth(overridden, config));
+        Assert.Equal(15, RefillCalendarRules.EffectiveRefillDayOfMonth(med));
     }
 
     [Fact]

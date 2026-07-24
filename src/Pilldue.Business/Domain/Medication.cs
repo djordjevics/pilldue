@@ -20,10 +20,14 @@ public sealed class Medication
     public int CurrentStockPills { get; set; }
 
     /// <summary>
-    /// Optional per-med refill day (1–31). Null means inherit <see cref="AppConfig.DefaultRefillDayOfMonth"/>.
+    /// Optional legacy field (ignored). Refill day-of-month is
+    /// <see cref="PrescriptionStartDate"/>.Day.
     /// </summary>
     public int? RefillDayOfMonthOverride { get; set; }
 
+    /// <summary>
+    /// Start of current prescription validity. The day-of-month is this medication's refill day.
+    /// </summary>
     public DateOnly PrescriptionStartDate { get; set; }
 
     /// <summary>Default prescription validity length in months (typically 6).</summary>

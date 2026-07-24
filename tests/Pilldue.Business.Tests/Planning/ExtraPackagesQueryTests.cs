@@ -17,7 +17,7 @@ public class ExtraPackagesQueryTests
             PrescribedPackageCount = 1,
             DailyDosagePills = 1,
             CurrentStockPills = 0,
-            PrescriptionStartDate = new DateOnly(2026, 1, 1),
+            PrescriptionStartDate = new DateOnly(2026, 1, 5),
         };
 
         var result = ExtraPackagesQuery.Evaluate(medication, DefaultConfig, today);
@@ -40,7 +40,7 @@ public class ExtraPackagesQueryTests
             PrescribedPackageCount = 2,
             DailyDosagePills = 1,
             CurrentStockPills = 0,
-            PrescriptionStartDate = new DateOnly(2026, 1, 1),
+            PrescriptionStartDate = new DateOnly(2026, 1, 5),
         };
 
         Assert.Null(ExtraPackagesQuery.Evaluate(medication, DefaultConfig, today));
@@ -62,7 +62,7 @@ public class ExtraPackagesQueryTests
             PrescribedPackageCount = 1,
             DailyDosagePills = 1,
             CurrentStockPills = 0,
-            PrescriptionStartDate = new DateOnly(2026, 1, 1),
+            PrescriptionStartDate = new DateOnly(2026, 1, 5),
         });
         await app.AddMedicationAsync(new Medication
         {
@@ -71,7 +71,7 @@ public class ExtraPackagesQueryTests
             PrescribedPackageCount = 2,
             DailyDosagePills = 1,
             CurrentStockPills = 0,
-            PrescriptionStartDate = new DateOnly(2026, 1, 1),
+            PrescriptionStartDate = new DateOnly(2026, 1, 5),
         });
 
         var results = await app.ListNeedExtraForSecondRefillAsync(new DateOnly(2026, 5, 5));

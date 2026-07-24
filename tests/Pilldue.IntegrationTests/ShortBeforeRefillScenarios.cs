@@ -27,7 +27,7 @@ public class ShortBeforeRefillScenarios
             PrescribedPackageCount = 1,
             DailyDosagePills = 1,
             CurrentStockPills = 28,
-            PrescriptionStartDate = new DateOnly(2026, 1, 1),
+            PrescriptionStartDate = new DateOnly(2026, 1, 5),
         });
 
         var asOf = new DateOnly(2026, 5, 5);

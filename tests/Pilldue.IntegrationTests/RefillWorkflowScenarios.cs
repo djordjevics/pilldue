@@ -24,8 +24,7 @@ public class RefillWorkflowScenarios
         Assert.Equal(med.Id, listed.Id);
         Assert.Equal("Atorvastatin", listed.Name);
 
-        var config = await app.GetConfigAsync();
-        var day = RefillCalendarRules.EffectiveRefillDayOfMonth(listed, config);
+        var day = RefillCalendarRules.EffectiveRefillDayOfMonth(listed);
         var (next, _) = RefillCalendarRules.NextAndSecondRefillDates(AsOf, day);
         Assert.Equal(new DateOnly(2026, 5, 6), next);
     }
@@ -128,6 +127,6 @@ public class RefillWorkflowScenarios
         PrescribedPackageCount = 1,
         DailyDosagePills = 1,
         CurrentStockPills = stock,
-        PrescriptionStartDate = new DateOnly(2026, 1, 1),
+        PrescriptionStartDate = new DateOnly(2026, 1, 6),
     };
 }
