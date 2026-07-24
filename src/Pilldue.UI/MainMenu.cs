@@ -84,7 +84,7 @@ internal static class MainMenu
                 await RefillForm.RunAsync(app, cancellationToken).ConfigureAwait(false);
                 break;
             case SkipDose:
-                ShowNotImplemented("Skip dose");
+                await SkipDoseForm.RunAsync(app, cancellationToken).ConfigureAwait(false);
                 break;
             case Calendar:
                 ShowNotImplemented("Calendar (last covered day + prescription end)");
