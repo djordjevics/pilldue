@@ -1,0 +1,29 @@
+---
+description: Core project context for Pilldue
+alwaysApply: true
+---
+
+# Pilldue
+
+Medication refill tracker. Log therapy schedules and know when each med needs a refill.
+
+## Product
+
+- **Personal local tool** — one instance per person; never multi-tenant / multi-user.
+- **v1 in:** meds + schedule, stock → refill-by date, log refill, refill history, flag skipped dose (increases stock).
+- **v1 out:** pharmacy/Rx/doctor, dose reminders.
+
+## Solution
+
+- **.NET 10** (`net10.0`), solution [Pilldue.slnx](Pilldue.slnx)
+- **Projects:** `src/Pilldue.Data` (SQLite), `src/Pilldue.Business`, `src/Pilldue.UI` (Spectre.Console exe)
+- **Tests:** `tests/Pilldue.Data.Tests`, `tests/Pilldue.Business.Tests`, `tests/Pilldue.IntegrationTests` (multi-step scenarios, no UI)
+- **Deps:** UI → Business → Data. Do not reverse those arrows.
+- Scaffold is empty; design and feature work come next. Prefer unit tests with features; integration tests for workflows.
+
+## Conventions
+
+- Prefer updating `docs/` and [todo.md](todo.md) when decisions change.
+- Keep Cursor guidance in `.cursor/rules/` and project skills in `.cursor/skills/`.
+- UI stays thin: call Business for stock/refill/skip-dose; no domain math in UI.
+- Persistence stays in Data only.
