@@ -81,7 +81,7 @@ internal static class MainMenu
                 await MedicationForm.EditAsync(app, cancellationToken).ConfigureAwait(false);
                 break;
             case LogRefill:
-                ShowNotImplemented("Log refill");
+                await RefillForm.RunAsync(app, cancellationToken).ConfigureAwait(false);
                 break;
             case SkipDose:
                 ShowNotImplemented("Skip dose");
