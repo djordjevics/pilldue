@@ -28,7 +28,7 @@ Personal local medication refill tracker (.NET 10, Spectre.Console, SQLite).
 - Feature branches start with the GitHub issue id: `3-sqlite-bootstrap`, `8-refill-dates` (not `feature/03_...`).
 - Update `docs/` when decisions change.
 - UI thin: call Business only; no SQL or refill math in UI.
-- Persistence and config file I/O only in Data.
+- Persistence and config file I/O only in Data; UI composition wires EF/SQLite repositories (not in-memory) for the real app.
 - Prefer small PRs mapped to GitHub issues; do not change port signatures without a contracts follow-up.
 - Do not push/commit directly to `main`; open a PR. Merge with `gh pr merge --admin` only when the user asks (or when a multitask parent prompt explicitly authorizes merge for that wave).
 

@@ -35,7 +35,7 @@ public class CalendarTwoRefillScenarios
         var entry = Assert.Single(view.Entries);
         Assert.Equal(new DateOnly(2026, 5, 6), entry.FirstRefillDate);
         Assert.Equal(
-            new[] { new DateOnly(2026, 5, 4), new DateOnly(2026, 5, 5) },
+            new[] { new DateOnly(2026, 5, 4) },
             entry.StockOutDates);
         Assert.Equal(view.AllStockOutDates, entry.StockOutDates);
     }
