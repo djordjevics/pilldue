@@ -2,68 +2,72 @@
 
 ## Product intent
 
-Pilldue helps you track medications and know when each one needs a refill. You log therapy schedules; the app surfaces refill timing.
+Pilldue helps you track medications against a **monthly refill day**, package-based stock, and prescription validity — so you know what to buy before the next (or second) refill and when to renew the prescription.
 
-**Audience:** personal tool only. One local instance per person; never multi-tenant or shared-user accounts. Household members each run their own copy if needed.
+**Audience:** personal tool only. One local instance per person; never multi-tenant. See [use-cases.md](use-cases.md) for v1 flows.
 
 ## v1 scope
 
 ### In
 
-- Medication list with dosing schedule
-- Current stock (pills left) and pack/refill quantity → **refill-by date**
-- Log a refill (add / reset stock)
-- Refill history
-- **Flag a skipped / missed dose** → increase pills left by that dose (inventory correction, not a reminder)
+- Config default refill **day of month** (5), per-med override
+- Med definition: package size, prescribed package count, daily dosage, stock, prescription window (~6 months)
+- Queries: stock vs next refill day; short list; need-extra-packages for second refill day
+- Refill by package count; skip-dose stock bump; calendar (last covered + prescription end)
 
 ### Out
 
-- Pharmacy / Rx numbers / doctor fields
-- Dose reminders / push / “time to take” prompts
-- Multi-user, cloud hosting, sync accounts
+- Pharmacy / Rx numbers / doctor contacts
+- Dose reminders / push
+- Multi-user, cloud, sync accounts
 
 ## Stack
 
 | Topic | Choice |
 |-------|--------|
-| Audience | Single-user, local instances only |
 | Delivery | Local small published exe |
 | UI | Spectre.Console |
-| Persistence | SQLite via Data layer |
+| Persistence | SQLite |
+| Config | File (default refill day) |
 | .NET | .NET 10 (`net10.0`) |
 | Solution | [Pilldue.slnx](../Pilldue.slnx) |
 
-## Solution layout
+## Solution layout and dependencies
 
 ```
 Pilldue.slnx
 src/
-  Pilldue.Data/        # SQLite persistence
-  Pilldue.Business/    # domain model + application services
-  Pilldue.UI/          # Spectre.Console host / entry point (exe)
+  Pilldue.Business/    # domain, ports, pure logic, app services
+  Pilldue.Data/        # SQLite + config file implementations of ports
+  Pilldue.UI/          # Spectre.Console composition root
 ```
 
-Dependency direction:
+Target dependency direction (contracts / DIP — to be applied in the interfaces issue):
 
 ```mermaid
-flowchart LR
+flowchart TB
   UI[Pilldue.UI] --> Business[Pilldue.Business]
-  Business --> Data[Pilldue.Data]
+  UI --> Data[Pilldue.Data]
+  Data --> Business
 ```
 
-- **UI** depends on **Business** only (not on concrete storage details).
-- **Business** defines what to store/load; **Data** implements it.
-- A future UI can reference **Business** the same way without rewriting domain or persistence.
+- Ports and entities live in **Business**
+- **Data** implements ports (SQLite, config file)
+- **UI** wires implementations and screens
 
-Projects are scaffolded empty (placeholders only). Domain design and feature implementation come next.
+Today’s scaffold still has `Business → Data` until the contracts PR flips it.
 
 ## Tests
 
 ```
 tests/
-  Pilldue.Data.Tests/           # unit: repositories, SQLite
-  Pilldue.Business.Tests/       # unit: refill math, skip-dose, services
-  Pilldue.IntegrationTests/     # scenarios: several actions → assert outcomes
+  Pilldue.Data.Tests/
+  Pilldue.Business.Tests/
+  Pilldue.IntegrationTests/   # multi-step actions → assert; no UI
 ```
 
-Integration tests compose Business + Data without the TUI. UI is not covered by automated tests in v1 scaffold.
+## Docs
+
+- [Use cases](use-cases.md)
+- [Getting started](getting-started.md)
+- [Development](development.md)
