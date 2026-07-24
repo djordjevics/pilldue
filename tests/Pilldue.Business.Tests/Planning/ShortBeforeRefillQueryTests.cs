@@ -10,7 +10,7 @@ public class ShortBeforeRefillQueryTests
             new InMemoryMedicationRepository(),
             new InMemoryRefillEventRepository(),
             new InMemorySkipDoseEventRepository(),
-            new InMemoryAppConfigStore());
+            new InMemoryAppConfigStore(new AppConfig { DefaultRefillDayOfMonth = 5 }));
     }
 
     [Fact]

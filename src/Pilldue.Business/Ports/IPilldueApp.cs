@@ -45,10 +45,11 @@ public interface IPilldueApp
         DateOnly date,
         CancellationToken cancellationToken = default);
 
-    /// <summary>Flow 3: last covered day + prescription end for meds overlapping the range.</summary>
-    Task<IReadOnlyList<MedicationCalendarEntry>> GetCalendarAsync(
-        DateOnly rangeStart,
-        DateOnly rangeEnd,
+    /// <summary>
+    /// Flow 3: calendar from <paramref name="asOfDate"/> through the second config refill day,
+    /// with stock-out dates assuming prescribed restock at each med's first refill.
+    /// </summary>
+    Task<CalendarView> GetCalendarAsync(
         DateOnly asOfDate,
         CancellationToken cancellationToken = default);
 }

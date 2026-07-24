@@ -14,7 +14,7 @@ public class PrescriptionEndScenarios
             new InMemoryMedicationRepository(),
             new InMemoryRefillEventRepository(),
             new InMemorySkipDoseEventRepository(),
-            new InMemoryAppConfigStore());
+            new InMemoryAppConfigStore(new AppConfig { DefaultRefillDayOfMonth = 6 }));
 
         var start = new DateOnly(2026, 1, 15);
         var med = await app.AddMedicationAsync(new Medication
@@ -32,14 +32,11 @@ public class PrescriptionEndScenarios
         Assert.Equal(new DateOnly(2026, 7, 15), expectedEnd);
 
         var asOf = new DateOnly(2026, 5, 1);
-        var entries = await app.GetCalendarAsync(
-            rangeStart: new DateOnly(2026, 7, 1),
-            rangeEnd: new DateOnly(2026, 7, 31),
-            asOfDate: asOf);
+        var view = await app.GetCalendarAsync(asOf);
 
-        var entry = Assert.Single(entries);
+        var entry = Assert.Single(view.Entries);
         Assert.Equal(med.Id, entry.Medication.Id);
         Assert.Equal(expectedEnd, entry.PrescriptionEndDate);
-        Assert.Equal(new DateOnly(2026, 5, 10), entry.LastCoveredDate);
+        Assert.Equal(new DateOnly(2026, 5, 6), entry.FirstRefillDate);
     }
 }

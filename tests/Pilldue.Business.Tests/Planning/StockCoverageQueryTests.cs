@@ -126,7 +126,7 @@ public class StockCoverageQueryTests
         var medications = new InMemoryMedicationRepository();
         var refills = new InMemoryRefillEventRepository();
         var skips = new InMemorySkipDoseEventRepository();
-        var config = new InMemoryAppConfigStore();
+        var config = new InMemoryAppConfigStore(new AppConfig { DefaultRefillDayOfMonth = 5 });
         var app = new PilldueApp(medications, refills, skips, config);
 
         await app.AddMedicationAsync(new Medication

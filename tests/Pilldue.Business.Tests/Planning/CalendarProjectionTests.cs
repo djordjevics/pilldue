@@ -4,114 +4,142 @@ namespace Pilldue.Business.Tests.Planning;
 
 public class CalendarProjectionTests
 {
-    [Fact]
-    public void Evaluate_includes_med_when_last_covered_in_range()
-    {
-        var asOf = new DateOnly(2026, 5, 1);
-        var medication = new Medication
+    private static readonly AppConfig ConfigDay6 = new() { DefaultRefillDayOfMonth = 6 };
+
+    private static Medication Med(
+        string name,
+        int stock,
+        int dosage = 1,
+        int packageSize = 28,
+        int prescribed = 1,
+        int? refillOverride = null) =>
+        new()
         {
-            Name = "Covered",
-            PackageSizePills = 28,
-            PrescribedPackageCount = 1,
-            DailyDosagePills = 1,
-            CurrentStockPills = 28,
-            PrescriptionStartDate = new DateOnly(2025, 1, 1),
-            PrescriptionDurationMonths = 6,
-        };
-
-        var entry = CalendarProjection.Evaluate(
-            medication,
-            rangeStart: new DateOnly(2026, 5, 1),
-            rangeEnd: new DateOnly(2026, 5, 31),
-            asOfDate: asOf);
-
-        Assert.NotNull(entry);
-        Assert.Equal(new DateOnly(2026, 5, 28), entry.LastCoveredDate);
-        Assert.Equal(new DateOnly(2025, 7, 1), entry.PrescriptionEndDate);
-    }
-
-    [Fact]
-    public void Evaluate_includes_med_when_prescription_end_in_range()
-    {
-        var medication = new Medication
-        {
-            Name = "RxEnd",
-            PackageSizePills = 28,
-            PrescribedPackageCount = 1,
-            DailyDosagePills = 1,
-            CurrentStockPills = 100,
+            Name = name,
+            PackageSizePills = packageSize,
+            PrescribedPackageCount = prescribed,
+            DailyDosagePills = dosage,
+            CurrentStockPills = stock,
+            RefillDayOfMonthOverride = refillOverride,
             PrescriptionStartDate = new DateOnly(2026, 1, 1),
             PrescriptionDurationMonths = 6,
         };
 
-        var entry = CalendarProjection.Evaluate(
-            medication,
-            rangeStart: new DateOnly(2026, 6, 1),
-            rangeEnd: new DateOnly(2026, 7, 31),
-            asOfDate: new DateOnly(2026, 5, 1));
+    [Fact]
+    public void Build_range_is_asOf_through_second_config_refill_day()
+    {
+        var asOf = new DateOnly(2026, 5, 1);
+        var view = CalendarProjection.Build(Array.Empty<Medication>(), ConfigDay6, asOf);
 
-        Assert.NotNull(entry);
-        Assert.Equal(new DateOnly(2026, 7, 1), entry.PrescriptionEndDate);
+        Assert.Equal(asOf, view.RangeStart);
+        Assert.Equal(new DateOnly(2026, 6, 6), view.RangeEnd);
     }
 
     [Fact]
-    public void Evaluate_returns_null_when_neither_date_in_range()
+    public void Evaluate_marks_stock_out_days_before_first_refill()
     {
-        var medication = new Medication
-        {
-            Name = "Out",
-            PackageSizePills = 28,
-            PrescribedPackageCount = 1,
-            DailyDosagePills = 1,
-            CurrentStockPills = 5,
-            PrescriptionStartDate = new DateOnly(2025, 1, 1),
-            PrescriptionDurationMonths = 6,
-        };
+        // asOf May 1, refill day 6, stock 3 → out on May 4–5 before restock on May 6.
+        // One package of 28 is not enough for the 31-day May6→Jun6 gap, so stock-outs resume later.
+        var asOf = new DateOnly(2026, 5, 1);
+        var entry = CalendarProjection.Evaluate(Med("Short", stock: 3), ConfigDay6, asOf);
 
-        var entry = CalendarProjection.Evaluate(
-            medication,
-            rangeStart: new DateOnly(2026, 8, 1),
-            rangeEnd: new DateOnly(2026, 8, 31),
-            asOfDate: new DateOnly(2026, 5, 1));
-
-        Assert.Null(entry);
+        Assert.Equal(new DateOnly(2026, 5, 6), entry.FirstRefillDate);
+        Assert.Equal(new DateOnly(2026, 6, 6), entry.SecondRefillDate);
+        Assert.Contains(new DateOnly(2026, 5, 4), entry.StockOutDates);
+        Assert.Contains(new DateOnly(2026, 5, 5), entry.StockOutDates);
+        Assert.DoesNotContain(new DateOnly(2026, 5, 6), entry.StockOutDates);
     }
 
     [Fact]
-    public async Task GetCalendarAsync_returns_overlapping_entries_only()
+    public void Evaluate_assumes_prescribed_restock_at_first_refill()
     {
+        // Two packages (56) at first refill cover the 31-day gap after early shortfall.
+        var asOf = new DateOnly(2026, 5, 1);
+        var entry = CalendarProjection.Evaluate(
+            Med("Restocked", stock: 3, prescribed: 2),
+            ConfigDay6,
+            asOf);
+
+        Assert.Equal(
+            new[] { new DateOnly(2026, 5, 4), new DateOnly(2026, 5, 5) },
+            entry.StockOutDates);
+        Assert.All(entry.StockOutDates, d => Assert.True(d < entry.FirstRefillDate));
+    }
+
+    [Fact]
+    public void Evaluate_marks_stock_out_again_when_restock_is_not_enough_for_second_gap()
+    {
+        // Empty stock, package 7, prescribed 1 → restock 7 on May 6.
+        // May 6–12 covered; May 13 onward short until June 6.
+        var asOf = new DateOnly(2026, 5, 1);
+        var med = Med("TinyPack", stock: 0, packageSize: 7, prescribed: 1);
+        var entry = CalendarProjection.Evaluate(med, ConfigDay6, asOf);
+
+        Assert.Contains(new DateOnly(2026, 5, 1), entry.StockOutDates);
+        Assert.Contains(new DateOnly(2026, 5, 5), entry.StockOutDates);
+        Assert.DoesNotContain(new DateOnly(2026, 5, 6), entry.StockOutDates);
+        Assert.Contains(new DateOnly(2026, 5, 13), entry.StockOutDates);
+        Assert.Contains(new DateOnly(2026, 6, 6), entry.StockOutDates);
+    }
+
+    [Fact]
+    public void Evaluate_uses_per_med_refill_override_for_restock_day()
+    {
+        var asOf = new DateOnly(2026, 5, 1);
+        var entry = CalendarProjection.Evaluate(
+            Med("Override", stock: 2, prescribed: 2, refillOverride: 10),
+            ConfigDay6,
+            asOf);
+
+        Assert.Equal(new DateOnly(2026, 5, 10), entry.FirstRefillDate);
+        Assert.Equal(new DateOnly(2026, 6, 10), entry.SecondRefillDate);
+        Assert.Equal(
+            new[]
+            {
+                new DateOnly(2026, 5, 3),
+                new DateOnly(2026, 5, 4),
+                new DateOnly(2026, 5, 5),
+                new DateOnly(2026, 5, 6),
+                new DateOnly(2026, 5, 7),
+                new DateOnly(2026, 5, 8),
+                new DateOnly(2026, 5, 9),
+            },
+            entry.StockOutDates);
+    }
+
+    [Fact]
+    public void Build_aggregates_stock_out_days_across_medications()
+    {
+        var asOf = new DateOnly(2026, 5, 1);
+        var view = CalendarProjection.Build(
+            new[] { Med("A", stock: 1), Med("B", stock: 100) },
+            ConfigDay6,
+            asOf);
+
+        Assert.Equal(2, view.Entries.Count);
+        Assert.Contains(new DateOnly(2026, 5, 2), view.AllStockOutDates);
+        Assert.Contains(view.Entries, e => e.Medication.Name == "B" && e.StockOutDates.Count == 0);
+    }
+
+    [Fact]
+    public async Task GetCalendarAsync_uses_config_default_day_for_range()
+    {
+        var store = new InMemoryAppConfigStore(new AppConfig { DefaultRefillDayOfMonth = 6 });
         var app = new PilldueApp(
             new InMemoryMedicationRepository(),
             new InMemoryRefillEventRepository(),
             new InMemorySkipDoseEventRepository(),
-            new InMemoryAppConfigStore());
+            store);
 
-        await app.AddMedicationAsync(new Medication
-        {
-            Name = "InRange",
-            PackageSizePills = 28,
-            PrescribedPackageCount = 1,
-            DailyDosagePills = 1,
-            CurrentStockPills = 10,
-            PrescriptionStartDate = new DateOnly(2025, 1, 1),
-        });
-        await app.AddMedicationAsync(new Medication
-        {
-            Name = "OutOfRange",
-            PackageSizePills = 28,
-            PrescribedPackageCount = 1,
-            DailyDosagePills = 1,
-            CurrentStockPills = 200,
-            PrescriptionStartDate = new DateOnly(2024, 1, 1),
-        });
+        await app.AddMedicationAsync(Med("InRange", stock: 2));
 
-        var entries = await app.GetCalendarAsync(
-            rangeStart: new DateOnly(2026, 5, 1),
-            rangeEnd: new DateOnly(2026, 5, 31),
-            asOfDate: new DateOnly(2026, 5, 1));
+        var asOf = new DateOnly(2026, 5, 1);
+        var view = await app.GetCalendarAsync(asOf);
 
-        var entry = Assert.Single(entries);
-        Assert.Equal("InRange", entry.Medication.Name);
-        Assert.Equal(new DateOnly(2026, 5, 10), entry.LastCoveredDate);
+        Assert.Equal(asOf, view.RangeStart);
+        Assert.Equal(new DateOnly(2026, 6, 6), view.RangeEnd);
+        var entry = Assert.Single(view.Entries);
+        Assert.Equal(new DateOnly(2026, 7, 1), entry.PrescriptionEndDate);
+        Assert.NotEmpty(entry.StockOutDates);
     }
 }

@@ -5,7 +5,8 @@ using Pilldue.UI.Localization;
 namespace Pilldue.UI;
 
 /// <summary>
-/// Spectre screen: date range with last covered day and prescription end per medication.
+/// Spectre screen: calendar from today through the second refill day.
+/// Stock-out days are highlighted red; notes list meds that run out (restock assumed at first refill).
 /// </summary>
 internal static class CalendarScreen
 {
@@ -17,52 +18,27 @@ internal static class CalendarScreen
         AnsiConsole.WriteLine();
 
         var today = DateOnly.FromDateTime(DateTime.Today);
-        var rangeStart = PromptDate(UiLocalizer.Get("Cal.RangeStart"), today.AddDays(1 - today.Day));
-        var rangeEnd = PromptDate(UiLocalizer.Get("Cal.RangeEnd"), rangeStart.AddMonths(1).AddDays(-1));
-        if (rangeEnd < rangeStart)
-        {
-            AnsiConsole.MarkupLine($"[red]{UiLocalizer.Get("Cal.RangeInvalid").EscapeMarkup()}[/]");
-            return;
-        }
-
-        var asOf = PromptDate(UiLocalizer.Get("Cal.AsOf"), today);
-        AnsiConsole.WriteLine();
 
         try
         {
-            var entries = await app.GetCalendarAsync(rangeStart, rangeEnd, asOf, cancellationToken)
-                .ConfigureAwait(false);
+            var view = await app.GetCalendarAsync(today, cancellationToken).ConfigureAwait(false);
 
-            if (entries.Count == 0)
+            AnsiConsole.MarkupLine(
+                $"[grey]{UiLocalizer.Format(
+                    "Cal.RangeLabel",
+                    view.RangeStart.ToString("yyyy-MM-dd"),
+                    view.RangeEnd.ToString("yyyy-MM-dd")).EscapeMarkup()}[/]");
+            AnsiConsole.MarkupLine($"[grey]{UiLocalizer.Get("Cal.RestockNote").EscapeMarkup()}[/]");
+            AnsiConsole.WriteLine();
+
+            if (view.Entries.Count == 0)
             {
-                AnsiConsole.MarkupLine(
-                    $"[yellow]{UiLocalizer.Format(
-                        "Cal.Empty",
-                        rangeStart.ToString("yyyy-MM-dd"),
-                        rangeEnd.ToString("yyyy-MM-dd")).EscapeMarkup()}[/]");
+                AnsiConsole.MarkupLine($"[yellow]{UiLocalizer.Get("Cal.Empty").EscapeMarkup()}[/]");
                 return;
             }
 
-            var table = new Table()
-                .Border(TableBorder.Rounded)
-                .Title(UiLocalizer.Format(
-                    "Cal.TableTitle",
-                    rangeStart.ToString("yyyy-MM-dd"),
-                    rangeEnd.ToString("yyyy-MM-dd"),
-                    asOf.ToString("yyyy-MM-dd")))
-                .AddColumn(UiLocalizer.Get("List.ColName"))
-                .AddColumn(UiLocalizer.Get("Cal.ColLast"))
-                .AddColumn(UiLocalizer.Get("Cal.ColRxEnd"));
-
-            foreach (var entry in entries)
-            {
-                table.AddRow(
-                    entry.Medication.Name.EscapeMarkup(),
-                    entry.LastCoveredDate?.ToString("yyyy-MM-dd") ?? "—",
-                    entry.PrescriptionEndDate.ToString("yyyy-MM-dd"));
-            }
-
-            AnsiConsole.Write(table);
+            WriteMonthCalendars(view);
+            WriteNotes(view);
         }
         catch (Exception ex)
         {
@@ -71,15 +47,75 @@ internal static class CalendarScreen
         }
     }
 
-    private static DateOnly PromptDate(string label, DateOnly defaultValue)
+    private static void WriteMonthCalendars(CalendarView view)
     {
-        var raw = AnsiConsole.Prompt(
-            new TextPrompt<string>(label)
-                .DefaultValue(defaultValue.ToString("yyyy-MM-dd"))
-                .Validate(value =>
-                    DateOnly.TryParseExact(value.Trim(), "yyyy-MM-dd", out _)
-                        ? ValidationResult.Success()
-                        : ValidationResult.Error(UiLocalizer.Get("Common.UseDateFormat"))));
-        return DateOnly.ParseExact(raw.Trim(), "yyyy-MM-dd");
+        var stockOut = view.AllStockOutDates.ToHashSet();
+        var cursor = new DateOnly(view.RangeStart.Year, view.RangeStart.Month, 1);
+        var lastMonth = new DateOnly(view.RangeEnd.Year, view.RangeEnd.Month, 1);
+
+        while (cursor <= lastMonth)
+        {
+            var calendar = new Calendar(cursor.Year, cursor.Month)
+            {
+                HighlightStyle = new Style(Color.White, Color.Red),
+                HeaderStyle = new Style(Color.Blue),
+            };
+
+            foreach (var day in stockOut.Where(d => d.Year == cursor.Year && d.Month == cursor.Month))
+            {
+                calendar.AddCalendarEvent(day.ToDateTime(TimeOnly.MinValue));
+            }
+
+            AnsiConsole.Write(calendar);
+            AnsiConsole.WriteLine();
+            cursor = cursor.AddMonths(1);
+        }
+    }
+
+    private static void WriteNotes(CalendarView view)
+    {
+        AnsiConsole.MarkupLine($"[bold]{UiLocalizer.Get("Cal.NotesTitle").EscapeMarkup()}[/]");
+
+        var withStockOut = view.Entries.Where(e => e.StockOutDates.Count > 0).ToList();
+        if (withStockOut.Count == 0)
+        {
+            AnsiConsole.MarkupLine($"[green]{UiLocalizer.Get("Cal.NotesNone").EscapeMarkup()}[/]");
+        }
+        else
+        {
+            foreach (var entry in withStockOut)
+            {
+                var days = string.Join(", ", entry.StockOutDates.Select(d => d.ToString("yyyy-MM-dd")));
+                AnsiConsole.MarkupLine(
+                    $"[red]{UiLocalizer.Format(
+                        "Cal.NoteStockOut",
+                        entry.Medication.Name,
+                        days).EscapeMarkup()}[/]");
+            }
+        }
+
+        AnsiConsole.WriteLine();
+        var table = new Table()
+            .Border(TableBorder.Rounded)
+            .AddColumn(UiLocalizer.Get("List.ColName"))
+            .AddColumn(UiLocalizer.Get("Cal.ColFirstRefill"))
+            .AddColumn(UiLocalizer.Get("Cal.ColSecondRefill"))
+            .AddColumn(UiLocalizer.Get("Cal.ColStockOut"))
+            .AddColumn(UiLocalizer.Get("Cal.ColRxEnd"));
+
+        foreach (var entry in view.Entries)
+        {
+            var stockOut = entry.StockOutDates.Count == 0
+                ? "—"
+                : string.Join(", ", entry.StockOutDates.Select(d => d.ToString("yyyy-MM-dd")));
+            table.AddRow(
+                entry.Medication.Name.EscapeMarkup(),
+                entry.FirstRefillDate.ToString("yyyy-MM-dd"),
+                entry.SecondRefillDate.ToString("yyyy-MM-dd"),
+                stockOut.EscapeMarkup(),
+                entry.PrescriptionEndDate.ToString("yyyy-MM-dd"));
+        }
+
+        AnsiConsole.Write(table);
     }
 }

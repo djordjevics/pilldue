@@ -12,7 +12,7 @@ public class FacadeWiringTests
             new InMemoryMedicationRepository(),
             new InMemoryRefillEventRepository(),
             new InMemorySkipDoseEventRepository(),
-            new InMemoryAppConfigStore());
+            new InMemoryAppConfigStore(new AppConfig { DefaultRefillDayOfMonth = 5 }));
 
         var asOf = new DateOnly(2026, 5, 5);
         var med = await app.AddMedicationAsync(new Medication
@@ -41,10 +41,8 @@ public class FacadeWiringTests
         var loaded = Assert.Single(await app.ListMedicationsAsync());
         Assert.Equal(28 + 1, loaded.CurrentStockPills);
 
-        var calendar = await app.GetCalendarAsync(
-            rangeStart: new DateOnly(2026, 5, 1),
-            rangeEnd: new DateOnly(2026, 7, 31),
-            asOfDate: asOf);
-        Assert.Contains(calendar, e => e.Medication.Id == med.Id);
+        var calendar = await app.GetCalendarAsync(asOf);
+        Assert.Contains(calendar.Entries, e => e.Medication.Id == med.Id);
+        Assert.Equal(asOf, calendar.RangeStart);
     }
 }

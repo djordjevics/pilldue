@@ -6,6 +6,7 @@ namespace Pilldue.UI;
 
 /// <summary>
 /// Spectre screen: select a medication, enter package count, call <see cref="IPilldueApp.RefillAsync"/>.
+/// User can cancel from the medication list or at the final confirmation.
 /// </summary>
 internal static class RefillForm
 {
@@ -23,12 +24,26 @@ internal static class RefillForm
             return;
         }
 
-        var selected = AnsiConsole.Prompt(
-            new SelectionPrompt<Medication>()
+        var cancelLabel = UiLocalizer.Get("Common.Cancel");
+        var labels = medications
+            .Select(m => UiLocalizer.Format("Common.StockSuffix", m.Name, m.CurrentStockPills))
+            .Append(cancelLabel)
+            .ToList();
+
+        var selectedLabel = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
                 .Title(UiLocalizer.Get("Common.SelectMedication"))
-                .PageSize(10)
-                .UseConverter(m => UiLocalizer.Format("Common.StockSuffix", m.Name, m.CurrentStockPills))
-                .AddChoices(medications));
+                .PageSize(12)
+                .AddChoices(labels));
+
+        if (RefillFormLogic.IsCancelSelection(selectedLabel, cancelLabel))
+        {
+            AnsiConsole.MarkupLine($"[grey]{UiLocalizer.Get("Refill.Cancelled").EscapeMarkup()}[/]");
+            return;
+        }
+
+        var selectedIndex = labels.IndexOf(selectedLabel);
+        var selected = medications[selectedIndex];
 
         var packageCount = AnsiConsole.Prompt(
             new TextPrompt<int>(UiLocalizer.Get("Refill.Packages"))
@@ -47,6 +62,17 @@ internal static class RefillForm
                         ? ValidationResult.Success()
                         : ValidationResult.Error(UiLocalizer.Get("Common.UseDateFormat"))));
         var date = DateOnly.ParseExact(dateRaw.Trim(), "yyyy-MM-dd");
+
+        var confirm = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title(UiLocalizer.Format("Refill.Confirm", selected.Name, packageCount, date.ToString("yyyy-MM-dd")))
+                .AddChoices(UiLocalizer.Get("Common.Yes"), cancelLabel));
+
+        if (RefillFormLogic.IsCancelSelection(confirm, cancelLabel))
+        {
+            AnsiConsole.MarkupLine($"[grey]{UiLocalizer.Get("Refill.Cancelled").EscapeMarkup()}[/]");
+            return;
+        }
 
         try
         {
