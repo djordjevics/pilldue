@@ -75,10 +75,10 @@ internal static class MainMenu
                 ShowNotImplemented("Planning queries (covers until next refill / short list / need extra for second refill)");
                 break;
             case AddMedication:
-                ShowNotImplemented("Add medication");
+                await MedicationForm.AddAsync(app, cancellationToken).ConfigureAwait(false);
                 break;
             case EditMedication:
-                ShowNotImplemented("Edit medication");
+                await MedicationForm.EditAsync(app, cancellationToken).ConfigureAwait(false);
                 break;
             case LogRefill:
                 ShowNotImplemented("Log refill");
