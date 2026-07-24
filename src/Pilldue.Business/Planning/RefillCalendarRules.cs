@@ -94,4 +94,23 @@ public static class RefillCalendarRules
         var second = RefillDateInMonth(monthAfterNext.Year, monthAfterNext.Month, dayOfMonth);
         return (next, second);
     }
+
+    /// <summary>
+    /// Last calendar day current stock lasts, inclusive of <paramref name="asOfDate"/> when
+    /// <c>floor(stock / dailyDosage) &gt; 0</c>. Returns <c>null</c> when that floor is 0
+    /// (no covered day). See <see cref="LastCoveredDayRule"/>.
+    /// </summary>
+    public static DateOnly? LastCoveredDate(DateOnly asOfDate, int stockPills, int dailyDosagePills)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(stockPills, 0);
+        ArgumentOutOfRangeException.ThrowIfLessThan(dailyDosagePills, 1);
+
+        var daysCovered = stockPills / dailyDosagePills;
+        if (daysCovered == 0)
+        {
+            return null;
+        }
+
+        return asOfDate.AddDays(daysCovered - 1);
+    }
 }
