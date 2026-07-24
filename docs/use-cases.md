@@ -6,7 +6,7 @@ Personal local refill tracker. One instance per person. No multi-user, no dose r
 
 | Key | Default | Storage |
 |-----|---------|---------|
-| Default refill day of month | **6** | Config file — used for calendar range window |
+| UI language | OS culture (`en` / `sr`) | Config file next to the app |
 
 ## Medication definition
 
@@ -47,7 +47,7 @@ Record a refill history entry (today’s date, med, package count).
 
 ## Flow 3 — Calendar
 
-From **today** through the **second** upcoming config refill day:
+From **today** through the **latest second refill** among medications:
 
 - Spectre month calendars with **stock-out days in red** (only the **first** day of each stretch without enough stock)
 - Simulation **assumes the usual prescribed packages are obtained at the first refill** before that day’s dose

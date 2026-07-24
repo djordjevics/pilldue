@@ -56,11 +56,10 @@ public sealed class PilldueApp : IPilldueApp
         DateOnly asOfDate,
         CancellationToken cancellationToken = default)
     {
-        var config = await _config.LoadAsync(cancellationToken).ConfigureAwait(false);
         var medications = await _medications.ListAsync(cancellationToken).ConfigureAwait(false);
 
         return medications
-            .Select(medication => StockCoverageQuery.Evaluate(medication, config, asOfDate))
+            .Select(medication => StockCoverageQuery.Evaluate(medication, asOfDate))
             .ToList();
     }
 
@@ -78,11 +77,10 @@ public sealed class PilldueApp : IPilldueApp
         DateOnly asOfDate,
         CancellationToken cancellationToken = default)
     {
-        var config = await _config.LoadAsync(cancellationToken).ConfigureAwait(false);
         var medications = await _medications.ListAsync(cancellationToken).ConfigureAwait(false);
 
         return medications
-            .Select(medication => ExtraPackagesQuery.Evaluate(medication, config, asOfDate))
+            .Select(medication => ExtraPackagesQuery.Evaluate(medication, asOfDate))
             .Where(result => result is not null)
             .Select(result => result!)
             .ToList();
@@ -138,8 +136,7 @@ public sealed class PilldueApp : IPilldueApp
         DateOnly asOfDate,
         CancellationToken cancellationToken = default)
     {
-        var config = await _config.LoadAsync(cancellationToken).ConfigureAwait(false);
         var medications = await _medications.ListAsync(cancellationToken).ConfigureAwait(false);
-        return CalendarProjection.Build(medications, config, asOfDate);
+        return CalendarProjection.Build(medications, asOfDate);
     }
 }

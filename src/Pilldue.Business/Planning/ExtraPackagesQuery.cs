@@ -10,10 +10,9 @@ public static class ExtraPackagesQuery
     /// <c>ceil(max(0, daysToSecond * dosage - stock) / packageSize)</c>.
     /// Returns a result only when that exceeds <see cref="Medication.PrescribedPackageCount"/>.
     /// </summary>
-    public static ExtraPackagesNeeded? Evaluate(Medication medication, AppConfig config, DateOnly asOfDate)
+    public static ExtraPackagesNeeded? Evaluate(Medication medication, DateOnly asOfDate)
     {
         ArgumentNullException.ThrowIfNull(medication);
-        ArgumentNullException.ThrowIfNull(config);
 
         var refillDay = RefillCalendarRules.EffectiveRefillDayOfMonth(medication);
         var (_, secondRefillDate) = RefillCalendarRules.NextAndSecondRefillDates(asOfDate, refillDay);

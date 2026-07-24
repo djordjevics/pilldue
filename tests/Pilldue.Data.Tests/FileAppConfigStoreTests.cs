@@ -6,7 +6,7 @@ namespace Pilldue.Data.Tests;
 public class FileAppConfigStoreTests
 {
     [Fact]
-    public async Task Load_missing_file_returns_default_refill_day_6()
+    public async Task Load_missing_file_returns_empty_language()
     {
         var path = Path.Combine(Path.GetTempPath(), $"pilldue-config-{Guid.NewGuid():N}.json");
         try
@@ -16,8 +16,6 @@ public class FileAppConfigStoreTests
 
             var config = await store.LoadAsync();
 
-            Assert.Equal(AppConfig.DefaultRefillDayOfMonthValue, config.DefaultRefillDayOfMonth);
-            Assert.Equal(6, config.DefaultRefillDayOfMonth);
             Assert.Equal(string.Empty, config.UiLanguage);
         }
         finally
@@ -30,7 +28,7 @@ public class FileAppConfigStoreTests
     }
 
     [Fact]
-    public async Task Save_then_load_round_trips_override()
+    public async Task Save_then_load_round_trips_language()
     {
         var path = Path.Combine(Path.GetTempPath(), $"pilldue-config-{Guid.NewGuid():N}.json");
         try
@@ -39,18 +37,41 @@ public class FileAppConfigStoreTests
 
             await store.SaveAsync(new AppConfig
             {
-                DefaultRefillDayOfMonth = 12,
                 UiLanguage = AppConfig.SerbianLanguage,
             });
             var loaded = await store.LoadAsync();
 
-            Assert.Equal(12, loaded.DefaultRefillDayOfMonth);
             Assert.Equal(AppConfig.SerbianLanguage, loaded.UiLanguage);
 
-            // Fresh store instance still sees persisted value
             var reloaded = await new FileAppConfigStore(path).LoadAsync();
-            Assert.Equal(12, reloaded.DefaultRefillDayOfMonth);
             Assert.Equal(AppConfig.SerbianLanguage, reloaded.UiLanguage);
+        }
+        finally
+        {
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+        }
+    }
+
+    [Fact]
+    public async Task Load_ignores_legacy_default_refill_day_property()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"pilldue-config-{Guid.NewGuid():N}.json");
+        try
+        {
+            await File.WriteAllTextAsync(
+                path,
+                """
+                {
+                  "defaultRefillDayOfMonth": 12,
+                  "uiLanguage": "en"
+                }
+                """);
+
+            var loaded = await new FileAppConfigStore(path).LoadAsync();
+            Assert.Equal(AppConfig.EnglishLanguage, loaded.UiLanguage);
         }
         finally
         {

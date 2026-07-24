@@ -5,9 +5,8 @@ namespace Pilldue.Business.Tests;
 public class AppConfigDefaultsTests
 {
     [Fact]
-    public void Default_refill_day_of_month_is_6()
+    public void Default_ui_language_is_empty_for_os_detection()
     {
-        Assert.Equal(6, AppConfig.DefaultRefillDayOfMonthValue);
-        Assert.Equal(6, new AppConfig().DefaultRefillDayOfMonth);
+        Assert.Equal(string.Empty, new AppConfig().UiLanguage);
     }
 }

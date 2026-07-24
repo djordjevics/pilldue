@@ -5,7 +5,7 @@ namespace Pilldue.Data;
 
 /// <summary>
 /// JSON file implementation of <see cref="IAppConfigStore"/>. Separate from EF/SQLite.
-/// Missing file yields <see cref="AppConfig.DefaultRefillDayOfMonthValue"/>.
+/// Missing file yields an empty language (detect from OS at startup).
 /// </summary>
 public sealed class FileAppConfigStore : IAppConfigStore
 {
@@ -54,7 +54,6 @@ public sealed class FileAppConfigStore : IAppConfigStore
 
     private static AppConfig CreateDefault() => new()
     {
-        DefaultRefillDayOfMonth = AppConfig.DefaultRefillDayOfMonthValue,
         UiLanguage = string.Empty,
     };
 }

@@ -26,7 +26,7 @@ By default the app database file is:
 
 `%LocalAppData%/Pilldue/pilldue.db`
 
-(on Windows; equivalent local application data folder elsewhere). Schema is applied with EF Core migrations (`PilldueDbBootstrap.MigrateAsync`). Config (default refill day) remains a separate file store, not in SQLite.
+(on Windows; equivalent local application data folder elsewhere). Schema is applied with EF Core migrations (`PilldueDbBootstrap.MigrateAsync`). Config (UI language) remains a separate file store, not in SQLite.
 
 ## Repository layout
 

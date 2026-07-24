@@ -4,9 +4,7 @@ namespace Pilldue.Business.Tests.Planning;
 
 public class CalendarProjectionTests
 {
-    private static readonly AppConfig ConfigDay6 = new() { DefaultRefillDayOfMonth = 6 };
-
-    private static Medication Med(
+        private static Medication Med(
         string name,
         int stock,
         int dosage = 1,
@@ -25,13 +23,25 @@ public class CalendarProjectionTests
         };
 
     [Fact]
-    public void Build_range_is_asOf_through_second_config_refill_day()
+    public void Build_empty_meds_range_is_asOf_only()
     {
         var asOf = new DateOnly(2026, 5, 1);
-        var view = CalendarProjection.Build(Array.Empty<Medication>(), ConfigDay6, asOf);
+        var view = CalendarProjection.Build(Array.Empty<Medication>(), asOf);
 
         Assert.Equal(asOf, view.RangeStart);
-        Assert.Equal(new DateOnly(2026, 6, 6), view.RangeEnd);
+        Assert.Equal(asOf, view.RangeEnd);
+    }
+
+    [Fact]
+    public void Build_range_end_is_latest_second_refill_among_meds()
+    {
+        var asOf = new DateOnly(2026, 5, 1);
+        var view = CalendarProjection.Build(
+            new[] { Med("A", stock: 90, refillDay: 6), Med("B", stock: 90, refillDay: 20) },
+            asOf);
+
+        Assert.Equal(asOf, view.RangeStart);
+        Assert.Equal(new DateOnly(2026, 6, 20), view.RangeEnd);
     }
 
     [Fact]
@@ -93,7 +103,6 @@ public class CalendarProjectionTests
         var asOf = new DateOnly(2026, 5, 1);
         var view = CalendarProjection.Build(
             new[] { Med("A", stock: 1, prescribed: 2), Med("B", stock: 100) },
-            ConfigDay6,
             asOf);
 
         Assert.Equal(2, view.Entries.Count);
@@ -102,14 +111,13 @@ public class CalendarProjectionTests
     }
 
     [Fact]
-    public async Task GetCalendarAsync_uses_config_default_day_for_range()
+    public async Task GetCalendarAsync_range_follows_medication_second_refill()
     {
-        var store = new InMemoryAppConfigStore(new AppConfig { DefaultRefillDayOfMonth = 6 });
         var app = new PilldueApp(
             new InMemoryMedicationRepository(),
             new InMemoryRefillEventRepository(),
             new InMemorySkipDoseEventRepository(),
-            store);
+            new InMemoryAppConfigStore());
 
         await app.AddMedicationAsync(Med("InRange", stock: 2, prescribed: 2, refillDay: 6));
 

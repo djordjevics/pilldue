@@ -4,9 +4,7 @@ namespace Pilldue.Business.Tests.Planning;
 
 public class StockCoverageQueryTests
 {
-    private static readonly AppConfig DefaultConfig = new() { DefaultRefillDayOfMonth = 5 };
-
-    [Fact]
+        [Fact]
     public void Evaluate_may_to_june_31_day_gap_28_stock_does_not_cover()
     {
         var today = new DateOnly(2026, 5, 5);
@@ -20,7 +18,7 @@ public class StockCoverageQueryTests
             PrescriptionStartDate = new DateOnly(2026, 1, 5),
         };
 
-        var result = StockCoverageQuery.Evaluate(medication, DefaultConfig, today);
+        var result = StockCoverageQuery.Evaluate(medication, today);
 
         Assert.Equal(new DateOnly(2026, 6, 5), result.NextRefillDate);
         Assert.Equal(new DateOnly(2026, 6, 1), result.LastCoveredDate);
@@ -43,7 +41,7 @@ public class StockCoverageQueryTests
             PrescriptionStartDate = new DateOnly(2026, 1, 5),
         };
 
-        var result = StockCoverageQuery.Evaluate(medication, DefaultConfig, today);
+        var result = StockCoverageQuery.Evaluate(medication, today);
 
         Assert.Equal(new DateOnly(2026, 6, 5), result.NextRefillDate);
         Assert.True(result.CoversUntilNextRefill);
@@ -66,7 +64,7 @@ public class StockCoverageQueryTests
             PrescriptionStartDate = new DateOnly(2026, 1, 15),
         };
 
-        var result = StockCoverageQuery.Evaluate(medication, DefaultConfig, today);
+        var result = StockCoverageQuery.Evaluate(medication, today);
 
         Assert.Equal(new DateOnly(2026, 5, 15), result.NextRefillDate);
         Assert.Equal(5, result.NextRefillDate.DayNumber - today.DayNumber);
@@ -89,7 +87,7 @@ public class StockCoverageQueryTests
             PrescriptionStartDate = new DateOnly(2026, 1, 5),
         };
 
-        var result = StockCoverageQuery.Evaluate(medication, DefaultConfig, today);
+        var result = StockCoverageQuery.Evaluate(medication, today);
 
         Assert.Equal(new DateOnly(2026, 5, 5), result.NextRefillDate);
         Assert.True(result.CoversUntilNextRefill);
@@ -110,7 +108,7 @@ public class StockCoverageQueryTests
             PrescriptionStartDate = new DateOnly(2026, 1, 5),
         };
 
-        var result = StockCoverageQuery.Evaluate(medication, DefaultConfig, today);
+        var result = StockCoverageQuery.Evaluate(medication, today);
 
         Assert.Equal(new DateOnly(2026, 6, 5), result.NextRefillDate);
         Assert.False(result.CoversUntilNextRefill);
@@ -125,7 +123,7 @@ public class StockCoverageQueryTests
         var medications = new InMemoryMedicationRepository();
         var refills = new InMemoryRefillEventRepository();
         var skips = new InMemorySkipDoseEventRepository();
-        var config = new InMemoryAppConfigStore(new AppConfig { DefaultRefillDayOfMonth = 5 });
+        var config = new InMemoryAppConfigStore();
         var app = new PilldueApp(medications, refills, skips, config);
 
         await app.AddMedicationAsync(new Medication

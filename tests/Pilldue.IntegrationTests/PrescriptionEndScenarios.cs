@@ -14,7 +14,7 @@ public class PrescriptionEndScenarios
             new InMemoryMedicationRepository(),
             new InMemoryRefillEventRepository(),
             new InMemorySkipDoseEventRepository(),
-            new InMemoryAppConfigStore(new AppConfig { DefaultRefillDayOfMonth = 6 }));
+            new InMemoryAppConfigStore());
 
         var start = new DateOnly(2026, 1, 15);
         var med = await app.AddMedicationAsync(new Medication

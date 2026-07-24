@@ -12,7 +12,7 @@ public class FacadeWiringTests
             new InMemoryMedicationRepository(),
             new InMemoryRefillEventRepository(),
             new InMemorySkipDoseEventRepository(),
-            new InMemoryAppConfigStore(new AppConfig { DefaultRefillDayOfMonth = 5 }));
+            new InMemoryAppConfigStore());
 
         var asOf = new DateOnly(2026, 5, 5);
         var med = await app.AddMedicationAsync(new Medication

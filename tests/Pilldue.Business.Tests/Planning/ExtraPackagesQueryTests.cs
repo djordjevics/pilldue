@@ -4,9 +4,7 @@ namespace Pilldue.Business.Tests.Planning;
 
 public class ExtraPackagesQueryTests
 {
-    private static readonly AppConfig DefaultConfig = new() { DefaultRefillDayOfMonth = 5 };
-
-    [Fact]
+        [Fact]
     public void Evaluate_on_refill_day_empty_stock_needs_2_packages_for_31_day_gap()
     {
         var today = new DateOnly(2026, 5, 5);
@@ -20,7 +18,7 @@ public class ExtraPackagesQueryTests
             PrescriptionStartDate = new DateOnly(2026, 1, 5),
         };
 
-        var result = ExtraPackagesQuery.Evaluate(medication, DefaultConfig, today);
+        var result = ExtraPackagesQuery.Evaluate(medication, today);
 
         Assert.NotNull(result);
         Assert.Equal(new DateOnly(2026, 6, 5), result.SecondRefillDate);
@@ -43,7 +41,7 @@ public class ExtraPackagesQueryTests
             PrescriptionStartDate = new DateOnly(2026, 1, 5),
         };
 
-        Assert.Null(ExtraPackagesQuery.Evaluate(medication, DefaultConfig, today));
+        Assert.Null(ExtraPackagesQuery.Evaluate(medication, today));
     }
 
     [Fact]
