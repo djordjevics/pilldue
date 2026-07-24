@@ -1,8 +1,8 @@
 namespace Pilldue.Business;
 
 /// <summary>
-/// Facade stub that persists meds/refills/skips via ports.
-/// Planning queries throw until business issues C3–C9 implement them.
+/// Facade that persists meds/refills/skips via ports and runs planning queries.
+/// Remaining planning queries throw until business issues C4–C9 implement them.
 /// </summary>
 public sealed class PilldueApp : IPilldueApp
 {
@@ -47,10 +47,17 @@ public sealed class PilldueApp : IPilldueApp
         return (await _medications.GetAsync(medication.Id, cancellationToken).ConfigureAwait(false))!;
     }
 
-    public Task<IReadOnlyList<StockCoverageResult>> GetStockCoverageAsync(
+    public async Task<IReadOnlyList<StockCoverageResult>> GetStockCoverageAsync(
         DateOnly asOfDate,
         CancellationToken cancellationToken = default)
-        => throw new NotImplementedException("Implement in business issue C3.");
+    {
+        var config = await _config.LoadAsync(cancellationToken).ConfigureAwait(false);
+        var medications = await _medications.ListAsync(cancellationToken).ConfigureAwait(false);
+
+        return medications
+            .Select(medication => StockCoverageQuery.Evaluate(medication, config, asOfDate))
+            .ToList();
+    }
 
     public Task<IReadOnlyList<StockCoverageResult>> ListShortBeforeNextRefillAsync(
         DateOnly asOfDate,
