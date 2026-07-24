@@ -29,11 +29,17 @@ Medications inherit this day unless overridden.
 
 ## Flow 1 — Refill-day planning queries
 
-Using each med’s effective refill day and current stock:
+Using each med’s effective refill day and current stock.
 
-1. **Covers until next refill?** — Does stock last until the next occurrence of that day-of-month?
-2. **Short before next refill** — List meds whose stock runs out *before* the next refill day.
-3. **Need extra for second refill** — List meds where `prescribedPackageCount` packages are not enough for stock to last until the *second* upcoming refill day (user should buy more than usual).
+**Calendar months matter.** Days until the next refill day are the real calendar span between consecutive refill-day dates (28–31), not a fixed “30 days.”
+
+Example: refill day = 5th, stock = 28 pills, daily dosage = 1. From 5 May → 5 June is **31** days → stock covers 28 days → **3 pills short**. If `packageSize` = 28, packages needed for that gap is `ceil(31 / 28) = 2` (or `ceil(3 / 28) = 1` extra on top of one usual package) → **suggest buying 2 packages**.
+
+Queries:
+
+1. **Covers until next refill?** — Does stock last until the next occurrence of that day-of-month (using actual day count)?
+2. **Short before next refill** — List meds whose stock runs out *before* the next refill day; include **pills short** and **packages to buy** (`ceil(pillsShort / packageSize)`, minimum packages to close the gap).
+3. **Need extra for second refill** — List meds where `prescribedPackageCount` packages are not enough for stock to last until the *second* upcoming refill day (user should buy more than usual). Same calendar-accurate day counts.
 
 ## Flow 2 — Refill by packages
 
@@ -55,10 +61,11 @@ User flags a skipped/missed dose → increase stock by the dose amount (typicall
 
 ## Derived values (Business)
 
-- Next refill date / second refill date from “today” + day-of-month rule
-- Last covered date from `floor(stock / dailyDosage)` (define inclusive/exclusive day rule in contracts PR and keep tests consistent)
+- Next refill date / second refill date from “today” + day-of-month rule (clamp invalid days to month end)
+- **Days in gap** = calendar days from one refill date to the next (month length sensitive)
+- Last covered date from stock ÷ daily dosage (define inclusive/exclusive day rule in contracts PR; keep tests consistent)
 - Prescription end from start + duration
-- Shortfall package counts for flow 1.3
+- **Pills short** / **packages to buy** = `ceil(pillsShort / packageSize)` for flow 1 shortfalls (see 31-day / 28-pill example above)
 
 ## Out of scope (v1)
 
