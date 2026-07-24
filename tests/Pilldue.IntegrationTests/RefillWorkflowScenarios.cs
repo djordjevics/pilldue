@@ -27,7 +27,7 @@ public class RefillWorkflowScenarios
         var config = await app.GetConfigAsync();
         var day = RefillCalendarRules.EffectiveRefillDayOfMonth(listed, config);
         var (next, _) = RefillCalendarRules.NextAndSecondRefillDates(AsOf, day);
-        Assert.Equal(new DateOnly(2026, 5, 5), next);
+        Assert.Equal(new DateOnly(2026, 5, 6), next);
     }
 
     [Fact]

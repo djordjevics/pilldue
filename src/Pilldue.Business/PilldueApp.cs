@@ -134,18 +134,12 @@ public sealed class PilldueApp : IPilldueApp
             cancellationToken).ConfigureAwait(false);
     }
 
-    public async Task<IReadOnlyList<MedicationCalendarEntry>> GetCalendarAsync(
-        DateOnly rangeStart,
-        DateOnly rangeEnd,
+    public async Task<CalendarView> GetCalendarAsync(
         DateOnly asOfDate,
         CancellationToken cancellationToken = default)
     {
+        var config = await _config.LoadAsync(cancellationToken).ConfigureAwait(false);
         var medications = await _medications.ListAsync(cancellationToken).ConfigureAwait(false);
-
-        return medications
-            .Select(medication => CalendarProjection.Evaluate(medication, rangeStart, rangeEnd, asOfDate))
-            .Where(entry => entry is not null)
-            .Select(entry => entry!)
-            .ToList();
+        return CalendarProjection.Build(medications, config, asOfDate);
     }
 }

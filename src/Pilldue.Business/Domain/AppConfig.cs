@@ -1,9 +1,9 @@
 namespace Pilldue.Business;
 
-/// <summary>Application settings. Default refill day is the 5th of each month.</summary>
+/// <summary>Application settings. Default refill day is the 6th of each month.</summary>
 public sealed class AppConfig
 {
-    public const int DefaultRefillDayOfMonthValue = 5;
+    public const int DefaultRefillDayOfMonthValue = 6;
 
     public const string EnglishLanguage = "en";
 

@@ -2,7 +2,22 @@ namespace Pilldue.Business;
 
 public sealed class InMemoryAppConfigStore : IAppConfigStore
 {
-    private AppConfig _config = new();
+    private AppConfig _config;
+
+    public InMemoryAppConfigStore()
+        : this(new AppConfig())
+    {
+    }
+
+    public InMemoryAppConfigStore(AppConfig config)
+    {
+        ArgumentNullException.ThrowIfNull(config);
+        _config = new AppConfig
+        {
+            DefaultRefillDayOfMonth = config.DefaultRefillDayOfMonth,
+            UiLanguage = config.UiLanguage,
+        };
+    }
 
     public Task<AppConfig> LoadAsync(CancellationToken cancellationToken = default)
     {

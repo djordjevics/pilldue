@@ -6,7 +6,7 @@ namespace Pilldue.Data.Tests;
 public class FileAppConfigStoreTests
 {
     [Fact]
-    public async Task Load_missing_file_returns_default_refill_day_5()
+    public async Task Load_missing_file_returns_default_refill_day_6()
     {
         var path = Path.Combine(Path.GetTempPath(), $"pilldue-config-{Guid.NewGuid():N}.json");
         try
@@ -17,7 +17,7 @@ public class FileAppConfigStoreTests
             var config = await store.LoadAsync();
 
             Assert.Equal(AppConfig.DefaultRefillDayOfMonthValue, config.DefaultRefillDayOfMonth);
-            Assert.Equal(5, config.DefaultRefillDayOfMonth);
+            Assert.Equal(6, config.DefaultRefillDayOfMonth);
             Assert.Equal(string.Empty, config.UiLanguage);
         }
         finally
