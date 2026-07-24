@@ -36,18 +36,19 @@ public class CalendarProjectionTests
     }
 
     [Fact]
-    public void Evaluate_marks_stock_out_days_before_first_refill()
+    public void Evaluate_marks_only_first_day_of_each_stock_out_stretch()
     {
-        // asOf May 1, refill day 6, stock 3 → out on May 4–5 before restock on May 6.
-        // One package of 28 is not enough for the 31-day May6→Jun6 gap, so stock-outs resume later.
+        // asOf May 1, refill day 6, stock 3 → first without med is May 4 (not May 5).
+        // One package of 28 is not enough for May6→Jun6; second stretch starts later.
         var asOf = new DateOnly(2026, 5, 1);
         var entry = CalendarProjection.Evaluate(Med("Short", stock: 3), ConfigDay6, asOf);
 
         Assert.Equal(new DateOnly(2026, 5, 6), entry.FirstRefillDate);
         Assert.Equal(new DateOnly(2026, 6, 6), entry.SecondRefillDate);
-        Assert.Contains(new DateOnly(2026, 5, 4), entry.StockOutDates);
-        Assert.Contains(new DateOnly(2026, 5, 5), entry.StockOutDates);
+        Assert.Equal(new DateOnly(2026, 5, 4), Assert.Single(entry.StockOutDates, d => d < entry.FirstRefillDate));
+        Assert.DoesNotContain(new DateOnly(2026, 5, 5), entry.StockOutDates);
         Assert.DoesNotContain(new DateOnly(2026, 5, 6), entry.StockOutDates);
+        Assert.Equal(2, entry.StockOutDates.Count);
     }
 
     [Fact]
@@ -60,26 +61,24 @@ public class CalendarProjectionTests
             ConfigDay6,
             asOf);
 
-        Assert.Equal(
-            new[] { new DateOnly(2026, 5, 4), new DateOnly(2026, 5, 5) },
-            entry.StockOutDates);
-        Assert.All(entry.StockOutDates, d => Assert.True(d < entry.FirstRefillDate));
+        Assert.Equal(new[] { new DateOnly(2026, 5, 4) }, entry.StockOutDates);
     }
 
     [Fact]
     public void Evaluate_marks_stock_out_again_when_restock_is_not_enough_for_second_gap()
     {
         // Empty stock, package 7, prescribed 1 → restock 7 on May 6.
-        // May 6–12 covered; May 13 onward short until June 6.
+        // First stretch starts May 1; after restock, second stretch starts May 13.
         var asOf = new DateOnly(2026, 5, 1);
         var med = Med("TinyPack", stock: 0, packageSize: 7, prescribed: 1);
         var entry = CalendarProjection.Evaluate(med, ConfigDay6, asOf);
 
-        Assert.Contains(new DateOnly(2026, 5, 1), entry.StockOutDates);
-        Assert.Contains(new DateOnly(2026, 5, 5), entry.StockOutDates);
+        Assert.Equal(
+            new[] { new DateOnly(2026, 5, 1), new DateOnly(2026, 5, 13) },
+            entry.StockOutDates);
+        Assert.DoesNotContain(new DateOnly(2026, 5, 5), entry.StockOutDates);
         Assert.DoesNotContain(new DateOnly(2026, 5, 6), entry.StockOutDates);
-        Assert.Contains(new DateOnly(2026, 5, 13), entry.StockOutDates);
-        Assert.Contains(new DateOnly(2026, 6, 6), entry.StockOutDates);
+        Assert.DoesNotContain(new DateOnly(2026, 6, 6), entry.StockOutDates);
     }
 
     [Fact]
@@ -93,18 +92,7 @@ public class CalendarProjectionTests
 
         Assert.Equal(new DateOnly(2026, 5, 10), entry.FirstRefillDate);
         Assert.Equal(new DateOnly(2026, 6, 10), entry.SecondRefillDate);
-        Assert.Equal(
-            new[]
-            {
-                new DateOnly(2026, 5, 3),
-                new DateOnly(2026, 5, 4),
-                new DateOnly(2026, 5, 5),
-                new DateOnly(2026, 5, 6),
-                new DateOnly(2026, 5, 7),
-                new DateOnly(2026, 5, 8),
-                new DateOnly(2026, 5, 9),
-            },
-            entry.StockOutDates);
+        Assert.Equal(new[] { new DateOnly(2026, 5, 3) }, entry.StockOutDates);
     }
 
     [Fact]
@@ -112,12 +100,12 @@ public class CalendarProjectionTests
     {
         var asOf = new DateOnly(2026, 5, 1);
         var view = CalendarProjection.Build(
-            new[] { Med("A", stock: 1), Med("B", stock: 100) },
+            new[] { Med("A", stock: 1, prescribed: 2), Med("B", stock: 100) },
             ConfigDay6,
             asOf);
 
         Assert.Equal(2, view.Entries.Count);
-        Assert.Contains(new DateOnly(2026, 5, 2), view.AllStockOutDates);
+        Assert.Equal(new[] { new DateOnly(2026, 5, 2) }, view.AllStockOutDates);
         Assert.Contains(view.Entries, e => e.Medication.Name == "B" && e.StockOutDates.Count == 0);
     }
 
@@ -131,7 +119,7 @@ public class CalendarProjectionTests
             new InMemorySkipDoseEventRepository(),
             store);
 
-        await app.AddMedicationAsync(Med("InRange", stock: 2));
+        await app.AddMedicationAsync(Med("InRange", stock: 2, prescribed: 2));
 
         var asOf = new DateOnly(2026, 5, 1);
         var view = await app.GetCalendarAsync(asOf);
@@ -140,6 +128,6 @@ public class CalendarProjectionTests
         Assert.Equal(new DateOnly(2026, 6, 6), view.RangeEnd);
         var entry = Assert.Single(view.Entries);
         Assert.Equal(new DateOnly(2026, 7, 1), entry.PrescriptionEndDate);
-        Assert.NotEmpty(entry.StockOutDates);
+        Assert.Equal(new[] { new DateOnly(2026, 5, 3) }, entry.StockOutDates);
     }
 }

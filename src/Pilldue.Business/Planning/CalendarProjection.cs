@@ -65,7 +65,7 @@ public static class CalendarProjection
     /// <summary>
     /// Day-by-day stock from <paramref name="asOfDate"/> through <paramref name="secondRefill"/> (inclusive).
     /// On <paramref name="firstRefill"/>, adds prescribed packages before taking that day's dose.
-    /// A day is a stock-out when remaining pills are below the daily dosage after any restock.
+    /// Records only the <em>first</em> day of each contiguous stock-out stretch (stock below dosage).
     /// </summary>
     public static IReadOnlyList<DateOnly> SimulateStockOutDates(
         Medication medication,
@@ -83,6 +83,7 @@ public static class CalendarProjection
         var dosage = medication.DailyDosagePills;
         var restock = medication.PrescribedPackageCount * medication.PackageSizePills;
         var stockOuts = new List<DateOnly>();
+        var inOutage = false;
 
         for (var day = asOfDate; day <= secondRefill; day = day.AddDays(1))
         {
@@ -93,10 +94,15 @@ public static class CalendarProjection
 
             if (stock < dosage)
             {
-                stockOuts.Add(day);
+                if (!inOutage)
+                {
+                    stockOuts.Add(day);
+                    inOutage = true;
+                }
             }
             else
             {
+                inOutage = false;
                 stock -= dosage;
             }
         }

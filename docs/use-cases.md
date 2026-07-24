@@ -52,7 +52,7 @@ Record a refill history entry (date, med, package count).
 
 From **today** through the **second** upcoming config refill day:
 
-- Spectre month calendars with **stock-out days in red** (days when stock is below daily dosage)
+- Spectre month calendars with **stock-out days in red** (only the **first** day of each stretch without enough stock)
 - Simulation **assumes the usual prescribed packages are obtained at the first refill** before that day’s dose
 - Notes list medications that run out in the window; table shows first/second refill, stock-out days, prescription end
 

@@ -12,7 +12,7 @@ public sealed class MedicationCalendarEntry
     public DateOnly SecondRefillDate { get; init; }
 
     /// <summary>
-    /// Days in the as-of → second-refill window when stock is insufficient for a full daily dose,
+    /// First day of each contiguous stretch when stock is insufficient for a full daily dose,
     /// assuming <see cref="Medication.PrescribedPackageCount"/> packages are added at
     /// <see cref="FirstRefillDate"/> before that day's dose.
     /// </summary>
