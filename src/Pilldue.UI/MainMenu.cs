@@ -87,7 +87,7 @@ internal static class MainMenu
                 ShowNotImplemented("Skip dose");
                 break;
             case Calendar:
-                ShowNotImplemented("Calendar (last covered day + prescription end)");
+                await CalendarScreen.RunAsync(app, cancellationToken).ConfigureAwait(false);
                 break;
         }
     }
