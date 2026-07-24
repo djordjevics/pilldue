@@ -4,10 +4,13 @@ Terminal medication tracker: log your therapy schedule and know when each med ne
 
 ## Status
 
-Early repository scaffold. The UI approach (console TUI vs WPF) is undecided. Application source will live under `src/` once a project type is chosen.
+Scaffolded empty solution on **.NET 10** + **Spectre.Console** + **SQLite** (persistence not implemented yet). Layers: **Data / Business / UI**.
 
-## Documentation
+**v1:** meds, stock → refill-by, log refill, history, skipped-dose stock bump. **Out:** pharmacy/Rx/doctor, dose reminders.
 
-- [Getting started](docs/getting-started.md)
-- [Architecture](docs/architecture.md)
-- [Development](docs/development.md)
+```bash
+dotnet test Pilldue.slnx
+dotnet run --project src/Pilldue.UI
+```
+
+Decisions: [todo.md](todo.md) · [Architecture](docs/architecture.md) · [Getting started](docs/getting-started.md) · [Development](docs/development.md)

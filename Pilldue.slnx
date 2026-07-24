@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Pilldue.Business/Pilldue.Business.csproj" />
+    <Project Path="src/Pilldue.Data/Pilldue.Data.csproj" />
+    <Project Path="src/Pilldue.UI/Pilldue.UI.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Pilldue.Business.Tests/Pilldue.Business.Tests.csproj" />
+    <Project Path="tests/Pilldue.Data.Tests/Pilldue.Data.Tests.csproj" />
+    <Project Path="tests/Pilldue.IntegrationTests/Pilldue.IntegrationTests.csproj" />
+  </Folder>
+</Solution>

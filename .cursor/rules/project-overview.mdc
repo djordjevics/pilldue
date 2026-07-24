@@ -7,14 +7,23 @@ alwaysApply: true
 
 Medication refill tracker. Log therapy schedules and know when each med needs a refill.
 
-## Current state
+## Product
 
-- Early repository scaffold only — no application project yet.
-- UI approach is undecided: console TUI vs WPF. Do not assume either.
-- Application source will live under `src/` once a project type is chosen.
+- **Personal local tool** — one instance per person; never multi-tenant / multi-user.
+- **v1 in:** meds + schedule, stock → refill-by date, log refill, refill history, flag skipped dose (increases stock).
+- **v1 out:** pharmacy/Rx/doctor, dose reminders.
+
+## Solution
+
+- **.NET 10** (`net10.0`), solution [Pilldue.slnx](Pilldue.slnx)
+- **Projects:** `src/Pilldue.Data` (SQLite), `src/Pilldue.Business`, `src/Pilldue.UI` (Spectre.Console exe)
+- **Tests:** `tests/Pilldue.Data.Tests`, `tests/Pilldue.Business.Tests`, `tests/Pilldue.IntegrationTests` (multi-step scenarios, no UI)
+- **Deps:** UI → Business → Data. Do not reverse those arrows.
+- Scaffold is empty; design and feature work come next. Prefer unit tests with features; integration tests for workflows.
 
 ## Conventions
 
-- Prefer updating `docs/` when repository structure or decisions change.
+- Prefer updating `docs/` and [todo.md](todo.md) when decisions change.
 - Keep Cursor guidance in `.cursor/rules/` and project skills in `.cursor/skills/`.
-- Do not scaffold a .NET solution or lock UI tech unless the user asks.
+- UI stays thin: call Business for stock/refill/skip-dose; no domain math in UI.
+- Persistence stays in Data only.
