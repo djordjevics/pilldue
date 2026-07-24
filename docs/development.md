@@ -32,6 +32,8 @@ DIP: **UI → Business**, **UI → Data**, **Data → Business**. Persistence st
 
 **SQLite access:** EF Core only (migrations for schema). No Dapper/ADO in v1. Config file I/O is separate from EF.
 
+Default DB path: `%LocalAppData%/Pilldue/pilldue.db` (`SqliteDatabasePaths`). Apply schema with `PilldueDbBootstrap.MigrateAsync` (also used from UI startup).
+
 In-memory port implementations live in Business for tests and early UI composition.
 
 ## Tests

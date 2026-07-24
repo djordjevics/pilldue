@@ -35,9 +35,11 @@ Pilldue helps you track medications against a **monthly refill day**, package-ba
 ### Schema and data access
 
 - Use **EF Core** + SQLite in `Pilldue.Data` for tables and repository implementations.
-- Manage schema with **EF migrations**; apply on startup (or explicit migrate in tests with temp DB).
+- Manage schema with **EF migrations**; apply on startup (or explicit migrate in tests with temp DB) via `PilldueDbBootstrap.MigrateAsync`.
 - Do **not** use Dapper or hand-rolled ADO for v1.
 - Config file stays a simple file store (JSON or similar), separate from EF.
+
+**Default SQLite path:** `%LocalAppData%/Pilldue/pilldue.db` (see `SqliteDatabasePaths.GetDefaultDatabasePath()`). Tables: `medications`, `refill_events`, `skip_dose_events`.
 
 ## Solution layout and dependencies
 

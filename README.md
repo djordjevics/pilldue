@@ -4,7 +4,7 @@ Terminal medication tracker: log your therapy schedule and know when each med ne
 
 ## Status
 
-Scaffolded empty solution on **.NET 10** + **Spectre.Console** + **SQLite** (persistence not implemented yet). Layers: **Data / Business / UI**.
+**.NET 10** + **Spectre.Console** + **EF Core / SQLite** bootstrap (schema + migrations; repository CRUD still landing). Layers: **Data / Business / UI**. Default DB: `%LocalAppData%/Pilldue/pilldue.db`.
 
 **v1:** monthly refill day (default 5th), package-based stock, prescription end ~6 months, skip-dose stock bump, calendar. See [use cases](docs/use-cases.md).
 
