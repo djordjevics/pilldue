@@ -29,6 +29,7 @@ public class SqlitePersistenceScenarios
                     new EfMedicationRepository(db),
                     new EfRefillEventRepository(db),
                     new EfSkipDoseEventRepository(options),
+                    new InMemoryMissedDoseEventRepository(),
                     new InMemoryAppConfigStore());
 
                 var med = await app.AddMedicationAsync(new Medication
@@ -49,6 +50,7 @@ public class SqlitePersistenceScenarios
                     new EfMedicationRepository(db),
                     new EfRefillEventRepository(db),
                     new EfSkipDoseEventRepository(options),
+                    new InMemoryMissedDoseEventRepository(),
                     new InMemoryAppConfigStore());
 
                 var listed = Assert.Single(await app.ListMedicationsAsync());

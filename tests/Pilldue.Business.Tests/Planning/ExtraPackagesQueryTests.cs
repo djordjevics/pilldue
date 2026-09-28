@@ -51,6 +51,7 @@ public class ExtraPackagesQueryTests
             new InMemoryMedicationRepository(),
             new InMemoryRefillEventRepository(),
             new InMemorySkipDoseEventRepository(),
+            new InMemoryMissedDoseEventRepository(),
             new InMemoryAppConfigStore());
 
         await app.AddMedicationAsync(new Medication

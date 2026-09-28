@@ -45,13 +45,13 @@ Open point: weekly as every 7 days from the prescription start, or on a chosen w
 
 ## 4. Flag a missed dose
 
-- [ ] Open
+- [x] Done (separate flag, no stock change — #72)
 
 When a dose is missed, record it so it can be seen later: medication, date, and that it was missed.
 
 The current Skip dose screen (`SkipDoseForm` → `SkipDoseAsync`) returns pills to stock and stores a skip-dose event. That corrects inventory. This idea is the flag itself — a mark that the dose was missed, visible afterward.
 
-Open point: same action as skip-dose (stock goes up), or a separate mark that only records the miss.
+Decision: separate mark that only records the miss (stock unchanged).
 
 ## 5. Bug: Add medication has no way back
 

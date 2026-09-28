@@ -1,4 +1,4 @@
-﻿using Spectre.Console;
+using Spectre.Console;
 using Pilldue.Business;
 using Pilldue.Data;
 using Pilldue.UI;
@@ -12,8 +12,9 @@ await using var db = new PilldueDbContext(options);
 IMedicationRepository medications = new EfMedicationRepository(db);
 IRefillEventRepository refills = new EfRefillEventRepository(db);
 ISkipDoseEventRepository skips = new EfSkipDoseEventRepository(options);
+IMissedDoseEventRepository missed = new EfMissedDoseEventRepository(options);
 IAppConfigStore configStore = new FileAppConfigStore(SqliteDatabasePaths.GetDefaultConfigPath());
-IPilldueApp app = new PilldueApp(medications, refills, skips, configStore);
+IPilldueApp app = new PilldueApp(medications, refills, skips, missed, configStore);
 
 try
 {

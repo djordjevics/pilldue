@@ -49,6 +49,19 @@ public interface IPilldueApp
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Flag a missed dose for later review. Does not change stock
+    /// (use <see cref="SkipDoseAsync"/> for inventory correction).
+    /// </summary>
+    Task FlagMissedDoseAsync(
+        Guid medicationId,
+        DateOnly date,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>List all missed-dose flags, oldest first.</summary>
+    Task<IReadOnlyList<MissedDoseEvent>> ListMissedDosesAsync(
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Flow 3: calendar from <paramref name="asOfDate"/> through the second config refill day,
     /// with stock-out dates assuming prescribed restock at each med's first refill.
     /// </summary>

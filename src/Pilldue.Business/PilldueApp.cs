@@ -1,24 +1,27 @@
 namespace Pilldue.Business;
 
 /// <summary>
-/// Facade that persists meds/refills/skips via ports and runs planning queries.
+/// Facade that persists meds/refills/skips/missed doses via ports and runs planning queries.
 /// </summary>
 public sealed class PilldueApp : IPilldueApp
 {
     private readonly IMedicationRepository _medications;
     private readonly IRefillEventRepository _refills;
     private readonly ISkipDoseEventRepository _skips;
+    private readonly IMissedDoseEventRepository _missedDoses;
     private readonly IAppConfigStore _config;
 
     public PilldueApp(
         IMedicationRepository medications,
         IRefillEventRepository refills,
         ISkipDoseEventRepository skips,
+        IMissedDoseEventRepository missedDoses,
         IAppConfigStore config)
     {
         _medications = medications;
         _refills = refills;
         _skips = skips;
+        _missedDoses = missedDoses;
         _config = config;
     }
 
@@ -141,6 +144,27 @@ public sealed class PilldueApp : IPilldueApp
             },
             cancellationToken).ConfigureAwait(false);
     }
+
+    public async Task FlagMissedDoseAsync(
+        Guid medicationId,
+        DateOnly date,
+        CancellationToken cancellationToken = default)
+    {
+        _ = await _medications.GetAsync(medicationId, cancellationToken).ConfigureAwait(false)
+            ?? throw new InvalidOperationException($"Medication '{medicationId}' was not found.");
+
+        await _missedDoses.AddAsync(
+            new MissedDoseEvent
+            {
+                MedicationId = medicationId,
+                Date = date,
+            },
+            cancellationToken).ConfigureAwait(false);
+    }
+
+    public Task<IReadOnlyList<MissedDoseEvent>> ListMissedDosesAsync(
+        CancellationToken cancellationToken = default)
+        => _missedDoses.ListAsync(cancellationToken);
 
     public async Task<CalendarView> GetCalendarAsync(
         DateOnly asOfDate,

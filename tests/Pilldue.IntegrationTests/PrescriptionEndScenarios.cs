@@ -14,6 +14,7 @@ public class PrescriptionEndScenarios
             new InMemoryMedicationRepository(),
             new InMemoryRefillEventRepository(),
             new InMemorySkipDoseEventRepository(),
+            new InMemoryMissedDoseEventRepository(),
             new InMemoryAppConfigStore());
 
         var start = new DateOnly(2026, 1, 15);

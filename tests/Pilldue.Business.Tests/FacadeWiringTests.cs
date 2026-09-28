@@ -12,6 +12,7 @@ public class FacadeWiringTests
             new InMemoryMedicationRepository(),
             new InMemoryRefillEventRepository(),
             new InMemorySkipDoseEventRepository(),
+            new InMemoryMissedDoseEventRepository(),
             new InMemoryAppConfigStore());
 
         var asOf = new DateOnly(2026, 5, 5);

@@ -14,6 +14,7 @@ public class ApplySkipDoseTests
             medications,
             new InMemoryRefillEventRepository(),
             skips,
+            new InMemoryMissedDoseEventRepository(),
             new InMemoryAppConfigStore());
 
         var asOf = new DateOnly(2026, 5, 1);
@@ -53,6 +54,7 @@ public class ApplySkipDoseTests
             new InMemoryMedicationRepository(),
             new InMemoryRefillEventRepository(),
             new InMemorySkipDoseEventRepository(),
+            new InMemoryMissedDoseEventRepository(),
             new InMemoryAppConfigStore());
 
         var med = await app.AddMedicationAsync(new Medication

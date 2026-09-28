@@ -117,6 +117,7 @@ public class CalendarProjectionTests
             new InMemoryMedicationRepository(),
             new InMemoryRefillEventRepository(),
             new InMemorySkipDoseEventRepository(),
+            new InMemoryMissedDoseEventRepository(),
             new InMemoryAppConfigStore());
 
         await app.AddMedicationAsync(Med("InRange", stock: 2, prescribed: 2, refillDay: 6));

@@ -19,6 +19,8 @@ public sealed class PilldueDbContext : DbContext
 
     public DbSet<SkipDoseEvent> SkipDoseEvents => Set<SkipDoseEvent>();
 
+    public DbSet<MissedDoseEvent> MissedDoseEvents => Set<MissedDoseEvent>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Medication>(entity =>
@@ -56,6 +58,19 @@ public sealed class PilldueDbContext : DbContext
             entity.Property(e => e.MedicationId).IsRequired();
             entity.Property(e => e.Date).IsRequired();
             entity.Property(e => e.PillsReturned).IsRequired();
+            entity.HasIndex(e => e.MedicationId);
+            entity.HasOne<Medication>()
+                .WithMany()
+                .HasForeignKey(e => e.MedicationId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<MissedDoseEvent>(entity =>
+        {
+            entity.ToTable("missed_dose_events");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.MedicationId).IsRequired();
+            entity.Property(e => e.Date).IsRequired();
             entity.HasIndex(e => e.MedicationId);
             entity.HasOne<Medication>()
                 .WithMany()

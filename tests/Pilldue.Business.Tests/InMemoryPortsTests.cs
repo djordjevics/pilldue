@@ -11,7 +11,12 @@ public class InMemoryPortsTests
         var refills = new InMemoryRefillEventRepository();
         var skips = new InMemorySkipDoseEventRepository();
         var config = new InMemoryAppConfigStore();
-        var app = new PilldueApp(medications, refills, skips, config);
+        var app = new PilldueApp(
+            medications,
+            refills,
+            skips,
+            new InMemoryMissedDoseEventRepository(),
+            config);
 
         var med = new Medication
         {
