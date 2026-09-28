@@ -12,11 +12,9 @@ Add the next idea as a new numbered section at the bottom.
 
 ## 1. Extract the data layer from the terminal host
 
-- [ ] Open
+- [x] Done (`Pilldue.App` host + `PilldueComposition` — #69)
 
-`Pilldue.Data` already implements the Business ports (EF Core + SQLite, config file). `Pilldue.UI` is also the composition root: it references Data and wires the database at startup.
-
-Move that wiring out of the terminal project. A small host opens SQLite, runs migrations, and passes `IPilldueApp` into the UI. Terminal screens then depend on Business only, and a second UI can reuse the same host.
+`Pilldue.Data` implements the Business ports. `Pilldue.App` opens SQLite, runs migrations via `PilldueComposition`, and passes `IPilldueApp` into `Pilldue.UI`. Terminal screens depend on Business only; a second UI can reuse the same composition helper.
 
 ## 2. Terminal and desktop UI on one business layer
 

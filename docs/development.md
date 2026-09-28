@@ -66,11 +66,11 @@ User-facing Spectre copy lives in `src/Pilldue.UI/Localization/UiLocalizer.cs` (
 
 ```bash
 dotnet build Pilldue.slnx
-dotnet run --project src/Pilldue.UI
+dotnet run --project src/Pilldue.App
 ```
 
 Publish a small exe when ready to distribute:
 
 ```bash
-dotnet publish src/Pilldue.UI -c Release -o ./publish
+dotnet publish src/Pilldue.App -c Release -o ./publish
 ```

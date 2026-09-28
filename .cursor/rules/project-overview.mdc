@@ -17,18 +17,18 @@ Personal local medication refill tracker (.NET 10, Spectre.Console, SQLite).
 
 ## Solution
 
-- Projects: `Pilldue.Business` (domain + ports + in-memory fakes), `Pilldue.Data` (**EF Core + SQLite** migrations + config file), `Pilldue.UI` (composition + TUI).
-- Deps: UI → Business, UI → Data, Data → Business (DIP).
+- Projects: `Pilldue.Business` (domain + ports + in-memory fakes), `Pilldue.Data` (**EF Core + SQLite** migrations + config file + composition), `Pilldue.UI` (Spectre screens), `Pilldue.App` (host / composition root).
+- Deps: App → UI + Data; UI → Business; Data → Business (DIP).
 - Tests under `tests/`; integration tests = multi-step scenarios, no UI.
 - Persistence: EF Core only for v1 DB access — no Dapper/ADO.
-- Last-covered rule: inclusive (`asOf + floor(stock/dosage) - 1`); calendar gaps use real month lengths.
+- Last-covered rule: inclusive dose-day walk from as-of (`floor(stock/dosage)` doses); calendar gaps use real month lengths.
 
 ## Conventions
 
 - Feature branches start with the GitHub issue id: `3-sqlite-bootstrap`, `8-refill-dates` (not `feature/03_...`).
 - Update `docs/` when decisions change.
 - UI thin: call Business only; no SQL or refill math in UI.
-- Persistence and config file I/O only in Data; UI composition wires EF/SQLite repositories (not in-memory) for the real app.
+- Persistence and config file I/O only in Data; `Pilldue.App` (or another host) wires EF/SQLite via `PilldueComposition`.
 - Prefer small PRs mapped to GitHub issues; do not change port signatures without a contracts follow-up.
 - Do not push/commit directly to `main`; open a PR. Merge with `gh pr merge --admin` only when the user asks (or when a multitask parent prompt explicitly authorizes merge for that wave).
 

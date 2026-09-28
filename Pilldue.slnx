@@ -3,6 +3,7 @@
     <Project Path="src/Pilldue.Business/Pilldue.Business.csproj" />
     <Project Path="src/Pilldue.Data/Pilldue.Data.csproj" />
     <Project Path="src/Pilldue.UI/Pilldue.UI.csproj" />
+    <Project Path="src/Pilldue.App/Pilldue.App.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Pilldue.Business.Tests/Pilldue.Business.Tests.csproj" />
