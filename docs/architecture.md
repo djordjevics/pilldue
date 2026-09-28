@@ -80,3 +80,4 @@ tests/
 - [Use cases](use-cases.md)
 - [Getting started](getting-started.md)
 - [Development](development.md)
+- [Improvements](improvements.md)
