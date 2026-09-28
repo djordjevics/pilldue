@@ -16,6 +16,7 @@ public class RefillCancelScenarios
             new InMemoryMedicationRepository(),
             refills,
             new InMemorySkipDoseEventRepository(),
+            new InMemoryMissedDoseEventRepository(),
             new InMemoryAppConfigStore());
 
         var med = await app.AddMedicationAsync(new Medication
@@ -42,6 +43,7 @@ public class RefillCancelScenarios
             new InMemoryMedicationRepository(),
             refills,
             new InMemorySkipDoseEventRepository(),
+            new InMemoryMissedDoseEventRepository(),
             new InMemoryAppConfigStore());
 
         var med = await app.AddMedicationAsync(new Medication

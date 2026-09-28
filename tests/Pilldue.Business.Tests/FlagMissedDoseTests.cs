@@ -2,22 +2,23 @@ using Pilldue.Business;
 
 namespace Pilldue.Business.Tests;
 
-public class RemoveMedicationTests
+public class FlagMissedDoseTests
 {
     [Fact]
-    public async Task Remove_medication_drops_it_from_list()
+    public async Task Flag_missed_dose_records_event_without_changing_stock()
     {
         var medications = new InMemoryMedicationRepository();
+        var missed = new InMemoryMissedDoseEventRepository();
         var app = new PilldueApp(
             medications,
             new InMemoryRefillEventRepository(),
             new InMemorySkipDoseEventRepository(),
-            new InMemoryMissedDoseEventRepository(),
+            missed,
             new InMemoryAppConfigStore());
 
         var med = await app.AddMedicationAsync(new Medication
         {
-            Name = "ToRemove",
+            Name = "Aspirin",
             PackageSizePills = 28,
             PrescribedPackageCount = 1,
             DailyDosagePills = 1,
@@ -25,13 +26,20 @@ public class RemoveMedicationTests
             PrescriptionStartDate = new DateOnly(2026, 1, 1),
         });
 
-        await app.RemoveMedicationAsync(med.Id);
+        var date = new DateOnly(2026, 5, 10);
+        await app.FlagMissedDoseAsync(med.Id, date);
 
-        Assert.Empty(await app.ListMedicationsAsync());
+        var loaded = Assert.Single(await app.ListMedicationsAsync());
+        Assert.Equal(10, loaded.CurrentStockPills);
+
+        var entry = Assert.Single(await app.ListMissedDosesAsync());
+        Assert.Equal(med.Id, entry.MedicationId);
+        Assert.Equal(date, entry.Date);
+        Assert.Single(await missed.ListByMedicationAsync(med.Id));
     }
 
     [Fact]
-    public async Task Remove_unknown_medication_throws()
+    public async Task Flag_unknown_medication_throws()
     {
         var app = new PilldueApp(
             new InMemoryMedicationRepository(),
@@ -41,6 +49,6 @@ public class RemoveMedicationTests
             new InMemoryAppConfigStore());
 
         await Assert.ThrowsAsync<InvalidOperationException>(
-            () => app.RemoveMedicationAsync(Guid.NewGuid()));
+            () => app.FlagMissedDoseAsync(Guid.NewGuid(), new DateOnly(2026, 5, 1)));
     }
 }

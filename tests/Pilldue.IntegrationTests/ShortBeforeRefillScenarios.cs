@@ -15,6 +15,7 @@ public class ShortBeforeRefillScenarios
             medications,
             new InMemoryRefillEventRepository(),
             new InMemorySkipDoseEventRepository(),
+            new InMemoryMissedDoseEventRepository(),
             new InMemoryAppConfigStore());
 
         // Documented example: refill day 5, stock 28, dosage 1, package 28.

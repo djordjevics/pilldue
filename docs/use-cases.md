@@ -57,6 +57,10 @@ From **today** through the **latest second refill** among medications:
 
 User flags a skipped/missed dose → increase stock by the dose amount (typically one day of `dailyDosage`) so last covered day moves later. Inventory correction only — not a reminder system.
 
+## Flow 5 — Missed dose flag
+
+User records that a dose was **missed** (medication + date) so it can be listed later. **Stock does not change.** Use Flow 4 (skip dose) when inventory should go back up.
+
 ## Derived values (Business)
 
 - Next refill date / second refill date from “today” + day-of-month rule (clamp invalid days to month end)

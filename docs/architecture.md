@@ -39,7 +39,7 @@ Pilldue helps you track medications against a **monthly refill day**, package-ba
 - Do **not** use Dapper or hand-rolled ADO for v1.
 - Config file stays a simple file store (JSON or similar), separate from EF.
 
-**Default SQLite path:** `%LocalAppData%/Pilldue/pilldue.db` (see `SqliteDatabasePaths.GetDefaultDatabasePath()`). Tables: `medications`, `refill_events`, `skip_dose_events`.
+**Default SQLite path:** `%LocalAppData%/Pilldue/pilldue.db` (see `SqliteDatabasePaths.GetDefaultDatabasePath()`). Tables: `medications`, `refill_events`, `skip_dose_events`, `missed_dose_events`.
 
 ## Solution layout and dependencies
 

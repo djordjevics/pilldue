@@ -14,6 +14,7 @@ public class CalendarRangeScenarios
             new InMemoryMedicationRepository(),
             new InMemoryRefillEventRepository(),
             new InMemorySkipDoseEventRepository(),
+            new InMemoryMissedDoseEventRepository(),
             new InMemoryAppConfigStore());
 
         await app.AddMedicationAsync(new Medication
@@ -49,6 +50,7 @@ public class CalendarRangeScenarios
             new InMemoryMedicationRepository(),
             new InMemoryRefillEventRepository(),
             new InMemorySkipDoseEventRepository(),
+            new InMemoryMissedDoseEventRepository(),
             new InMemoryAppConfigStore());
 
         var asOf = new DateOnly(2026, 5, 1);

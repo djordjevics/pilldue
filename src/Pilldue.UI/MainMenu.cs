@@ -16,6 +16,7 @@ internal static class MainMenu
     private const string IdRemove = "remove";
     private const string IdRefill = "refill";
     private const string IdSkip = "skip";
+    private const string IdMissed = "missed";
     private const string IdCalendar = "calendar";
     private const string IdLanguage = "language";
     private const string IdExit = "exit";
@@ -59,6 +60,7 @@ internal static class MainMenu
         new(IdRemove, UiLocalizer.Get("Menu.Remove")),
         new(IdRefill, UiLocalizer.Get("Menu.Refill")),
         new(IdSkip, UiLocalizer.Get("Menu.Skip")),
+        new(IdMissed, UiLocalizer.Get("Menu.Missed")),
         new(IdCalendar, UiLocalizer.Get("Menu.Calendar")),
         new(IdLanguage, UiLocalizer.Get("Menu.Language")),
         new(IdExit, UiLocalizer.Get("Menu.Exit")),
@@ -103,6 +105,9 @@ internal static class MainMenu
                 break;
             case IdSkip:
                 await SkipDoseForm.RunAsync(app, cancellationToken).ConfigureAwait(false);
+                break;
+            case IdMissed:
+                await MissedDoseForm.RunAsync(app, cancellationToken).ConfigureAwait(false);
                 break;
             case IdCalendar:
                 await CalendarScreen.RunAsync(app, cancellationToken).ConfigureAwait(false);

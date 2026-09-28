@@ -14,6 +14,7 @@ public class ApplyRefillTests
             medications,
             refills,
             new InMemorySkipDoseEventRepository(),
+            new InMemoryMissedDoseEventRepository(),
             new InMemoryAppConfigStore());
 
         var med = await app.AddMedicationAsync(new Medication
@@ -45,6 +46,7 @@ public class ApplyRefillTests
             new InMemoryMedicationRepository(),
             new InMemoryRefillEventRepository(),
             new InMemorySkipDoseEventRepository(),
+            new InMemoryMissedDoseEventRepository(),
             new InMemoryAppConfigStore());
 
         var med = await app.AddMedicationAsync(new Medication

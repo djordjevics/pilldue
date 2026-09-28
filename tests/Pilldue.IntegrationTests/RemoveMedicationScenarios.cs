@@ -29,6 +29,7 @@ public class RemoveMedicationScenarios
                 new EfMedicationRepository(db),
                 refills,
                 skips,
+                new InMemoryMissedDoseEventRepository(),
                 new InMemoryAppConfigStore());
 
             var med = await app.AddMedicationAsync(new Medication
