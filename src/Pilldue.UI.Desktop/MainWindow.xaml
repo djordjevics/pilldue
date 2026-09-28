@@ -1,0 +1,45 @@
+<Window x:Class="Pilldue.UI.Desktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Pilldue"
+        Height="520"
+        Width="720"
+        MinHeight="360"
+        MinWidth="560"
+        Loaded="OnLoaded">
+    <DockPanel Margin="16">
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock Text="Pilldue"
+                       FontSize="22"
+                       FontWeight="SemiBold"
+                       VerticalAlignment="Center"
+                       Margin="0,0,16,0" />
+            <Button Content="Refresh" Width="88" Margin="0,0,8,0" Click="OnRefreshClick" />
+            <Button Content="Add" Width="72" Margin="0,0,8,0" Click="OnAddClick" />
+            <Button Content="Refill" Width="72" Margin="0,0,8,0" Click="OnRefillClick" />
+            <Button Content="Remove" Width="72" Click="OnRemoveClick" />
+        </StackPanel>
+
+        <TextBlock x:Name="StatusText"
+                   DockPanel.Dock="Bottom"
+                   Margin="0,12,0,0"
+                   Foreground="Gray"
+                   TextWrapping="Wrap" />
+
+        <DataGrid x:Name="MedicationsGrid"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  HeadersVisibility="Column"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
+                <DataGridTextColumn Header="Stock" Binding="{Binding CurrentStockPills}" Width="80" />
+                <DataGridTextColumn Header="Dose" Binding="{Binding DailyDosagePills}" Width="70" />
+                <DataGridTextColumn Header="Every N days" Binding="{Binding DoseIntervalDays}" Width="100" />
+                <DataGridTextColumn Header="Package" Binding="{Binding PackageSizePills}" Width="80" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</Window>

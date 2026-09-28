@@ -18,18 +18,19 @@ Add the next idea as a new numbered section at the bottom.
 
 ## 2. Terminal and desktop UI on one business layer
 
-- [ ] Open
+- [x] Done (WPF `Pilldue.UI.Desktop` — #70)
 
-Keep one shared business layer and add a WPF desktop UI beside the Spectre terminal. Both call `IPilldueApp` and the planning code in `Pilldue.Business`. Persistence stays in `Pilldue.Data` (see idea 1 for who wires it).
+Keep one shared business layer and add a WPF desktop UI beside the Spectre terminal. Both call `IPilldueApp` via `PilldueComposition`. Persistence stays in `Pilldue.Data`.
 
 ```
-Pilldue.UI            Spectre terminal (existing)
-Pilldue.UI.Desktop    WPF
+Pilldue.App           Spectre terminal host
+Pilldue.UI            Spectre screens (library)
+Pilldue.UI.Desktop    WPF (Windows-only)
 Pilldue.Business      domain, ports, planning, app service
-Pilldue.Data          EF Core + SQLite + config file
+Pilldue.Data          EF Core + SQLite + config file + composition
 ```
 
-The desktop app is Windows-only. WPF stays in its own project so the terminal UI keeps working on its own.
+The desktop app is Windows-only (`net10.0-windows`). Terminal app keeps working on its own.
 
 ## 3. Doses that are not every day
 

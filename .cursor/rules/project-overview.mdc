@@ -17,8 +17,8 @@ Personal local medication refill tracker (.NET 10, Spectre.Console, SQLite).
 
 ## Solution
 
-- Projects: `Pilldue.Business` (domain + ports + in-memory fakes), `Pilldue.Data` (**EF Core + SQLite** migrations + config file + composition), `Pilldue.UI` (Spectre screens), `Pilldue.App` (host / composition root).
-- Deps: App → UI + Data; UI → Business; Data → Business (DIP).
+- Projects: `Pilldue.Business` (domain + ports + in-memory fakes), `Pilldue.Data` (**EF Core + SQLite** migrations + config file + composition), `Pilldue.UI` (Spectre screens), `Pilldue.App` (terminal host), `Pilldue.UI.Desktop` (WPF host, Windows).
+- Deps: App → UI + Data; Desktop → Business + Data; UI → Business; Data → Business (DIP).
 - Tests under `tests/`; integration tests = multi-step scenarios, no UI.
 - Persistence: EF Core only for v1 DB access — no Dapper/ADO.
 - Last-covered rule: inclusive dose-day walk from as-of (`floor(stock/dosage)` doses); calendar gaps use real month lengths.
