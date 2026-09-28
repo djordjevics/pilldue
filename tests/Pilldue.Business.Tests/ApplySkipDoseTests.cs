@@ -28,7 +28,7 @@ public class ApplySkipDoseTests
             PrescriptionStartDate = new DateOnly(2026, 1, 1),
         });
 
-        var before = RefillCalendarRules.LastCoveredDate(asOf, 10, 1);
+        var before = RefillCalendarRules.LastCoveredDate(asOf, med);
         Assert.Equal(new DateOnly(2026, 5, 10), before);
 
         await app.SkipDoseAsync(med.Id, pillsReturned: med.DailyDosagePills, date: new DateOnly(2026, 5, 6));
@@ -40,10 +40,7 @@ public class ApplySkipDoseTests
         Assert.Equal(1, evt.PillsReturned);
         Assert.Equal(new DateOnly(2026, 5, 6), evt.Date);
 
-        var after = RefillCalendarRules.LastCoveredDate(
-            asOf,
-            loaded.CurrentStockPills,
-            loaded.DailyDosagePills);
+        var after = RefillCalendarRules.LastCoveredDate(asOf, loaded);
         Assert.Equal(new DateOnly(2026, 5, 11), after);
     }
 

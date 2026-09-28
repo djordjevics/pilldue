@@ -17,8 +17,13 @@ public static class ExtraPackagesQuery
         var refillDay = RefillCalendarRules.EffectiveRefillDayOfMonth(medication);
         var (_, secondRefillDate) = RefillCalendarRules.NextAndSecondRefillDates(asOfDate, refillDay);
 
-        var daysInGap = secondRefillDate.DayNumber - asOfDate.DayNumber;
-        var pillsNeeded = daysInGap * medication.DailyDosagePills;
+        var interval = RefillCalendarRules.EffectiveDoseIntervalDays(medication);
+        var doseDays = RefillCalendarRules.CountDoseDays(
+            asOfDate,
+            secondRefillDate,
+            medication.PrescriptionStartDate,
+            interval);
+        var pillsNeeded = doseDays * medication.DailyDosagePills;
         var pillsShort = Math.Max(0, pillsNeeded - medication.CurrentStockPills);
         var packagesNeeded = RefillCalendarRules.PackagesToBuy(pillsShort, medication.PackageSizePills);
 

@@ -79,6 +79,7 @@ public static class CalendarProjection
 
         var stock = medication.CurrentStockPills;
         var dosage = medication.DailyDosagePills;
+        var interval = RefillCalendarRules.EffectiveDoseIntervalDays(medication);
         var restock = medication.PrescribedPackageCount * medication.PackageSizePills;
         var stockOuts = new List<DateOnly>();
         var inOutage = false;
@@ -88,6 +89,11 @@ public static class CalendarProjection
             if (day == firstRefill)
             {
                 stock += restock;
+            }
+
+            if (!RefillCalendarRules.IsDoseDay(day, medication.PrescriptionStartDate, interval))
+            {
+                continue;
             }
 
             if (stock < dosage)

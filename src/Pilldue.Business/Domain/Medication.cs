@@ -13,8 +13,14 @@ public sealed class Medication
     /// <summary>Usual number of packages obtained each refill.</summary>
     public int PrescribedPackageCount { get; set; }
 
-    /// <summary>Pills consumed per day.</summary>
+    /// <summary>Pills consumed on each dose day.</summary>
     public int DailyDosagePills { get; set; }
+
+    /// <summary>
+    /// Days between doses: <c>1</c> daily, <c>2</c> every other day, <c>7</c> weekly from
+    /// <see cref="PrescriptionStartDate"/> (not a fixed weekday).
+    /// </summary>
+    public int DoseIntervalDays { get; set; } = 1;
 
     /// <summary>Pills currently on hand.</summary>
     public int CurrentStockPills { get; set; }

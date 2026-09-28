@@ -35,13 +35,11 @@ The desktop app is Windows-only. WPF stays in its own project so the terminal UI
 
 ## 3. Doses that are not every day
 
-- [ ] Open
+- [x] Done (interval days from Rx start; weekly = every 7 days — #71)
 
-`DailyDosagePills` and the planning math (last covered day, shortfall, extra packages, calendar stock-outs) assume one dose every calendar day.
+`DailyDosagePills` is pills per dose. `DoseIntervalDays` (`1` daily, `2`, `3`, `7` weekly) controls which calendar days consume stock, counted from the prescription start.
 
-Some medications are taken every 2 days, every 3 days, or weekly. Store an interval in days (`1` daily, `2`, `3`, `7` weekly) and consume stock only on dose days.
-
-Open point: weekly as every 7 days from the prescription start, or on a chosen weekday.
+Decision: weekly is every 7 days from the prescription start, not a chosen weekday.
 
 ## 4. Flag a missed dose
 

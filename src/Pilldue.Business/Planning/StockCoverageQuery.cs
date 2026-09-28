@@ -21,12 +21,15 @@ public static class StockCoverageQuery
         var nextRefillDate = nextOnOrAfter > asOfDate ? nextOnOrAfter : second;
 
         var daysInGap = nextRefillDate.DayNumber - asOfDate.DayNumber;
-        var lastCoveredDate = RefillCalendarRules.LastCoveredDate(
-            asOfDate,
-            medication.CurrentStockPills,
-            medication.DailyDosagePills);
+        var interval = RefillCalendarRules.EffectiveDoseIntervalDays(medication);
+        var lastCoveredDate = RefillCalendarRules.LastCoveredDate(asOfDate, medication);
 
-        var pillsNeeded = daysInGap * medication.DailyDosagePills;
+        var doseDays = RefillCalendarRules.CountDoseDays(
+            asOfDate,
+            nextRefillDate,
+            medication.PrescriptionStartDate,
+            interval);
+        var pillsNeeded = doseDays * medication.DailyDosagePills;
         var pillsShort = Math.Max(0, pillsNeeded - medication.CurrentStockPills);
         var coversUntilNextRefill = pillsShort == 0;
         var packagesToBuy = RefillCalendarRules.PackagesToBuy(pillsShort, medication.PackageSizePills);

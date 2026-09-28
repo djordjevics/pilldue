@@ -54,6 +54,7 @@ public sealed class InMemoryMedicationRepository : IMedicationRepository
         PackageSizePills = source.PackageSizePills,
         PrescribedPackageCount = source.PrescribedPackageCount,
         DailyDosagePills = source.DailyDosagePills,
+        DoseIntervalDays = source.DoseIntervalDays,
         CurrentStockPills = source.CurrentStockPills,
         RefillDayOfMonthOverride = source.RefillDayOfMonthOverride,
         PrescriptionStartDate = source.PrescriptionStartDate,

@@ -31,6 +31,7 @@ public sealed class PilldueDbContext : DbContext
             entity.Property(e => e.PackageSizePills).IsRequired();
             entity.Property(e => e.PrescribedPackageCount).IsRequired();
             entity.Property(e => e.DailyDosagePills).IsRequired();
+            entity.Property(e => e.DoseIntervalDays).IsRequired();
             entity.Property(e => e.CurrentStockPills).IsRequired();
             entity.Property(e => e.RefillDayOfMonthOverride);
             entity.Property(e => e.PrescriptionStartDate).IsRequired();
