@@ -15,7 +15,8 @@ Personal local refill tracker. One instance per person. No multi-user, no dose r
 | Name | Display name |
 | Package size | Pills per package (e.g. 12, 28, 30, 60) |
 | Prescribed package count | Usual packages obtained each refill |
-| Daily dosage | Pills consumed per day |
+| Daily dosage | Pills per dose |
+| Dose interval (days) | `1` daily, `2` every other day, `7` weekly counted from prescription start (not a weekday) |
 | Current stock | Pills on hand |
 | Prescription start | Start of current prescription validity; **day-of-month is this med’s refill day** |
 | Prescription duration | Default **6 months** (or explicit end date) |
@@ -65,7 +66,7 @@ User records that a dose was **missed** (medication + date) so it can be listed 
 
 - Next refill date / second refill date from “today” + day-of-month rule (clamp invalid days to month end)
 - **Days in gap** = calendar days from one refill date to the next (month length sensitive)
-- **Last covered date (inclusive):** `asOfDate + floor(stock / dailyDosage) - 1` days when floor > 0; otherwise none. Locked in `RefillCalendarRules`.
+- **Last covered date (inclusive):** consume dosage only on dose days (`DoseIntervalDays` from prescription start); last covered is the date of the `floor(stock / dosage)`-th dose from as-of. Locked in `RefillCalendarRules`.
 - **Prescription end:** `PrescriptionStartDate.AddMonths(PrescriptionDurationMonths)` (default 6); locked in `RefillCalendarRules`
 - **Pills short** / **packages to buy** = `ceil(pillsShort / packageSize)` for flow 1 shortfalls (see 31-day / 28-pill example above)
 

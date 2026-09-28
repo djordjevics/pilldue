@@ -44,10 +44,7 @@ public class RefillWorkflowScenarios
         Assert.Equal(SkipDate, skip.Date);
         Assert.Equal(1, skip.PillsReturned);
 
-        var lastCovered = RefillCalendarRules.LastCoveredDate(
-            AsOf,
-            loaded.CurrentStockPills,
-            loaded.DailyDosagePills);
+        var lastCovered = RefillCalendarRules.LastCoveredDate(AsOf, loaded);
         Assert.Equal(new DateOnly(2026, 5, 11), lastCovered);
     }
 
@@ -66,10 +63,7 @@ public class RefillWorkflowScenarios
         Assert.Equal(RefillDate, refill.Date);
         Assert.Equal(1, refill.PackageCount);
 
-        var lastCovered = RefillCalendarRules.LastCoveredDate(
-            AsOf,
-            loaded.CurrentStockPills,
-            loaded.DailyDosagePills);
+        var lastCovered = RefillCalendarRules.LastCoveredDate(AsOf, loaded);
         Assert.Equal(new DateOnly(2026, 5, 28), lastCovered);
     }
 
@@ -99,10 +93,7 @@ public class RefillWorkflowScenarios
         Assert.Equal(SkipDate, skip.Date);
 
         // Inclusive last-covered: floor(39/1)=39 → asOf + 38 days = 8 Jun
-        var lastCovered = RefillCalendarRules.LastCoveredDate(
-            AsOf,
-            loaded.CurrentStockPills,
-            loaded.DailyDosagePills);
+        var lastCovered = RefillCalendarRules.LastCoveredDate(AsOf, loaded);
         Assert.Equal(new DateOnly(2026, 6, 8), lastCovered);
     }
 

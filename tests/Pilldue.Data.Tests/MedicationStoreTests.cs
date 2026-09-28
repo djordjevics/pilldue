@@ -197,6 +197,7 @@ public class MedicationStoreTests
         Assert.Equal(expected.PackageSizePills, actual.PackageSizePills);
         Assert.Equal(expected.PrescribedPackageCount, actual.PrescribedPackageCount);
         Assert.Equal(expected.DailyDosagePills, actual.DailyDosagePills);
+        Assert.Equal(expected.DoseIntervalDays, actual.DoseIntervalDays);
         Assert.Equal(expected.CurrentStockPills, actual.CurrentStockPills);
         Assert.Equal(expected.RefillDayOfMonthOverride, actual.RefillDayOfMonthOverride);
         Assert.Equal(expected.PrescriptionStartDate, actual.PrescriptionStartDate);

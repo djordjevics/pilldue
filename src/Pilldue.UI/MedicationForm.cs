@@ -155,6 +155,14 @@ internal static class MedicationForm
                         ? ValidationResult.Success()
                         : ValidationResult.Error(UiLocalizer.Get("Common.MustBeGreaterThan0"))));
 
+        var doseInterval = AnsiConsole.Prompt(
+            new TextPrompt<int>(UiLocalizer.Get("Med.DoseInterval"))
+                .DefaultValue(existing?.DoseIntervalDays is > 0 ? existing.DoseIntervalDays : 1)
+                .Validate(v =>
+                    v > 0
+                        ? ValidationResult.Success()
+                        : ValidationResult.Error(UiLocalizer.Get("Common.MustBeGreaterThan0"))));
+
         var currentStock = AnsiConsole.Prompt(
             new TextPrompt<int>(UiLocalizer.Get("Med.Stock"))
                 .DefaultValue(existing?.CurrentStockPills ?? 0)
@@ -189,6 +197,7 @@ internal static class MedicationForm
             PackageSizePills = packageSize,
             PrescribedPackageCount = prescribedPackages,
             DailyDosagePills = dailyDosage,
+            DoseIntervalDays = doseInterval,
             CurrentStockPills = currentStock,
             RefillDayOfMonthOverride = null,
             PrescriptionStartDate = DateOnly.ParseExact(prescriptionStart.Trim(), "yyyy-MM-dd"),
