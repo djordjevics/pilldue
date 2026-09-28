@@ -16,6 +16,9 @@ public interface IPilldueApp
 
     Task<Medication> UpdateMedicationAsync(Medication medication, CancellationToken cancellationToken = default);
 
+    /// <summary>Remove a medication and cascaded refill/skip history (SQLite FK cascade).</summary>
+    Task RemoveMedicationAsync(Guid medicationId, CancellationToken cancellationToken = default);
+
     /// <summary>Flow 1.1 / 1.2: coverage vs next refill day, including pills short and packages to buy.</summary>
     Task<IReadOnlyList<StockCoverageResult>> GetStockCoverageAsync(
         DateOnly asOfDate,
