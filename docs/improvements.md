@@ -62,3 +62,21 @@ Starting **Add medication** walks every field (name through prescription duratio
 Refill already offers Cancel before it writes. Edit medication uses the same field prompts, so the same gap is there too.
 
 Fix: abandon Add (and Edit) before any save and return to the main menu.
+
+## 6. Android app on the shared business/data layer
+
+- [ ] Open
+
+Yes, this is doable. Keep `Pilldue.Business` and `Pilldue.Data` (EF Core + SQLite) as the shared core, and add a .NET MAUI Android UI that calls `IPilldueApp` the same way the terminal and a future WPF desktop would.
+
+```
+Pilldue.UI            Spectre terminal (existing)
+Pilldue.UI.Desktop    WPF (idea 2)
+Pilldue.UI.Mobile     .NET MAUI (Android)
+Pilldue.Business      domain, ports, planning, app service
+Pilldue.Data          EF Core + SQLite + config file
+```
+
+Spectre.Console does not run on Android, so the mobile shell is a separate project. SQLite still lives on the device; install via sideload or a store later. Same personal-local product: one DB per phone, no cloud sync in this idea.
+
+Depends on extracting data wiring from the terminal host (idea 1) so every UI shares one composition path. Open point: Android only first, or MAUI for Android and iOS together.
