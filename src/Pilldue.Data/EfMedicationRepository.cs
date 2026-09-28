@@ -46,13 +46,15 @@ public sealed class EfMedicationRepository : IMedicationRepository
     {
         ArgumentNullException.ThrowIfNull(medication);
 
-        var exists = await _db.Medications.AnyAsync(m => m.Id == medication.Id, cancellationToken);
-        if (!exists)
+        // Prefer the tracked instance when the same DbContext lives for the whole session
+        // (UI composition root). Update(detached) would otherwise collide on the key.
+        var existing = await _db.Medications.FindAsync([medication.Id], cancellationToken);
+        if (existing is null)
         {
             throw new InvalidOperationException($"Medication '{medication.Id}' was not found.");
         }
 
-        _db.Medications.Update(medication);
+        _db.Entry(existing).CurrentValues.SetValues(medication);
         await _db.SaveChangesAsync(cancellationToken);
     }
 
