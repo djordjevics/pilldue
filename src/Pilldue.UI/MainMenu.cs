@@ -13,6 +13,7 @@ internal static class MainMenu
     private const string IdPlanning = "planning";
     private const string IdAdd = "add";
     private const string IdEdit = "edit";
+    private const string IdRemove = "remove";
     private const string IdRefill = "refill";
     private const string IdSkip = "skip";
     private const string IdCalendar = "calendar";
@@ -55,6 +56,7 @@ internal static class MainMenu
         new(IdPlanning, UiLocalizer.Get("Menu.Planning")),
         new(IdAdd, UiLocalizer.Get("Menu.Add")),
         new(IdEdit, UiLocalizer.Get("Menu.Edit")),
+        new(IdRemove, UiLocalizer.Get("Menu.Remove")),
         new(IdRefill, UiLocalizer.Get("Menu.Refill")),
         new(IdSkip, UiLocalizer.Get("Menu.Skip")),
         new(IdCalendar, UiLocalizer.Get("Menu.Calendar")),
@@ -92,6 +94,9 @@ internal static class MainMenu
                 break;
             case IdEdit:
                 await MedicationForm.EditAsync(app, cancellationToken).ConfigureAwait(false);
+                break;
+            case IdRemove:
+                await RemoveMedicationForm.RunAsync(app, cancellationToken).ConfigureAwait(false);
                 break;
             case IdRefill:
                 await RefillForm.RunAsync(app, cancellationToken).ConfigureAwait(false);

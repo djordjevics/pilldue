@@ -52,6 +52,16 @@ public sealed class PilldueApp : IPilldueApp
         return (await _medications.GetAsync(medication.Id, cancellationToken).ConfigureAwait(false))!;
     }
 
+    public async Task RemoveMedicationAsync(
+        Guid medicationId,
+        CancellationToken cancellationToken = default)
+    {
+        var medication = await _medications.GetAsync(medicationId, cancellationToken).ConfigureAwait(false)
+            ?? throw new InvalidOperationException($"Medication '{medicationId}' was not found.");
+
+        await _medications.DeleteAsync(medication.Id, cancellationToken).ConfigureAwait(false);
+    }
+
     public async Task<IReadOnlyList<StockCoverageResult>> GetStockCoverageAsync(
         DateOnly asOfDate,
         CancellationToken cancellationToken = default)
