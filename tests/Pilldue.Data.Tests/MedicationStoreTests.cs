@@ -82,6 +82,42 @@ public class MedicationStoreTests
     }
 
     [Fact]
+    public async Task Update_twice_on_same_context_with_new_instances_succeeds()
+    {
+        var dbPath = CreateTempDbPath();
+        try
+        {
+            await PilldueDbBootstrap.MigrateAsync(dbPath);
+
+            var medication = CreateSampleMedication();
+            medication.CurrentStockPills = 10;
+
+            await using var db = new PilldueDbContext(PilldueDbBootstrap.CreateOptions(dbPath));
+            var repository = new EfMedicationRepository(db);
+            await repository.AddAsync(medication);
+
+            var firstEdit = CreateSampleMedication(name: "First edit");
+            firstEdit.Id = medication.Id;
+            firstEdit.CurrentStockPills = 20;
+            await repository.UpdateAsync(firstEdit);
+
+            var secondEdit = CreateSampleMedication(name: "Second edit");
+            secondEdit.Id = medication.Id;
+            secondEdit.CurrentStockPills = 30;
+            await repository.UpdateAsync(secondEdit);
+
+            var loaded = await repository.GetAsync(medication.Id);
+            Assert.NotNull(loaded);
+            Assert.Equal("Second edit", loaded.Name);
+            Assert.Equal(30, loaded.CurrentStockPills);
+        }
+        finally
+        {
+            CleanupTempDb(dbPath);
+        }
+    }
+
+    [Fact]
     public async Task List_returns_medications_ordered_by_name()
     {
         var dbPath = CreateTempDbPath();
