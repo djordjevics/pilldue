@@ -13,4 +13,4 @@ dotnet test Pilldue.slnx
 dotnet run --project src/Pilldue.UI
 ```
 
-Docs: [Use cases](docs/use-cases.md) · [Architecture](docs/architecture.md) · [Getting started](docs/getting-started.md) · [Development](docs/development.md) · [todo.md](todo.md)
+Docs: [Use cases](docs/use-cases.md) · [Architecture](docs/architecture.md) · [Getting started](docs/getting-started.md) · [Development](docs/development.md) · [Improvements](docs/improvements.md) · [todo.md](todo.md)
