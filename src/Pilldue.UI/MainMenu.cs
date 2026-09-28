@@ -7,7 +7,7 @@ namespace Pilldue.UI;
 /// <summary>
 /// Spectre main menu shell for v1 flows. Screens call <see cref="IPilldueApp"/> only.
 /// </summary>
-internal static class MainMenu
+public static class MainMenu
 {
     private const string IdList = "list";
     private const string IdPlanning = "planning";

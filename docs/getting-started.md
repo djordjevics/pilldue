@@ -17,7 +17,7 @@ cd pilldue
 ```bash
 dotnet build Pilldue.slnx
 dotnet test Pilldue.slnx
-dotnet run --project src/Pilldue.UI
+dotnet run --project src/Pilldue.App
 ```
 
 ## Local SQLite database
@@ -33,9 +33,10 @@ By default the app database file is:
 | Path | Purpose |
 |------|---------|
 | `Pilldue.slnx` | Solution |
-| `src/Pilldue.Data` | Persistence (SQLite) |
+| `src/Pilldue.Data` | Persistence (SQLite) + composition helpers |
 | `src/Pilldue.Business` | Domain and application services |
-| `src/Pilldue.UI` | Spectre.Console TUI entry point |
+| `src/Pilldue.UI` | Spectre.Console TUI screens |
+| `src/Pilldue.App` | Terminal host / composition root |
 | `tests/Pilldue.Data.Tests` | Data unit tests |
 | `tests/Pilldue.Business.Tests` | Business unit tests |
 | `tests/Pilldue.IntegrationTests` | Multi-step scenario tests (no UI) |
