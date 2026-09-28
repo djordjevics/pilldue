@@ -63,12 +63,23 @@ internal static class MedicationForm
             return;
         }
 
-        var selected = AnsiConsole.Prompt(
-            new SelectionPrompt<Medication>()
+        var cancelLabel = UiLocalizer.Get("Common.Cancel");
+        var labels = medications.Select(m => m.Name).Append(cancelLabel).ToList();
+
+        var selectedLabel = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
                 .Title(UiLocalizer.Get("Common.SelectMedication"))
-                .PageSize(10)
-                .UseConverter(m => m.Name)
-                .AddChoices(medications));
+                .PageSize(12)
+                .AddChoices(labels));
+
+        var selectedIndex = MedicationFormLogic.ResolveMedicationSelection(labels, selectedLabel, cancelLabel);
+        if (selectedIndex is null)
+        {
+            AnsiConsole.MarkupLine($"[grey]{UiLocalizer.Get("Med.Cancelled").EscapeMarkup()}[/]");
+            return;
+        }
+
+        var selected = medications[selectedIndex.Value];
 
         AnsiConsole.WriteLine();
         AnsiConsole.MarkupLine(
@@ -83,7 +94,6 @@ internal static class MedicationForm
             return;
         }
 
-        var cancelLabel = UiLocalizer.Get("Common.Cancel");
         var confirm = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title(UiLocalizer.Format("Med.ConfirmEdit", updated.Name))

@@ -21,4 +21,18 @@ public class MedicationFormLogicTests
     {
         Assert.False(MedicationFormLogic.IsCancelledName(name));
     }
+
+    [Fact]
+    public void ResolveMedicationSelection_returns_null_for_cancel()
+    {
+        var labels = new[] { "Aspirin", "Metformin", "Cancel" };
+        Assert.Null(MedicationFormLogic.ResolveMedicationSelection(labels, "Cancel", "Cancel"));
+    }
+
+    [Fact]
+    public void ResolveMedicationSelection_returns_index_for_medication()
+    {
+        var labels = new[] { "Aspirin", "Metformin", "Cancel" };
+        Assert.Equal(1, MedicationFormLogic.ResolveMedicationSelection(labels, "Metformin", "Cancel"));
+    }
 }
