@@ -55,7 +55,7 @@ Open point: same action as skip-dose (stock goes up), or a separate mark that on
 
 ## 5. Bug: Add medication has no way back
 
-- [ ] Open
+- [x] Done (empty name cancels; confirm before save — #73)
 
 Starting **Add medication** walks every field (name through prescription duration) and then saves. There is no Back or Cancel, so the only way out is to finish the form.
 

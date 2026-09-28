@@ -14,9 +14,28 @@ internal static class MedicationForm
         ArgumentNullException.ThrowIfNull(app);
 
         AnsiConsole.MarkupLine($"[bold]{UiLocalizer.Get("Med.AddTitle").EscapeMarkup()}[/]");
+        AnsiConsole.MarkupLine($"[grey]{UiLocalizer.Get("Med.NameCancelHint").EscapeMarkup()}[/]");
         AnsiConsole.WriteLine();
 
         var medication = PromptFields(existing: null);
+        if (medication is null)
+        {
+            AnsiConsole.MarkupLine($"[grey]{UiLocalizer.Get("Med.Cancelled").EscapeMarkup()}[/]");
+            return;
+        }
+
+        var cancelLabel = UiLocalizer.Get("Common.Cancel");
+        var confirm = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title(UiLocalizer.Format("Med.ConfirmAdd", medication.Name))
+                .AddChoices(UiLocalizer.Get("Common.Yes"), cancelLabel));
+
+        if (RefillFormLogic.IsCancelSelection(confirm, cancelLabel))
+        {
+            AnsiConsole.MarkupLine($"[grey]{UiLocalizer.Get("Med.Cancelled").EscapeMarkup()}[/]");
+            return;
+        }
+
         try
         {
             var saved = await app.AddMedicationAsync(medication, cancellationToken).ConfigureAwait(false);
@@ -54,9 +73,28 @@ internal static class MedicationForm
         AnsiConsole.WriteLine();
         AnsiConsole.MarkupLine(
             UiLocalizer.Format("Med.Editing", $"[bold]{selected.Name.EscapeMarkup()}[/]"));
+        AnsiConsole.MarkupLine($"[grey]{UiLocalizer.Get("Med.NameCancelHint").EscapeMarkup()}[/]");
         AnsiConsole.WriteLine();
 
         var updated = PromptFields(selected);
+        if (updated is null)
+        {
+            AnsiConsole.MarkupLine($"[grey]{UiLocalizer.Get("Med.Cancelled").EscapeMarkup()}[/]");
+            return;
+        }
+
+        var cancelLabel = UiLocalizer.Get("Common.Cancel");
+        var confirm = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title(UiLocalizer.Format("Med.ConfirmEdit", updated.Name))
+                .AddChoices(UiLocalizer.Get("Common.Yes"), cancelLabel));
+
+        if (RefillFormLogic.IsCancelSelection(confirm, cancelLabel))
+        {
+            AnsiConsole.MarkupLine($"[grey]{UiLocalizer.Get("Med.Cancelled").EscapeMarkup()}[/]");
+            return;
+        }
+
         try
         {
             var saved = await app.UpdateMedicationAsync(updated, cancellationToken).ConfigureAwait(false);
@@ -70,15 +108,18 @@ internal static class MedicationForm
         }
     }
 
-    private static Medication PromptFields(Medication? existing)
+    /// <summary>Returns null when the user abandons via an empty name.</summary>
+    private static Medication? PromptFields(Medication? existing)
     {
         var name = AnsiConsole.Prompt(
             new TextPrompt<string>(UiLocalizer.Get("Med.Name"))
                 .DefaultValue(existing?.Name ?? string.Empty)
-                .Validate(value =>
-                    string.IsNullOrWhiteSpace(value)
-                        ? ValidationResult.Error(UiLocalizer.Get("Common.NameRequired"))
-                        : ValidationResult.Success()));
+                .AllowEmpty());
+
+        if (MedicationFormLogic.IsCancelledName(name))
+        {
+            return null;
+        }
 
         var packageSize = AnsiConsole.Prompt(
             new TextPrompt<int>(UiLocalizer.Get("Med.PackageSize"))
