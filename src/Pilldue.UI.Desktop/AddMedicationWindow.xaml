@@ -1,0 +1,56 @@
+<Window x:Class="Pilldue.UI.Desktop.AddMedicationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Add medication"
+        Height="420"
+        Width="420"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    <Grid Margin="16">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Name" Margin="0,0,0,8" VerticalAlignment="Center" />
+        <TextBox x:Name="NameBox" Grid.Row="0" Grid.Column="1" Margin="0,0,0,8" />
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Package size" Margin="0,0,0,8" VerticalAlignment="Center" />
+        <TextBox x:Name="PackageSizeBox" Grid.Row="1" Grid.Column="1" Text="28" Margin="0,0,0,8" />
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Prescribed packs" Margin="0,0,0,8" VerticalAlignment="Center" />
+        <TextBox x:Name="PrescribedBox" Grid.Row="2" Grid.Column="1" Text="1" Margin="0,0,0,8" />
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Pills per dose" Margin="0,0,0,8" VerticalAlignment="Center" />
+        <TextBox x:Name="DosageBox" Grid.Row="3" Grid.Column="1" Text="1" Margin="0,0,0,8" />
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Every N days" Margin="0,0,0,8" VerticalAlignment="Center" />
+        <TextBox x:Name="IntervalBox" Grid.Row="4" Grid.Column="1" Text="1" Margin="0,0,0,8" />
+
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="Current stock" Margin="0,0,0,8" VerticalAlignment="Center" />
+        <TextBox x:Name="StockBox" Grid.Row="5" Grid.Column="1" Text="0" Margin="0,0,0,8" />
+
+        <TextBlock Grid.Row="6" Grid.Column="0" Text="Rx start (yyyy-MM-dd)" Margin="0,0,0,8" VerticalAlignment="Center" />
+        <TextBox x:Name="RxStartBox" Grid.Row="6" Grid.Column="1" Margin="0,0,0,8" />
+
+        <TextBlock Grid.Row="7" Grid.Column="0" Text="Rx months" Margin="0,0,0,8" VerticalAlignment="Center" />
+        <TextBox x:Name="DurationBox" Grid.Row="7" Grid.Column="1" Text="6" Margin="0,0,0,8" />
+
+        <StackPanel Grid.Row="9" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Cancel" Width="88" Margin="0,0,8,0" IsCancel="True" Click="OnCancelClick" />
+            <Button Content="Save" Width="88" IsDefault="True" Click="OnSaveClick" />
+        </StackPanel>
+    </Grid>
+</Window>

@@ -49,6 +49,7 @@ src/
   Pilldue.Business/    # domain, ports, pure logic, app services
   Pilldue.Data/        # EF Core + SQLite (migrations) + config file + composition helpers
   Pilldue.UI/          # Spectre.Console screens (Business only)
+  Pilldue.UI.Desktop/  # WPF host (Windows-only)
   Pilldue.App/         # terminal host / composition root
 ```
 
@@ -58,14 +59,17 @@ Target dependency direction:
 flowchart TB
   App[Pilldue.App] --> UI[Pilldue.UI]
   App --> Data[Pilldue.Data]
-  UI --> Business[Pilldue.Business]
+  Desktop[Pilldue.UI.Desktop] --> Data
+  Desktop --> Business[Pilldue.Business]
+  UI --> Business
   Data --> Business
 ```
 
 - Ports and entities live in **Business** (plus in-memory fakes for tests)
 - **Data** implements ports with **EF Core + SQLite** (and config file for app settings) and exposes `PilldueComposition` for hosts
 - **UI** is a Spectre library that calls `IPilldueApp` only
-- **App** is the composition root: opens SQLite, migrates, passes `IPilldueApp` into the UI
+- **App** is the terminal composition root: opens SQLite, migrates, passes `IPilldueApp` into the UI
+- **UI.Desktop** is a Windows WPF host that reuses the same composition helper and `IPilldueApp`
 
 Shared planning formulas live in `RefillCalendarRules` (day clamp, packages-to-buy, inclusive last-covered rule, prescription end = start + duration months). Full query implementations are tracked in business issues C1–C9.
 
