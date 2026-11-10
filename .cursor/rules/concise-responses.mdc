@@ -1,0 +1,10 @@
+---
+description: Keep agent replies short and technical
+alwaysApply: true
+---
+
+# Response style
+
+- Be concise and technical.
+- After completing work, give a short summary of what changed and anything the user must do next.
+- Skip filler, restating the request, and a second recap of the same facts.

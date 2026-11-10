@@ -1,0 +1,88 @@
+---
+description: End of work only — @create-pr plus a GitHub issue id opens the PR and removes the worktree
+alwaysApply: false
+---
+
+# Create PR
+
+Use this only when the user invokes `@create-pr` with a GitHub issue id, after implementation. Do not use it to plan or code. In a fresh chat, derive the slug from `git diff` / `git log` against `main` and the issue id.
+
+Do not run `dotnet build` or `dotnet test` unless the user asks. CI covers that. In the PR notes, say verification was left to CI. Mark a checklist item done only when you can assert it without a full test run.
+
+## 1. Inputs
+
+- Issue id is required. `12` and `#12` are the same. Use `12` in the branch and `#12` in the PR body.
+- If this checkout is for a different issue, stop. Do not switch worktrees to force the PR.
+- Base branch is `main` unless the user names another.
+- Title: `#<id> - <short summary>`. Derive the summary from the change. Keep an explicit user title, but keep the `#<id>` prefix.
+
+## 2. Branch name
+
+`<id>-<slug>`. Slug is lowercase kebab-case, at most five words, from the work that landed (`8-refill-dates`). No `feature/` prefix.
+
+If the user gives a full branch name, use it.
+
+## 3. Commit and update
+
+Stay on this worktree. Never `git checkout main` here.
+
+1. `git fetch origin`
+2. If the branch is only `<id>`, rename it with `git branch -m <id>-<slug>`.
+3. Merge `origin/main` into the feature branch when it is behind. Do not check out `main` in this worktree.
+4. Commit changes that belong in this PR. Stash unrelated dirty files so they are not pushed.
+5. Run Bugbot (§3a) before push.
+6. `git push -u origin HEAD`
+
+Do not force-push `main`.
+
+## 3a. Bugbot before push
+
+On the committed branch diff, launch one Bugbot subagent (`subagent_type: bugbot`, description `Bugbot`, not in the background). Prompt:
+
+```text
+Full Repository Path: <absolute repository path>
+Diff: branch changes
+```
+
+- No findings → push and open the PR.
+- Findings → show them and wait. Do not auto-fix. Continue only if the user says to proceed, or after they ask for fixes, you commit, and Bugbot is run again.
+- If Bugbot fails, ask whether to proceed without it. Do not skip it silently.
+- Note the Bugbot result in the PR body.
+
+## 4. PR body
+
+```markdown
+## Summary
+<what changed and why, in a few sentences>
+
+## Related issues
+Closes #<id>
+```
+
+Use `Closes #<id>` only when every acceptance criterion is met. Otherwise use `Refs #<id>` and leave the issue open (`github-ticket-flow`).
+
+## Notes
+
+- Build and tests were not run locally; CI validates.
+- Bugbot: <no findings | proceeded with N findings after user confirmation>
+
+Mention a migration or a docs update when this branch has one.
+
+## 5. Open
+
+```powershell
+gh pr create --base main --head <branch> --title "#<id> - <summary>" --body-file pr-body.md
+```
+
+Delete `pr-body.md` after `gh` returns the URL. If `gh` is unavailable, give the compare URL and the same markdown.
+
+## 6. Cleanup
+
+After the PR exists:
+
+1. Confirm `git status` has no leftovers from this flow.
+2. If this folder is a sibling worktree (`PillDue-<id>`), call `move_agent_to_root` on the primary repo, then from there `git worktree remove "<path>"`.
+3. Delete the local branch if it is fully pushed (`git branch -d`). Do not delete `origin/<branch>` or `main`.
+4. Report the PR URL.
+
+Do not clean up if PR creation failed. Do not remove the primary checkout.

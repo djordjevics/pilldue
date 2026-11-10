@@ -1,0 +1,58 @@
+---
+description: Pilldue — always-on project context and rule router
+alwaysApply: true
+---
+
+# Pilldue — project context
+
+Personal local medication refill tracker. .NET 10, Spectre.Console, WPF host, EF Core + SQLite.
+
+## Product
+
+- Refill day is each medication's prescription start day-of-month.
+- Med: package size, prescribed package count, pills per dose, dose interval, stock, prescription length (~6 months).
+- Flows: stock vs next/second refill, refill by packages (today), skip-dose, missed dose, calendar.
+- Out of scope: pharmacy/doctor contacts, dose reminders, multi-user/cloud.
+- Details: `docs/use-cases.md`, `docs/architecture.md`.
+
+## Layout
+
+| Path | Purpose |
+|------|---------|
+| `src/Pilldue.Business` | Domain, ports, planning, in-memory fakes. No EF. |
+| `src/Pilldue.Data` | EF Core + SQLite, migrations, config file, `PilldueComposition` |
+| `src/Pilldue.UI` | Spectre screens. Business only. |
+| `src/Pilldue.App` | Terminal host |
+| `src/Pilldue.UI.Desktop` | WPF host (Windows) |
+| `tests/` | Business, Data, UI, Integration |
+| `docs/` | Human docs |
+
+**Direction:** App → UI + Data. Desktop → Business + Data. UI → Business. Data → Business. UI must not reference Data.
+
+## Non-negotiables
+
+- Branches: `<issue>-<slug>` (`8-refill-dates`). No `feature/` prefix. PRs target `main`. Do not push commits to `main`.
+- One GitHub issue per branch and PR. `Closes #N` only when the PR meets every acceptance criterion (`github-ticket-flow`).
+- Schema changes go through EF migrations in `Pilldue.Data`. No Dapper or hand-rolled ADO.
+- New UI copy: the same key in both `UiLocalizer` catalogs (English and Serbian Latin).
+- Update `docs/` when a decision changes.
+- Do not change port signatures without a contracts follow-up.
+
+## Parallel agents
+
+One issue per worktree (`ticket-worktree`). Use a cheaper model for helpers, thin UI, and isolated CRUD. Use a stronger model for EF migrations, cross-layer wiring, and hard rebases. If a cheaper agent fails twice on the same issue, retry with a stronger model.
+
+## Task → rule
+
+| Task | Rule |
+|------|------|
+| Start implementation | `ticket-worktree`, skill `github-ticket-flow` |
+| Where code goes | `layer-structure`, `model-separation` |
+| SQLite schema | `migrations` |
+| UI strings | `localization-both-resx` |
+| Tests | `testing` |
+| Open PR | `create-pr` (explicit `@create-pr` + issue id, from that worktree) |
+| Review a PR | `review-pr` (explicit `@review-pr` + PR number) |
+| Refactor / new pattern | `refactoring-and-rules` |
+
+Index: `implementation-rules-index`.

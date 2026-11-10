@@ -1,0 +1,55 @@
+---
+description: Always-on — one GitHub issue per sibling git worktree so agents can work in parallel
+alwaysApply: true
+---
+
+# Ticket + worktree isolation
+
+One GitHub issue → one sibling git worktree → one branch → one PR. Parallel agents must not share a checkout.
+
+## When this applies
+
+Any turn that will edit files, commit, or open a PR.
+
+## Skip
+
+- Read-only questions
+- Explicit `@review-pr`
+- Explicit `@create-pr` (stay in the current checkout)
+- User said `no ticket` or that this is a local experiment
+- The prompt already has the issue id, the current branch is `<id>` or `<id>-<slug>`, and this folder is already that worktree
+
+## 1. Ticket gate
+
+- Accept `12` or `#12`. Use the bare number everywhere.
+- If it is missing, do not edit. Ask in chat for the GitHub issue number. Do not use a multiple-choice picker for an unknown id.
+- Read `.cursor/skills/github-ticket-flow/SKILL.md` when you also need to create or split the issue.
+
+## 2. Read the issue
+
+```powershell
+gh issue view <id> --json number,title,body,state
+```
+
+Use the title, body, and acceptance criteria as the task. If `gh` fails, continue with the id and say that the issue body was not loaded. Do not comment on or close the issue unless the user asks.
+
+## 3. Isolate before any edit
+
+1. `git fetch origin`
+2. `git worktree list` — reuse a worktree whose branch is `<id>` or `<id>-*`
+3. Otherwise create a sibling of this repo:
+
+```powershell
+git worktree add -b <id> "..\PillDue-<id>" origin/main
+```
+
+- If `<id>` or `<id>-<slug>` already exists and is not checked out elsewhere, attach that branch instead of `-b`.
+- `@create-pr` renames a bare `<id>` branch to `<id>-<slug>` before push.
+
+4. Call `move_agent_to_root` with the worktree’s absolute path before any file edit.
+5. Do not commit or open a PR from `main` or from another issue’s branch.
+6. Do not `git checkout main` or another issue’s branch inside a feature worktree. `main` stays in the primary folder.
+
+## 4. End of work
+
+Run `@create-pr` from this worktree with the same issue id. That flow removes the sibling worktree and the local branch after the PR exists. The remote branch stays.

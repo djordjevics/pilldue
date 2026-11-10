@@ -1,46 +1,8 @@
 ---
-description: Core project context for Pilldue
-alwaysApply: true
+description: Pointer — canonical always-on Pilldue context is project-context
+alwaysApply: false
 ---
 
-# Pilldue
+# Project overview
 
-Personal local medication refill tracker (.NET 10, Spectre.Console, SQLite).
-
-## Product (v1)
-
-- Per-med refill day = prescription start day-of-month (no global default refill day).
-- Med: package size, prescribed package count, daily dosage, stock, prescription ~6 months.
-- Flows: stock vs next/second refill day; refill by packages (today); skip-dose stock bump; calendar (today → latest second refill, stock-outs with assumed first restock).
-- Out: pharmacy/doctor contacts, dose reminders, multi-user/cloud.
-- Details: [docs/use-cases.md](docs/use-cases.md)
-
-## Solution
-
-- Projects: `Pilldue.Business` (domain + ports + in-memory fakes), `Pilldue.Data` (**EF Core + SQLite** migrations + config file + composition), `Pilldue.UI` (Spectre screens), `Pilldue.App` (terminal host), `Pilldue.UI.Desktop` (WPF host, Windows).
-- Deps: App → UI + Data; Desktop → Business + Data; UI → Business; Data → Business (DIP).
-- Tests under `tests/`; integration tests = multi-step scenarios, no UI.
-- Persistence: EF Core only for v1 DB access — no Dapper/ADO.
-- Last-covered rule: inclusive dose-day walk from as-of (`floor(stock/dosage)` doses); calendar gaps use real month lengths.
-
-## Conventions
-
-- Feature branches start with the GitHub issue id: `3-sqlite-bootstrap`, `8-refill-dates` (not `feature/03_...`).
-- Update `docs/` when decisions change.
-- UI thin: call Business only; no SQL or refill math in UI.
-- Persistence and config file I/O only in Data; `Pilldue.App` (or another host) wires EF/SQLite via `PilldueComposition`.
-- Prefer small PRs mapped to GitHub issues; do not change port signatures without a contracts follow-up.
-- Do not push/commit directly to `main`; open a PR. Merge with `gh pr merge --admin` only when the user asks (or when a multitask parent prompt explicitly authorizes merge for that wave).
-
-## Parallel agents — model selection
-
-When spinning Task / background agents, **mix models by issue difficulty** (do not default every worker to the strongest/most expensive model):
-
-| Prefer cheaper / faster (e.g. Composer 2.5 Fast) | Prefer stronger (e.g. Grok 4.5 high fast, Sonnet) |
-|--------------------------------------------------|--------------------------------------------------|
-| Pure helpers + unit tests | EF Core schema / migrations |
-| Thin UI screens / menu stubs | Cross-layer wiring, facade orchestration |
-| Config file / small isolated Data CRUD | Rebases with non-trivial conflicts |
-| Well-spec’d `good-first-agent` issues | Agent already failed twice on a cheaper model |
-
-Also: one issue per agent; rebase onto `origin/main` before PR/merge if peers landed first.
+Canonical always-on context is `project-context`. Do not add a second product summary here.

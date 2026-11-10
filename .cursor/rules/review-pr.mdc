@@ -1,0 +1,16 @@
+---
+description: Explicit @review-pr plus a PR number — standards review via .cursor/skills/review-pr
+alwaysApply: false
+---
+
+# Review PR
+
+Use this only when the user invokes `@review-pr`, “review PR N”, or pastes a PR URL for a house-standards review.
+
+Follow `.cursor/skills/review-pr/SKILL.md`. Do not invent a second workflow here.
+
+- Read-only until the user selects finding IDs to post.
+- Use `gh` to fetch and submit.
+- Do not run `dotnet build` or `dotnet test` unless the user asks.
+- Do not auto-post every finding. Do not change code unless the user asks.
+- This is not Bugbot or Security Review.

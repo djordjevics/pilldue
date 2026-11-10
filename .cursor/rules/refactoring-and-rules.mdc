@@ -1,0 +1,16 @@
+---
+description: When refactoring, update Cursor rules so later work follows the new convention
+globs: .cursor/rules/*.mdc,src/**/*.cs,tests/**/*.cs
+alwaysApply: false
+---
+
+# Refactoring and keeping rules in sync
+
+When a refactor changes how something should be done (naming, layers, schema, localization, tests):
+
+1. Read the matching files in `.cursor/rules/` (`implementation-rules-index`).
+2. Update a rule when the refactor replaces an old convention.
+3. Add one new rule when the pattern should be repeated and is not documented yet.
+4. Add a row to `implementation-rules-index` when you add a rule.
+
+Do this for convention changes, not for a one-off bugfix.
