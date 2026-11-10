@@ -1,12 +1,12 @@
 ---
 description: New UI strings go in both UiLocalizer catalogs — English and Serbian Latin
-globs: src/Pilldue.UI/**/*.cs,tests/Pilldue.UI.Tests/**/*.cs
+globs: src/Pilldue.Business/Localization/**/*.cs,src/Pilldue.UI/**/*.cs,src/Pilldue.UI.Wpf/**/*.cs,tests/Pilldue.UI.Tests/**/*.cs
 alwaysApply: false
 ---
 
 # Localization: English and Serbian
 
-UI copy is not `.resx`. Catalogs are the `English` and `Serbian` dictionaries in `src/Pilldue.UI/Localization/UiLocalizer.cs`.
+UI copy is not `.resx`. Catalogs are the `English` and `Serbian` dictionaries in `src/Pilldue.Business/Localization/UiLocalizer.cs`. Both the terminal and WPF screens call that type. The catalogs live in Business so WPF does not reference Spectre.Console.
 
 - Language codes: `en` and `sr` (`AppConfig.EnglishLanguage`, `AppConfig.SerbianLanguage`). Serbian culture is `sr-Latn`.
 - Add every new key to **both** dictionaries in the same change.

@@ -1,6 +1,6 @@
 ---
 description: Domain types stay in Business; EF mapping stays in Data; UI does not persist
-globs: src/Pilldue.Business/**/*.cs,src/Pilldue.Data/**/*.cs,src/Pilldue.UI/**/*.cs
+globs: src/Pilldue.Business/**/*.cs,src/Pilldue.Data/**/*.cs,src/Pilldue.UI/**/*.cs,src/Pilldue.UI.Wpf/**/*.cs
 alwaysApply: false
 ---
 
@@ -15,7 +15,8 @@ There is no Request / DTO / Response / AutoMapper stack. Do not add one.
 | EF mapping | `src/Pilldue.Data/PilldueDbContext.cs` | Table names, keys, columns |
 | Persistence | `src/Pilldue.Data/Ef*.cs` | Port implementations |
 | In-memory fake | `src/Pilldue.Business/Memory` | Tests and early composition |
-| Screen | `src/Pilldue.UI` | Input and display. No stock or calendar math |
+| Screen | `src/Pilldue.UI`, `src/Pilldue.UI.Wpf` | Input and display. No stock or calendar math |
+| UI catalogs | `src/Pilldue.Business/Localization` | English and Serbian strings shared by both screen projects |
 
 A new persisted field is a property on the Business type, then EF configuration and a migration in Data, then the port method if a use case needs it. UI reaches it through `IPilldueApp` or an existing Business service.
 

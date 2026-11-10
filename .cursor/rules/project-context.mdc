@@ -19,15 +19,16 @@ Personal local medication refill tracker. .NET 10, Spectre.Console, WPF host, EF
 
 | Path | Purpose |
 |------|---------|
-| `src/Pilldue.Business` | Domain, ports, planning, in-memory fakes. No EF. |
+| `src/Pilldue.Business` | Domain, ports, planning, in-memory fakes, UI catalogs. No EF. |
 | `src/Pilldue.Data` | EF Core + SQLite, migrations, config file, `PilldueComposition` |
 | `src/Pilldue.UI` | Spectre screens. Business only. |
+| `src/Pilldue.UI.Wpf` | WPF screens. Business only. |
 | `src/Pilldue.App` | Terminal host |
-| `src/Pilldue.UI.Desktop` | WPF host (Windows) |
+| `src/Pilldue.UI.Desktop` | WPF host (Windows). Composition root for the desktop screens. |
 | `tests/` | Business, Data, UI, Integration |
 | `docs/` | Human docs |
 
-**Direction:** App → UI + Data. Desktop → Business + Data. UI → Business. Data → Business. UI must not reference Data.
+**Direction:** App → UI + Data. Desktop → Data + UI.Wpf + Business. UI → Business. UI.Wpf → Business. Data → Business. Screen projects must not reference Data. UI catalogs live in Business (`UiLocalizer`).
 
 ## Non-negotiables
 

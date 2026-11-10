@@ -1,6 +1,8 @@
 using System.Windows;
 using Pilldue.Business;
 using Pilldue.Data;
+using Pilldue.UI.Localization;
+using Pilldue.UI.Wpf;
 
 namespace Pilldue.UI.Desktop;
 
@@ -8,21 +10,26 @@ public partial class App : Application
 {
     private PilldueSession? _session;
 
-    public static IPilldueApp Pilldue { get; private set; } = null!;
-
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        ShutdownMode = ShutdownMode.OnExplicitShutdown;
+        UiLocalizer.Apply(new AppConfig());
 
         try
         {
             _session = await PilldueComposition.CreateDefaultSessionAsync();
-            Pilldue = _session.App;
+            UiLocalizer.Apply(await _session.App.GetConfigAsync());
+
+            var window = new MainWindow(_session.App);
+            MainWindow = window;
+            ShutdownMode = ShutdownMode.OnMainWindowClose;
+            window.Show();
         }
         catch (Exception ex)
         {
             MessageBox.Show(
-                $"Could not open the Pilldue database:\n{ex.Message}",
+                UiLocalizer.Format("Desktop.StartupFailed", ex.Message),
                 "Pilldue",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);

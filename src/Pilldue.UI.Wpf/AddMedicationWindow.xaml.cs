@@ -1,7 +1,8 @@
 using System.Windows;
 using Pilldue.Business;
+using Pilldue.UI.Localization;
 
-namespace Pilldue.UI.Desktop;
+namespace Pilldue.UI.Wpf;
 
 public partial class AddMedicationWindow : Window
 {
@@ -23,7 +24,12 @@ public partial class AddMedicationWindow : Window
     {
         if (string.IsNullOrWhiteSpace(NameBox.Text))
         {
-            MessageBox.Show(this, "Name is required.", "Add medication", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(
+                this,
+                UiLocalizer.Get("Common.NameRequired"),
+                UiLocalizer.Get("Med.AddTitle"),
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
             return;
         }
 
@@ -37,8 +43,8 @@ public partial class AddMedicationWindow : Window
         {
             MessageBox.Show(
                 this,
-                "Check numeric fields and use yyyy-MM-dd for the prescription start.",
-                "Add medication",
+                UiLocalizer.Get("Desktop.AddInvalid"),
+                UiLocalizer.Get("Med.AddTitle"),
                 MessageBoxButton.OK,
                 MessageBoxImage.Warning);
             return;

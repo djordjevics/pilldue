@@ -46,10 +46,11 @@ Pilldue helps you track medications against a **monthly refill day**, package-ba
 ```
 Pilldue.slnx
 src/
-  Pilldue.Business/    # domain, ports, pure logic, app services
+  Pilldue.Business/    # domain, ports, pure logic, app services, shared UI catalogs
   Pilldue.Data/        # EF Core + SQLite (migrations) + config file + composition helpers
   Pilldue.UI/          # Spectre.Console screens (Business only)
-  Pilldue.UI.Desktop/  # WPF host (Windows-only)
+  Pilldue.UI.Wpf/      # WPF screens (Business only)
+  Pilldue.UI.Desktop/  # WPF host / composition root (Windows-only)
   Pilldue.App/         # terminal host / composition root
 ```
 
@@ -60,16 +61,20 @@ flowchart TB
   App[Pilldue.App] --> UI[Pilldue.UI]
   App --> Data[Pilldue.Data]
   Desktop[Pilldue.UI.Desktop] --> Data
+  Desktop --> Wpf[Pilldue.UI.Wpf]
   Desktop --> Business[Pilldue.Business]
   UI --> Business
+  Wpf --> Business
   Data --> Business
 ```
 
 - Ports and entities live in **Business** (plus in-memory fakes for tests)
+- English and Serbian Latin UI catalogs live in **Business** (`UiLocalizer`) so both screen projects can read them. WPF does not reference Spectre.Console
 - **Data** implements ports with **EF Core + SQLite** (and config file for app settings) and exposes `PilldueComposition` for hosts
 - **UI** is a Spectre library that calls `IPilldueApp` only
+- **UI.Wpf** is the WPF screen library. It references Business only and calls `IPilldueApp` for list, add, refill, and remove. It does not reference Data, EF Core, SQLite, or SQL
 - **App** is the terminal composition root: opens SQLite, migrates, passes `IPilldueApp` into the UI
-- **UI.Desktop** is a Windows WPF host that reuses the same composition helper and `IPilldueApp`
+- **UI.Desktop** is the Windows WPF composition root: opens the session with `PilldueComposition` and passes `IPilldueApp` into the WPF screens
 
 Shared planning formulas live in `RefillCalendarRules` (day clamp, packages-to-buy, inclusive last-covered rule, prescription end = start + duration months). Full query implementations are tracked in business issues C1–C9.
 

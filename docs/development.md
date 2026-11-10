@@ -29,7 +29,7 @@ When structure or decisions change, update the relevant files under `docs/` and 
 
 ## Layering
 
-DIP: **UI → Business**, **Data → Business**. Hosts (`Pilldue.App`, `Pilldue.UI.Desktop`) reference Data to compose the app. Persistence stays inside Data.
+DIP: **UI → Business**, **UI.Wpf → Business**, **Data → Business**. Hosts (`Pilldue.App`, `Pilldue.UI.Desktop`) reference Data to compose the app. `Pilldue.UI.Desktop` passes `IPilldueApp` into `Pilldue.UI.Wpf`. Persistence stays inside Data. Screen projects do not reference Data.
 
 **SQLite access:** EF Core only (migrations for schema). No Dapper/ADO in v1. Config file I/O is separate from EF.
 
@@ -55,7 +55,7 @@ Pending feature tests use `[Fact(Skip = "...")]` until implemented so CI stays g
 
 ## UI strings (i18n)
 
-User-facing Spectre copy lives in `src/Pilldue.UI/Localization/UiLocalizer.cs` (English + Serbian Latin catalogs).
+User-facing copy for the terminal and WPF screens lives in `src/Pilldue.Business/Localization/UiLocalizer.cs` (English + Serbian Latin catalogs).
 
 1. Add the same key to **both** `English` and `Serbian` dictionaries.
 2. Call `UiLocalizer.Get("Your.Key")` / `Format(...)` from UI screens (never hardcode English in menus/prompts).
