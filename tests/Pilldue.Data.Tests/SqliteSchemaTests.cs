@@ -69,12 +69,12 @@ public class SqliteSchemaTests
     }
 
     [Fact]
-    public void Default_database_path_is_under_local_app_data_pilldue()
+    public void Default_database_path_is_under_the_user_profile_pilldue_folder()
     {
         var path = SqliteDatabasePaths.GetDefaultDatabasePath();
         var expected = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "Pilldue",
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            SqliteDatabasePaths.FolderName,
             SqliteDatabasePaths.FileName);
 
         Assert.Equal(expected, path);

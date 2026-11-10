@@ -9,7 +9,7 @@ alwaysApply: false
 - DbContext: `src/Pilldue.Data/PilldueDbContext.cs`
 - Design-time factory: `PilldueDbContextFactory` (uses a local `pilldue-design.db`, not the user's real database)
 - Migrations: `src/Pilldue.Data/Migrations/`
-- Runtime apply: `PilldueDbBootstrap.MigrateAsync` on startup. Default file: `%LocalAppData%/Pilldue/pilldue.db`
+- Runtime apply: `PilldueDbBootstrap.MigrateAsync` on startup. Default file: `%UserProfile%/Pilldue/pilldue.db` (`config.json` beside it). Startup moves a database left at `%LocalAppData%/Pilldue/` when the profile folder has none.
 
 Generate from the repo root. Do not hand-edit `PilldueDbContextModelSnapshot` or a migration's `Up`/`Down` to invent schema the model does not have.
 
@@ -17,7 +17,7 @@ Generate from the repo root. Do not hand-edit `PilldueDbContextModelSnapshot` or
 dotnet ef migrations add <MigrationName> --project src/Pilldue.Data --startup-project src/Pilldue.Data --output-dir Migrations
 ```
 
-Remove the last unapplied migration with `dotnet ef migrations remove` using the same `--project` and `--startup-project`. Do not point `database update` at the user's `%LocalAppData%` database unless they ask.
+Remove the last unapplied migration with `dotnet ef migrations remove` using the same `--project` and `--startup-project`. Do not point `database update` at the user's `%UserProfile%/Pilldue` database unless they ask.
 
 ## Adding a column or table
 

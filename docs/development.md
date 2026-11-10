@@ -33,7 +33,7 @@ DIP: **UI → Business**, **Data → Business**. Hosts (`Pilldue.App`, `Pilldue.
 
 **SQLite access:** EF Core only (migrations for schema). No Dapper/ADO in v1. Config file I/O is separate from EF.
 
-Default DB path: `%LocalAppData%/Pilldue/pilldue.db` (`SqliteDatabasePaths`). Apply schema with `PilldueDbBootstrap.MigrateAsync` (also used from UI startup).
+Default DB path: `%UserProfile%/Pilldue/pilldue.db`, with `config.json` beside it (`SqliteDatabasePaths`). Hosts reach it through `PilldueComposition`. Apply schema with `PilldueDbBootstrap.MigrateAsync` (also used from UI startup). A database left at `%LocalAppData%/Pilldue/pilldue.db` is moved on startup when the profile folder has none.
 
 In-memory port implementations live in Business for tests and early UI composition.
 
@@ -59,7 +59,7 @@ User-facing Spectre copy lives in `src/Pilldue.UI/Localization/UiLocalizer.cs` (
 
 1. Add the same key to **both** `English` and `Serbian` dictionaries.
 2. Call `UiLocalizer.Get("Your.Key")` / `Format(...)` from UI screens (never hardcode English in menus/prompts).
-3. Language is stored as `AppConfig.UiLanguage` (`en` / `sr`, empty = detect OS) via the JSON config file (`%LocalAppData%/Pilldue/config.json`). Changing language in the menu applies immediately; no reinstall needed.
+3. Language is stored as `AppConfig.UiLanguage` (`en` / `sr`, empty = detect OS) via the JSON config file (`%UserProfile%/Pilldue/config.json`). Changing language in the menu applies immediately; no reinstall needed.
 
 `tests/Pilldue.UI.Tests` asserts every English key exists in Serbian.
 

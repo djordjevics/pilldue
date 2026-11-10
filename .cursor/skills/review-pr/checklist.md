@@ -21,7 +21,7 @@ Mark each applicable item pass, fail, or N/A.
 |-------|------|
 | New persisted field is on a Business domain type, mapped in `PilldueDbContext` | `model-separation` |
 | Schema change has an EF migration; snapshot was not hand-written | `migrations` |
-| Rename or drop is safe for an existing `%LocalAppData%/Pilldue/pilldue.db` | `migrations` |
+| Rename or drop is safe for an existing `%UserProfile%/Pilldue/pilldue.db` | `migrations` |
 | No Dapper or hand-rolled ADO | `project-context` |
 
 ## UI copy
