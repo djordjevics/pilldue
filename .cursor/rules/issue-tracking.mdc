@@ -1,0 +1,37 @@
+---
+description: Always-on — track work with GitHub Issues and one Project board
+alwaysApply: true
+---
+
+# Issue and project tracking
+
+Tracked work is a GitHub issue. Progress is **one** GitHub Project for this repo. `gh` commands are in `.cursor/skills/github-ticket-flow/SKILL.md` (GitHub CLI 2.94.0 or later).
+
+## Units
+
+- An issue is one outcome that fits in one pull request.
+- A larger outcome is a parent issue. Sub-issues are the slices. Progress is how many sub-issues are done.
+- `blocked by` means another issue must finish first. Do not use it instead of a sub-issue.
+- A rough idea stays a draft item on the project until it can meet Ready.
+
+## Ready
+
+Ready means the title is the outcome, the body has checkable acceptance criteria, and the issue (or each sub-issue) fits in one pull request. Otherwise leave it in Backlog.
+
+## Board
+
+Status is only the project Status field: Backlog, Ready, In Progress, Done.
+
+- Work that is not Ready starts in Backlog.
+- Move to In Progress when implementation starts. Keep one or two items In Progress.
+- Do not mark Done when opening a pull request. `Closes #N` only when every acceptance criterion is met. Otherwise `Refs #N` and leave the issue open. Closing the issue moves the card to Done.
+- Do not put the pull request on the board when the issue is already there.
+- Labels are area only (`business`, `data`, `ui`, `docs`). A milestone is a named release. Priority, when that field exists, is Now, Next, or Later.
+
+## Project setup
+
+Do this only when the user asks and the repo has no project yet. One project. Auto-add `is:issue`. New item → Backlog. Issue closed or pull request merged → Done. Archive Done items. Leave Ready and In Progress as manual moves.
+
+## Report
+
+After you create or move tickets, reply with the issue number, title, URL, parent or blocked-by links, and the status you set.

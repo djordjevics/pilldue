@@ -10,7 +10,7 @@ Project-scoped Cursor skills live in this directory. Each skill is a folder with
 
 ## github-ticket-flow
 
-Create and update GitHub issues, sub-issues, dependencies, and project status. See [github-ticket-flow/SKILL.md](github-ticket-flow/SKILL.md).
+`gh` commands for issues, sub-issues, and project status. The working rules are in `.cursor/rules/issue-tracking.mdc`. See [github-ticket-flow/SKILL.md](github-ticket-flow/SKILL.md).
 
 ## review-pr
 

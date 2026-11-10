@@ -17,8 +17,9 @@ alwaysApply: false
 | **testing** | Which test project owns domain, EF, UI strings, and multi-step flows |
 | **concise-responses** | Short technical replies |
 | **refactoring-and-rules** | Update rules when a refactor changes a convention |
+| **issue-tracking** | Always-on: GitHub Issues plus one Project (Backlog → Ready → In Progress → Done) |
 | **ticket-worktree** | Always-on: GitHub issue + sibling worktree before edits |
 | **create-pr** | Explicit `@create-pr`: Bugbot, push, PR to `main`, remove the worktree |
 | **review-pr** | Explicit `@review-pr`: standards review in `.cursor/skills/review-pr/` |
 
-Skills: `github-ticket-flow` (issues and project board), `review-pr` (this review procedure).
+Skills: `github-ticket-flow` (`gh` commands for `issue-tracking`), `review-pr` (this review procedure).

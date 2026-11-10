@@ -32,7 +32,7 @@ Personal local medication refill tracker. .NET 10, Spectre.Console, WPF host, EF
 ## Non-negotiables
 
 - Branches: `<issue>-<slug>` (`8-refill-dates`). No `feature/` prefix. PRs target `main`. Do not push commits to `main`.
-- One GitHub issue per branch and PR. `Closes #N` only when the PR meets every acceptance criterion (`github-ticket-flow`).
+- Track work on GitHub Issues and one Project (`issue-tracking`). One issue per branch and PR.
 - Schema changes go through EF migrations in `Pilldue.Data`. No Dapper or hand-rolled ADO.
 - New UI copy: the same key in both `UiLocalizer` catalogs (English and Serbian Latin).
 - Update `docs/` when a decision changes.
@@ -46,7 +46,8 @@ One issue per worktree (`ticket-worktree`). Use a cheaper model for helpers, thi
 
 | Task | Rule |
 |------|------|
-| Start implementation | `ticket-worktree`, skill `github-ticket-flow` |
+| Track issues and the project board | `issue-tracking`, skill `github-ticket-flow` |
+| Start implementation | `ticket-worktree` |
 | Where code goes | `layer-structure`, `model-separation` |
 | SQLite schema | `migrations` |
 | UI strings | `localization-both-resx` |
