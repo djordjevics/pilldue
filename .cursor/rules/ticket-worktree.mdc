@@ -23,7 +23,7 @@ Any turn that will edit files, commit, or open a PR.
 
 - Accept `12` or `#12`. Use the bare number everywhere.
 - If it is missing, do not edit. Ask in chat for the GitHub issue number. Do not use a multiple-choice picker for an unknown id.
-- Read `.cursor/skills/github-ticket-flow/SKILL.md` when you also need to create or split the issue.
+- Follow `issue-tracking` when you create, split, or move the issue. Use `.cursor/skills/github-ticket-flow/SKILL.md` for the `gh` commands.
 
 ## 2. Read the issue
 

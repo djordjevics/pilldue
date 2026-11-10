@@ -18,6 +18,7 @@ When structure or decisions change, update the relevant files under `docs/` and 
 - Branch from `main` using the issue id as prefix: `3-sqlite-bootstrap`, `11-shortfall-query`.
 - Open a PR into `main` (do not push commits directly to `main`).
 - Prefer one issue per PR when practical.
+- Track that work on GitHub Issues and one Project. Status is Backlog, Ready, In Progress, Done. See `.cursor/rules/issue-tracking.mdc`.
 
 ## Parallel agents
 

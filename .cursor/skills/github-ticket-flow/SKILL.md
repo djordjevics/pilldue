@@ -5,7 +5,7 @@ description: Create and update GitHub issues, sub-issues, dependencies, and Proj
 
 # GitHub ticket flow
 
-Use GitHub Issues for tracked work and one GitHub Project as the board. Requires GitHub CLI 2.94.0 or later (`gh --version`). Pass `--repo OWNER/REPO` when the current directory is not the target repository. Always pass `--title` and `--body` (or `--body-file`) so `gh` does not open an interactive prompt.
+Policy is `.cursor/rules/issue-tracking.mdc` (issues, one project, status). This skill is the `gh` procedure. Requires GitHub CLI 2.94.0 or later (`gh --version`). Pass `--repo OWNER/REPO` when the current directory is not the target repository. Always pass `--title` and `--body` (or `--body-file`) so `gh` does not open an interactive prompt.
 
 ## Model
 
@@ -13,7 +13,7 @@ Use GitHub Issues for tracked work and one GitHub Project as the board. Requires
 - A parent issue is a larger outcome. Sub-issues are its slices. Progress is the sub-issue count.
 - `blocked by` means another issue must finish first. Use it for order, not for slices of the same outcome.
 - Status lives only in the project Status field: Backlog, Ready, In Progress, Done.
-- Labels name an area (`api`, `ui`, `docs`). Milestone names a release (`v0.4`). An iteration is a one-week time box.
+- Labels name an area (`business`, `data`, `ui`, `docs`). Milestone names a release (`v0.4`). An iteration is a one-week time box.
 - Priority, when the project has that field, is Now, Next, or Later.
 
 ## When to open an issue
