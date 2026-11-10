@@ -1,0 +1,35 @@
+---
+description: EF Core SQLite migrations for Pilldue.Data — generate with dotnet ef, apply on startup
+globs: src/Pilldue.Data/**/*.cs,src/Pilldue.Business/Domain/**/*.cs
+alwaysApply: false
+---
+
+# Migrations (SQLite + EF Core)
+
+- DbContext: `src/Pilldue.Data/PilldueDbContext.cs`
+- Design-time factory: `PilldueDbContextFactory` (uses a local `pilldue-design.db`, not the user's real database)
+- Migrations: `src/Pilldue.Data/Migrations/`
+- Runtime apply: `PilldueDbBootstrap.MigrateAsync` on startup. Default file: `%LocalAppData%/Pilldue/pilldue.db`
+
+Generate from the repo root. Do not hand-edit `PilldueDbContextModelSnapshot` or a migration's `Up`/`Down` to invent schema the model does not have.
+
+```powershell
+dotnet ef migrations add <MigrationName> --project src/Pilldue.Data --startup-project src/Pilldue.Data --output-dir Migrations
+```
+
+Remove the last unapplied migration with `dotnet ef migrations remove` using the same `--project` and `--startup-project`. Do not point `database update` at the user's `%LocalAppData%` database unless they ask.
+
+## Adding a column or table
+
+1. Change the domain type in `Pilldue.Business`.
+2. Update `OnModelCreating` when the column name, nullability, or key is not the EF default. Table names stay snake_case (`medications`, `refill_events`).
+3. Add the migration with the command above.
+4. Cover the new persistence path in `tests/Pilldue.Data.Tests` or an integration scenario.
+
+## Existing local databases
+
+People already have `pilldue.db`. A migration that renames or drops a column in one step breaks that file.
+
+- Add a column with a default or as nullable, and backfill in `Up` when old rows need a value.
+- Split rename/drop across a later migration after the app reads the new shape.
+- Implement `Down` when it can undo the change. If it cannot, say so in the migration comment.

@@ -1,0 +1,22 @@
+---
+description: Pilldue project boundaries — Business, Data, UI, and hosts
+globs: src/**/*.cs
+alwaysApply: false
+---
+
+# Layer structure
+
+| Project | Responsibility |
+|---------|----------------|
+| `Pilldue.Business` | Domain types, ports, planning rules, app services, in-memory fakes |
+| `Pilldue.Data` | `PilldueDbContext`, EF mapping, migrations, SQLite paths, config file, `PilldueComposition` |
+| `Pilldue.UI` | Spectre screens. Calls `IPilldueApp` and other Business types only |
+| `Pilldue.App` | Terminal composition root. Opens SQLite and migrates |
+| `Pilldue.UI.Desktop` | WPF composition root. Same Business services as the terminal host |
+
+**Direction**
+
+- UI → Business. UI does not reference Data, EF, SQLite, or SQL.
+- Data → Business. Data implements ports. Business does not reference EF or `Pilldue.Data`.
+- Hosts (`Pilldue.App`, `Pilldue.UI.Desktop`) may reference Data to compose the app.
+- Refill math stays in Business (`RefillCalendarRules` and planning types). Do not reimplement it in UI or Data.

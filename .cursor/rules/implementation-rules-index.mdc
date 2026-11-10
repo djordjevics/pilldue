@@ -1,0 +1,24 @@
+---
+description: Index of Pilldue implementation rules
+globs: .cursor/rules/*.mdc
+alwaysApply: false
+---
+
+# Implementation rules index
+
+| Rule | Focus |
+|------|--------|
+| **project-context** | Always-on stack, layout, and task → rule router |
+| **project-overview** | Pointer to `project-context` |
+| **layer-structure** | Business / Data / UI / hosts and who may reference whom |
+| **model-separation** | Domain types in Business, EF mapping in Data, no DTO stack |
+| **migrations** | SQLite EF migrations via `dotnet ef`; safe changes for existing local databases |
+| **localization-both-resx** | English and Serbian Latin keys, both catalogs in `UiLocalizer` |
+| **testing** | Which test project owns domain, EF, UI strings, and multi-step flows |
+| **concise-responses** | Short technical replies |
+| **refactoring-and-rules** | Update rules when a refactor changes a convention |
+| **ticket-worktree** | Always-on: GitHub issue + sibling worktree before edits |
+| **create-pr** | Explicit `@create-pr`: Bugbot, push, PR to `main`, remove the worktree |
+| **review-pr** | Explicit `@review-pr`: standards review in `.cursor/skills/review-pr/` |
+
+Skills: `github-ticket-flow` (issues and project board), `review-pr` (this review procedure).
