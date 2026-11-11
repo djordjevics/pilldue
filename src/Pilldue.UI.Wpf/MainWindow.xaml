@@ -4,9 +4,9 @@
         xmlns:wpf="clr-namespace:Pilldue.UI.Wpf"
         Title="Pilldue"
         Height="520"
-        Width="840"
+        Width="960"
         MinHeight="360"
-        MinWidth="720"
+        MinWidth="800"
         Loaded="OnLoaded">
     <DockPanel Margin="16">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
@@ -20,7 +20,8 @@
             <Button Content="{wpf:Loc Desktop.Edit}" Width="80" Margin="0,0,8,0" Click="OnEditClick" />
             <Button Content="{wpf:Loc Desktop.Refill}" Width="72" Margin="0,0,8,0" Click="OnRefillClick" />
             <Button Content="{wpf:Loc Desktop.Remove}" Width="88" Margin="0,0,8,0" Click="OnRemoveClick" />
-            <Button Content="{wpf:Loc Desktop.Coverage}" Width="108" Click="OnCoverageClick" />
+            <Button Content="{wpf:Loc Desktop.Coverage}" Width="108" Margin="0,0,8,0" Click="OnCoverageClick" />
+            <Button Content="{wpf:Loc Desktop.Calendar}" Width="88" Click="OnCalendarClick" />
         </StackPanel>
 
         <TextBlock x:Name="StatusText"

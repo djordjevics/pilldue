@@ -1,0 +1,49 @@
+<Window x:Class="Pilldue.UI.Wpf.CalendarWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wpf="clr-namespace:Pilldue.UI.Wpf"
+        Title="{wpf:Loc Cal.Title}"
+        Height="520"
+        Width="860"
+        MinHeight="360"
+        MinWidth="640"
+        WindowStartupLocation="CenterOwner"
+        Loaded="OnLoaded">
+    <DockPanel Margin="16">
+        <TextBlock x:Name="RangeText"
+                   DockPanel.Dock="Top"
+                   TextWrapping="Wrap"
+                   Margin="0,0,0,8" />
+        <TextBlock DockPanel.Dock="Top"
+                   Text="{wpf:Loc Cal.RestockNote}"
+                   TextWrapping="Wrap"
+                   Margin="0,0,0,12" />
+        <Button DockPanel.Dock="Bottom"
+                Content="{wpf:Loc Common.Back}"
+                Width="88"
+                HorizontalAlignment="Right"
+                Margin="0,12,0,0"
+                IsCancel="True" />
+        <DockPanel>
+            <TextBlock x:Name="EmptyText"
+                       DockPanel.Dock="Top"
+                       Text="{wpf:Loc Cal.Empty}"
+                       Visibility="Collapsed"
+                       Margin="0,0,0,8" />
+            <DataGrid x:Name="CalendarGrid"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      HeadersVisibility="Column"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="{wpf:Loc List.ColName}" Binding="{Binding Name}" Width="*" />
+                    <DataGridTextColumn Header="{wpf:Loc Cal.ColFirstRefill}" Binding="{Binding FirstRefill}" Width="110" />
+                    <DataGridTextColumn Header="{wpf:Loc Cal.ColSecondRefill}" Binding="{Binding SecondRefill}" Width="120" />
+                    <DataGridTextColumn Header="{wpf:Loc Cal.ColStockOut}" Binding="{Binding StockOut}" Width="180" />
+                    <DataGridTextColumn Header="{wpf:Loc Cal.ColRxEnd}" Binding="{Binding PrescriptionEnd}" Width="130" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+    </DockPanel>
+</Window>
