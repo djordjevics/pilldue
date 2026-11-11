@@ -21,13 +21,20 @@ dotnet run --project src/Pilldue.App
 dotnet run --project src/Pilldue.UI.Desktop
 ```
 
-## Local SQLite database
+## Local files
 
-By default the app database file is:
+The database and the language config live in one profile folder:
 
-`%LocalAppData%/Pilldue/pilldue.db`
+`%UserProfile%/Pilldue/`
 
-(on Windows; equivalent local application data folder elsewhere). Schema is applied with EF Core migrations (`PilldueDbBootstrap.MigrateAsync`). Config (UI language) remains a separate file store, not in SQLite.
+- `pilldue.db` — medications and history
+- `config.json` — UI language
+
+On Windows that is `C:\Users\<you>\Pilldue\`. The terminal host and the WPF host both use this folder through `PilldueComposition` (`SqliteDatabasePaths` is the only default). Schema is applied with EF Core migrations (`PilldueDbBootstrap.MigrateAsync`).
+
+`dotnet ef` uses a design-time `pilldue-design.db` in the working directory, not in this folder.
+
+If `%UserProfile%/Pilldue/pilldue.db` is missing and an older database exists at `%LocalAppData%/Pilldue/pilldue.db`, startup moves that database and `config.json` into the profile folder. After the move, both hosts show the same medications and the same language.
 
 ## Repository layout
 

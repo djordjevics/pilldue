@@ -15,6 +15,7 @@ public static class PilldueComposition
     public static Task<PilldueSession> CreateDefaultSessionAsync(
         CancellationToken cancellationToken = default)
     {
+        SqliteDatabasePaths.MoveLegacyStoreIfNeeded();
         var dbPath = SqliteDatabasePaths.GetDefaultDatabasePath();
         var configPath = SqliteDatabasePaths.GetDefaultConfigPath();
         return CreateSessionAsync(dbPath, configPath, cancellationToken);
