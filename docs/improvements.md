@@ -14,7 +14,7 @@ Add the next idea as a new numbered section at the bottom.
 
 - [x] Done (`Pilldue.App` host + `PilldueComposition` — #69)
 
-`Pilldue.Data` implements the Business ports. `Pilldue.App` opens SQLite, runs migrations via `PilldueComposition`, and passes `IPilldueApp` into `Pilldue.UI`. Terminal screens depend on Business only; a second UI can reuse the same composition helper.
+`Pilldue.Data` implements the Business ports. Composition goes through `PilldueComposition`. #107 removed the terminal host and screens. The WPF host is the only UI.
 
 ## 2. Terminal and desktop UI on one business layer
 
@@ -23,14 +23,13 @@ Add the next idea as a new numbered section at the bottom.
 Keep one shared business layer and add a WPF desktop UI beside the Spectre terminal. Both call `IPilldueApp` via `PilldueComposition`. Persistence stays in `Pilldue.Data`.
 
 ```
-Pilldue.App           Spectre terminal host
-Pilldue.UI            Spectre screens (library)
-Pilldue.UI.Desktop    WPF (Windows-only)
+Pilldue.UI.Desktop    WPF host (Windows-only)
+Pilldue.UI.Wpf        WPF screens
 Pilldue.Business      domain, ports, planning, app service
 Pilldue.Data          EF Core + SQLite + config file + composition
 ```
 
-The desktop app is Windows-only (`net10.0-windows`). Terminal app keeps working on its own.
+The desktop app is Windows-only (`net10.0-windows`). #107 removed `Pilldue.App` and `Pilldue.UI`. The WPF host is the only UI.
 
 ## 3. Doses that are not every day
 
@@ -64,16 +63,16 @@ Fix: abandon Add (and Edit) before any save and return to the main menu.
 
 - [ ] Open
 
-Yes, this is doable. Keep `Pilldue.Business` and `Pilldue.Data` (EF Core + SQLite) as the shared core, and add a .NET MAUI Android UI that calls `IPilldueApp` the same way the terminal and a future WPF desktop would.
+Yes, this is doable. Keep `Pilldue.Business` and `Pilldue.Data` (EF Core + SQLite) as the shared core, and add a .NET MAUI app for Android and iOS that calls `IPilldueApp` the same way the WPF host does.
 
 ```
-Pilldue.UI            Spectre terminal (existing)
-Pilldue.UI.Desktop    WPF (idea 2)
-Pilldue.UI.Mobile     .NET MAUI (Android)
+Pilldue.UI.Desktop    WPF host (existing)
+Pilldue.UI.Wpf        WPF screens (existing)
+Pilldue.UI.Mobile     .NET MAUI (Android and iOS)
 Pilldue.Business      domain, ports, planning, app service
 Pilldue.Data          EF Core + SQLite + config file
 ```
 
-Spectre.Console does not run on Android, so the mobile shell is a separate project. SQLite still lives on the device; install via sideload or a store later. Same personal-local product: one DB per phone, no cloud sync in this idea.
+The mobile shell is a separate project. SQLite still lives on the device; install via sideload or a store later. Same personal-local product: one DB per phone, no cloud sync in this idea.
 
-Depends on extracting data wiring from the terminal host (idea 1) so every UI shares one composition path. Open point: Android only first, or MAUI for Android and iOS together.
+Every UI shares `PilldueComposition`. Android and iOS ship together (#76).

@@ -8,7 +8,7 @@ Mark each applicable item pass, fail, or N/A.
 
 | Check | Rule |
 |-------|------|
-| Screen projects (`Pilldue.UI`, `Pilldue.UI.Wpf`) do not reference Data, EF, or SQL. `Pilldue.UI.Wpf` references Business only and does not reference Spectre | `layer-structure` |
+| `Pilldue.UI.Wpf` references Business only and does not reference Data, EF, SQL, or Spectre | `layer-structure` |
 | Business does not reference `Pilldue.Data` or EF | `layer-structure` |
 | Refill math stays in Business | `layer-structure`, `model-separation` |
 | PR base is `main` | `create-pr` |
@@ -38,5 +38,5 @@ Mark each applicable item pass, fail, or N/A.
 |-------|------|
 | Domain behavior covered in `Pilldue.Business.Tests` | `testing` |
 | New persistence covered in Data or Integration tests | `testing` |
-| Integration tests do not drive Spectre | `testing` |
+| Integration tests do not drive the WPF window | `testing` |
 | UI string parity test still applies | `testing`, `localization-both-resx` |

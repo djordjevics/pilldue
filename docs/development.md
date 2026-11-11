@@ -29,11 +29,11 @@ When structure or decisions change, update the relevant files under `docs/` and 
 
 ## Layering
 
-DIP: **UI → Business**, **UI.Wpf → Business**, **Data → Business**. Hosts (`Pilldue.App`, `Pilldue.UI.Desktop`) reference Data to compose the app. `Pilldue.UI.Desktop` passes `IPilldueApp` into `Pilldue.UI.Wpf`. Persistence stays inside Data. Screen projects do not reference Data.
+DIP: **UI.Wpf → Business**, **Data → Business**. `Pilldue.UI.Desktop` references Data to compose the app and passes `IPilldueApp` into `Pilldue.UI.Wpf`. Persistence stays inside Data. The screen project does not reference Data.
 
 **SQLite access:** EF Core only (migrations for schema). No Dapper/ADO in v1. Config file I/O is separate from EF.
 
-Default DB path: `%UserProfile%/Pilldue/pilldue.db`, with `config.json` beside it (`SqliteDatabasePaths`). Hosts reach it through `PilldueComposition`. Apply schema with `PilldueDbBootstrap.MigrateAsync` (also used from UI startup). A database left at `%LocalAppData%/Pilldue/pilldue.db` is moved on startup when the profile folder has none.
+Default DB path: `%UserProfile%/Pilldue/pilldue.db`, with `config.json` beside it (`SqliteDatabasePaths`). The WPF host reaches it through `PilldueComposition`. Apply schema with `PilldueDbBootstrap.MigrateAsync` on startup. A database left at `%LocalAppData%/Pilldue/pilldue.db` is moved on startup when the profile folder has none.
 
 In-memory port implementations live in Business for tests and early UI composition.
 
@@ -49,29 +49,29 @@ In-memory port implementations live in Business for tests and early UI compositi
 dotnet test Pilldue.slnx
 ```
 
-Integration tests drive Business (+ Data) like a scripted session: add med, skip dose, log refill, then assert stock / refill-by / history. They do not use Spectre.Console.
+Integration tests drive Business (+ Data) like a scripted session: add med, skip dose, log refill, then assert stock / refill-by / history. They do not open the WPF window.
 
 Pending feature tests use `[Fact(Skip = "...")]` until implemented so CI stays green.
 
 ## UI strings (i18n)
 
-User-facing copy for the terminal and WPF screens lives in `src/Pilldue.Business/Localization/UiLocalizer.cs` (English + Serbian Latin catalogs).
+User-facing copy for the WPF screens lives in `src/Pilldue.Business/Localization/UiLocalizer.cs` (English + Serbian Latin catalogs).
 
 1. Add the same key to **both** `English` and `Serbian` dictionaries.
 2. Call `UiLocalizer.Get("Your.Key")` / `Format(...)` from UI screens (never hardcode English in menus/prompts).
 3. Language is stored as `AppConfig.UiLanguage` (`en` / `sr`, empty = detect OS) via the JSON config file (`%UserProfile%/Pilldue/config.json`). Changing language in the menu applies immediately; no reinstall needed.
 
-`tests/Pilldue.UI.Tests` asserts every English key exists in Serbian.
+`tests/Pilldue.Business.Tests` asserts every English key exists in Serbian.
 
 ## Build and run
 
 ```bash
 dotnet build Pilldue.slnx
-dotnet run --project src/Pilldue.App
+dotnet run --project src/Pilldue.UI.Desktop
 ```
 
 Publish a small exe when ready to distribute:
 
 ```bash
-dotnet publish src/Pilldue.App -c Release -o ./publish
+dotnet publish src/Pilldue.UI.Desktop -c Release -o ./publish
 ```

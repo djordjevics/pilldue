@@ -2,15 +2,12 @@
   <Folder Name="/src/">
     <Project Path="src/Pilldue.Business/Pilldue.Business.csproj" />
     <Project Path="src/Pilldue.Data/Pilldue.Data.csproj" />
-    <Project Path="src/Pilldue.UI/Pilldue.UI.csproj" />
     <Project Path="src/Pilldue.UI.Wpf/Pilldue.UI.Wpf.csproj" />
     <Project Path="src/Pilldue.UI.Desktop/Pilldue.UI.Desktop.csproj" />
-    <Project Path="src/Pilldue.App/Pilldue.App.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Pilldue.Business.Tests/Pilldue.Business.Tests.csproj" />
     <Project Path="tests/Pilldue.Data.Tests/Pilldue.Data.Tests.csproj" />
     <Project Path="tests/Pilldue.IntegrationTests/Pilldue.IntegrationTests.csproj" />
-    <Project Path="tests/Pilldue.UI.Tests/Pilldue.UI.Tests.csproj" />
   </Folder>
 </Solution>

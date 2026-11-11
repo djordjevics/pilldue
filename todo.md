@@ -130,7 +130,7 @@ Status key: `[ ]` open · `[~]` investigating · `[x]` decided
   - Spectre.Console / Terminal.Gui / …
   - WPF / Avalonia / …
   - ASP.NET (Blazor, MVC, minimal APIs + SPA)
-  - Notes: **Spectre.Console** for v1 TUI. Terminal.Gui only if we outgrow forms later.
+  - Notes: **WPF** is the product UI. The Spectre terminal was removed in #107.
 
 - [x] **.NET version / TFM**
   - Latest LTS vs newest
@@ -139,7 +139,7 @@ Status key: `[ ]` open · `[~]` investigating · `[x]` decided
 - [x] **Solution layout**
   - Single project under `src/`
   - Multiple projects (domain / UI / persistence) from day one
-  - Notes: **Three projects from the start:** Data (persistence), Business (domain/services), UI (TUI host). Goal: add another UI later without rewriting business/data.
+  - Notes: **Data, Business, and a WPF host.** Screens are `Pilldue.UI.Wpf`. The host is `Pilldue.UI.Desktop`. Goal: add another UI later without rewriting business/data.
 
 ---
 
@@ -208,7 +208,7 @@ When a decision is made:
 
 Enough to answer:
 
-1. **UI:** console / desktop GUI / web — **done: small TUI (Spectre.Console lean)**
+1. **UI:** console / desktop GUI / web — **done: WPF (`Pilldue.UI.Desktop`)**
 2. **Where app runs:** local / cloud / both — **done: local exe**
 3. **Where data lives:** files / SQLite / hosted DB (+ sync story if multi-device) — **done: lean SQLite (local)**
 4. **v1 scope:** what’s in / out — **done (see §1)**
@@ -227,7 +227,7 @@ Decided today:
   - Personal local instances only (never multi-user)
   - v1: refill tracking + stock + refill log/history + skipped-dose stock bump
   - Out: pharmacy/Rx/doctor, dose reminders
-  - Local exe + Spectre.Console TUI; Data/Business/UI; SQLite; .NET 10
+  - Local exe + WPF; Data/Business/UI.Wpf; SQLite; .NET 10
 Still unsure:
   - (none blocking)
 Next step:

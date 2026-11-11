@@ -10,15 +10,13 @@ alwaysApply: false
 |---------|----------------|
 | `Pilldue.Business` | Domain types, ports, planning rules, app services, in-memory fakes, shared UI catalogs (`UiLocalizer`) |
 | `Pilldue.Data` | `PilldueDbContext`, EF mapping, migrations, SQLite paths, config file, `PilldueComposition` |
-| `Pilldue.UI` | Spectre screens. Calls `IPilldueApp` and other Business types only |
 | `Pilldue.UI.Wpf` | WPF screens. Calls `IPilldueApp`. References `Pilldue.Business` only |
-| `Pilldue.App` | Terminal composition root. Opens SQLite and migrates |
 | `Pilldue.UI.Desktop` | WPF composition root. Opens the session with `PilldueComposition` and passes `IPilldueApp` into the screens |
 
 **Direction**
 
-- `Pilldue.UI` and `Pilldue.UI.Wpf` → Business. Screen projects do not reference Data, EF, SQLite, or SQL.
+- `Pilldue.UI.Wpf` → Business. The screen project does not reference Data, EF, SQLite, or SQL.
 - `Pilldue.UI.Wpf` does not reference Spectre.Console. It reads the English and Serbian catalogs from Business.
 - Data → Business. Data implements ports. Business does not reference EF or `Pilldue.Data`.
-- Hosts (`Pilldue.App`, `Pilldue.UI.Desktop`) may reference Data to compose the app. `Pilldue.UI.Desktop` references `Pilldue.UI.Wpf` for screens and does not own them.
+- `Pilldue.UI.Desktop` may reference Data to compose the app. It references `Pilldue.UI.Wpf` for screens and does not own them.
 - Refill math stays in Business (`RefillCalendarRules` and planning types). Do not reimplement it in UI or Data.

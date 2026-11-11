@@ -1,7 +1,7 @@
 using Pilldue.Business;
 using Pilldue.UI.Localization;
 
-namespace Pilldue.UI.Tests;
+namespace Pilldue.Business.Tests;
 
 public class UiLocalizerTests
 {
