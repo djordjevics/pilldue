@@ -81,6 +81,39 @@ public class WpfProjectBoundaryTests
         Assert.DoesNotContain("ExtraPackagesQuery", screen, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void Skip_and_missed_dose_go_through_the_app()
+    {
+        var toolbar = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml");
+        Assert.Contains("Desktop.Skip", toolbar, StringComparison.Ordinal);
+        Assert.Contains("OnSkipClick", toolbar, StringComparison.Ordinal);
+        Assert.Contains("Desktop.Missed", toolbar, StringComparison.Ordinal);
+        Assert.Contains("OnMissedClick", toolbar, StringComparison.Ordinal);
+
+        var main = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml.cs");
+        Assert.Contains("new SkipDoseWindow(selected)", main, StringComparison.Ordinal);
+        Assert.Contains("dialog.ShowDialog() != true || dialog.PillsReturned < 1", main, StringComparison.Ordinal);
+        Assert.Contains("SkipDoseAsync(selected.Id, dialog.PillsReturned, dialog.Date)", main, StringComparison.Ordinal);
+        Assert.Contains("new MissedDoseWindow(_app, selected)", main, StringComparison.Ordinal);
+
+        var skip = ReadRepoFile("src/Pilldue.UI.Wpf/SkipDoseWindow.xaml.cs");
+        Assert.Contains("count < 1", skip, StringComparison.Ordinal);
+        Assert.Contains("DialogResult = false", skip, StringComparison.Ordinal);
+        Assert.DoesNotContain("IPilldueApp", skip, StringComparison.Ordinal);
+        Assert.DoesNotContain("SkipDoseAsync", skip, StringComparison.Ordinal);
+
+        var flag = ReadRepoFile("src/Pilldue.UI.Wpf/FlagMissedDoseWindow.xaml.cs");
+        Assert.Contains("DialogResult = false", flag, StringComparison.Ordinal);
+        Assert.DoesNotContain("IPilldueApp", flag, StringComparison.Ordinal);
+        Assert.DoesNotContain("FlagMissedDoseAsync", flag, StringComparison.Ordinal);
+
+        var list = ReadRepoFile("src/Pilldue.UI.Wpf/MissedDoseWindow.xaml.cs");
+        Assert.Contains("ListMissedDosesAsync", list, StringComparison.Ordinal);
+        Assert.Contains("FlagMissedDoseAsync", list, StringComparison.Ordinal);
+        Assert.Contains("flag.ShowDialog() != true", list, StringComparison.Ordinal);
+        Assert.DoesNotContain("CurrentStockPills", list, StringComparison.Ordinal);
+    }
+
     private static string ReadRepoFile(string relativePath) =>
         File.ReadAllText(RepoPath(relativePath));
 
