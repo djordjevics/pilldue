@@ -44,6 +44,37 @@ public partial class MainWindow : Window
         }
     }
 
+    private async void OnEditClick(object sender, RoutedEventArgs e)
+    {
+        if (MedicationsGrid.SelectedItem is not Medication selected)
+        {
+            MessageBox.Show(
+                this,
+                UiLocalizer.Get("Desktop.SelectFirst"),
+                UiLocalizer.Get("Med.EditTitle"),
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+            return;
+        }
+
+        var dialog = new AddMedicationWindow(selected) { Owner = this };
+        if (dialog.ShowDialog() != true || dialog.Result is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _app.UpdateMedicationAsync(dialog.Result);
+            StatusText.Text = UiLocalizer.Format("Desktop.Updated", dialog.Result.Name);
+            await RefreshAsync();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, UiLocalizer.Get("Med.EditTitle"), MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
     private async void OnRefillClick(object sender, RoutedEventArgs e)
     {
         if (MedicationsGrid.SelectedItem is not Medication selected)

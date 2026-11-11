@@ -6,12 +6,29 @@ namespace Pilldue.UI.Wpf;
 
 public partial class AddMedicationWindow : Window
 {
+    private readonly Medication? _existing;
+
     public Medication? Result { get; private set; }
 
-    public AddMedicationWindow()
+    public AddMedicationWindow(Medication? existing = null)
     {
+        _existing = existing;
         InitializeComponent();
-        RxStartBox.Text = DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd");
+        if (existing is null)
+        {
+            RxStartBox.Text = DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd");
+            return;
+        }
+
+        Title = UiLocalizer.Get("Med.EditTitle");
+        NameBox.Text = existing.Name;
+        PackageSizeBox.Text = existing.PackageSizePills.ToString();
+        PrescribedBox.Text = existing.PrescribedPackageCount.ToString();
+        DosageBox.Text = existing.DailyDosagePills.ToString();
+        IntervalBox.Text = existing.DoseIntervalDays.ToString();
+        StockBox.Text = existing.CurrentStockPills.ToString();
+        RxStartBox.Text = existing.PrescriptionStartDate.ToString("yyyy-MM-dd");
+        DurationBox.Text = existing.PrescriptionDurationMonths.ToString();
     }
 
     private void OnCancelClick(object sender, RoutedEventArgs e)
@@ -22,12 +39,16 @@ public partial class AddMedicationWindow : Window
 
     private void OnSaveClick(object sender, RoutedEventArgs e)
     {
+        var title = _existing is null
+            ? UiLocalizer.Get("Med.AddTitle")
+            : UiLocalizer.Get("Med.EditTitle");
+
         if (string.IsNullOrWhiteSpace(NameBox.Text))
         {
             MessageBox.Show(
                 this,
                 UiLocalizer.Get("Common.NameRequired"),
-                UiLocalizer.Get("Med.AddTitle"),
+                title,
                 MessageBoxButton.OK,
                 MessageBoxImage.Warning);
             return;
@@ -44,13 +65,13 @@ public partial class AddMedicationWindow : Window
             MessageBox.Show(
                 this,
                 UiLocalizer.Get("Desktop.AddInvalid"),
-                UiLocalizer.Get("Med.AddTitle"),
+                title,
                 MessageBoxButton.OK,
                 MessageBoxImage.Warning);
             return;
         }
 
-        Result = new Medication
+        var saved = new Medication
         {
             Name = NameBox.Text.Trim(),
             PackageSizePills = packageSize,
@@ -61,6 +82,13 @@ public partial class AddMedicationWindow : Window
             PrescriptionStartDate = rxStart,
             PrescriptionDurationMonths = duration,
         };
+        if (_existing is not null)
+        {
+            saved.Id = _existing.Id;
+            saved.RefillDayOfMonthOverride = _existing.RefillDayOfMonthOverride;
+        }
+
+        Result = saved;
         DialogResult = true;
         Close();
     }

@@ -34,8 +34,28 @@ public class WpfProjectBoundaryTests
         var screen = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml.cs");
         Assert.Contains("ListMedicationsAsync", screen, StringComparison.Ordinal);
         Assert.Contains("AddMedicationAsync", screen, StringComparison.Ordinal);
+        Assert.Contains("UpdateMedicationAsync", screen, StringComparison.Ordinal);
         Assert.Contains("RefillAsync", screen, StringComparison.Ordinal);
         Assert.Contains("RemoveMedicationAsync", screen, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Edit_keeps_the_selected_medication_id_and_rejects_invalid_input()
+    {
+        var toolbar = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml");
+        Assert.Contains("Desktop.Edit", toolbar, StringComparison.Ordinal);
+        Assert.Contains("OnEditClick", toolbar, StringComparison.Ordinal);
+
+        var screen = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml.cs");
+        Assert.Contains("new AddMedicationWindow(selected)", screen, StringComparison.Ordinal);
+        Assert.Contains("dialog.ShowDialog() != true", screen, StringComparison.Ordinal);
+        Assert.Contains("UpdateMedicationAsync", screen, StringComparison.Ordinal);
+
+        var editor = ReadRepoFile("src/Pilldue.UI.Wpf/AddMedicationWindow.xaml.cs");
+        Assert.Contains("saved.Id = _existing.Id", editor, StringComparison.Ordinal);
+        Assert.Contains("DialogResult = false", editor, StringComparison.Ordinal);
+        Assert.Contains("Desktop.AddInvalid", editor, StringComparison.Ordinal);
+        Assert.DoesNotContain("IPilldueApp", editor, StringComparison.Ordinal);
     }
 
     private static string ReadRepoFile(string relativePath) =>
