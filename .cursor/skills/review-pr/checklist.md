@@ -8,7 +8,7 @@ Mark each applicable item pass, fail, or N/A.
 
 | Check | Rule |
 |-------|------|
-| UI does not reference Data, EF, or SQL | `layer-structure` |
+| Screen projects (`Pilldue.UI`, `Pilldue.UI.Wpf`) do not reference Data, EF, or SQL. `Pilldue.UI.Wpf` references Business only and does not reference Spectre | `layer-structure` |
 | Business does not reference `Pilldue.Data` or EF | `layer-structure` |
 | Refill math stays in Business | `layer-structure`, `model-separation` |
 | PR base is `main` | `create-pr` |

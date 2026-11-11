@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Pilldue.Business\Pilldue.Business.csproj" />
     <ProjectReference Include="..\Pilldue.Data\Pilldue.Data.csproj" />
+    <ProjectReference Include="..\Pilldue.UI.Wpf\Pilldue.UI.Wpf.csproj" />
   </ItemGroup>
 
 </Project>

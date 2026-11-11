@@ -45,7 +45,7 @@ Read [checklist.md](checklist.md) after routing. Always also read `.cursor/rules
 |--------------|-----------|
 | `src/Pilldue.Business/` | `model-separation` |
 | `src/Pilldue.Data/` | `model-separation`, `migrations` |
-| `src/Pilldue.UI/` | `localization-both-resx`, `model-separation` |
+| `src/Pilldue.UI/`, `src/Pilldue.UI.Wpf/`, `src/Pilldue.Business/Localization/` | `localization-both-resx`, `model-separation` |
 | `src/Pilldue.App/`, `src/Pilldue.UI.Desktop/` | `layer-structure` |
 | `tests/` | `testing` |
 | `Localization` keys in `UiLocalizer.cs` | `localization-both-resx` |

@@ -10,7 +10,7 @@ alwaysApply: false
 |---------|----------|
 | `tests/Pilldue.Business.Tests` | Domain rules, planning, services with in-memory ports |
 | `tests/Pilldue.Data.Tests` | EF repositories, config file, composition, schema |
-| `tests/Pilldue.UI.Tests` | Screen logic and `UiLocalizer` key parity. No full Spectre session |
+| `tests/Pilldue.UI.Tests` | Screen logic, `UiLocalizer` key parity, and the WPF project boundary. No full Spectre session |
 | `tests/Pilldue.IntegrationTests` | Multi-step flows (add med, refill, skip). No UI |
 
 Run `dotnet test Pilldue.slnx` when the user asks for verification. Do not start a full test run as part of opening a PR (`create-pr`).
