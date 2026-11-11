@@ -94,23 +94,17 @@ public partial class MainWindow : Window
             return;
         }
 
-        var packages = selected.PrescribedPackageCount > 0 ? selected.PrescribedPackageCount : 1;
-        var confirm = MessageBox.Show(
-            this,
-            UiLocalizer.Format("Desktop.RefillConfirm", packages, selected.Name),
-            UiLocalizer.Get("Refill.Title"),
-            MessageBoxButton.YesNo,
-            MessageBoxImage.Question);
-        if (confirm != MessageBoxResult.Yes)
+        var dialog = new RefillWindow(selected) { Owner = this };
+        if (dialog.ShowDialog() != true || dialog.PackageCount < 1)
         {
             return;
         }
 
         try
         {
-            await _app.RefillAsync(selected.Id, packages, DateOnly.FromDateTime(DateTime.Today));
-            StatusText.Text = UiLocalizer.Format("Desktop.Refilled", selected.Name, packages);
+            await _app.RefillAsync(selected.Id, dialog.PackageCount, DateOnly.FromDateTime(DateTime.Today));
             await RefreshAsync();
+            StatusText.Text = UiLocalizer.Format("Desktop.Refilled", selected.Name, dialog.PackageCount);
         }
         catch (Exception ex)
         {
