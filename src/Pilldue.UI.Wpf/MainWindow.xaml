@@ -9,18 +9,24 @@
         MinWidth="720"
         Loaded="OnLoaded">
     <DockPanel Margin="16">
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
-            <TextBlock Text="Pilldue"
-                       FontSize="22"
-                       FontWeight="SemiBold"
-                       VerticalAlignment="Center"
-                       Margin="0,0,16,0" />
-            <Button Content="{wpf:Loc Desktop.Refresh}" Width="88" Margin="0,0,8,0" Click="OnRefreshClick" />
-            <Button Content="{wpf:Loc Desktop.Add}" Width="72" Margin="0,0,8,0" Click="OnAddClick" />
-            <Button Content="{wpf:Loc Desktop.Edit}" Width="80" Margin="0,0,8,0" Click="OnEditClick" />
-            <Button Content="{wpf:Loc Desktop.Refill}" Width="72" Margin="0,0,8,0" Click="OnRefillClick" />
-            <Button Content="{wpf:Loc Desktop.Remove}" Width="88" Margin="0,0,8,0" Click="OnRemoveClick" />
-            <Button Content="{wpf:Loc Desktop.Coverage}" Width="108" Click="OnCoverageClick" />
+        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <TextBlock Text="Pilldue"
+                           FontSize="22"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center"
+                           Margin="0,0,16,0" />
+                <Button Content="{wpf:Loc Desktop.Refresh}" Width="88" Margin="0,0,8,0" Click="OnRefreshClick" />
+                <Button Content="{wpf:Loc Desktop.Add}" Width="72" Margin="0,0,8,0" Click="OnAddClick" />
+                <Button Content="{wpf:Loc Desktop.Edit}" Width="80" Margin="0,0,8,0" Click="OnEditClick" />
+                <Button Content="{wpf:Loc Desktop.Refill}" Width="72" Margin="0,0,8,0" Click="OnRefillClick" />
+                <Button Content="{wpf:Loc Desktop.Remove}" Width="88" Click="OnRemoveClick" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Button Content="{wpf:Loc Desktop.Coverage}" Width="108" Margin="0,0,8,0" Click="OnCoverageClick" />
+                <Button Content="{wpf:Loc Desktop.Skip}" Width="72" Margin="0,0,8,0" Click="OnSkipClick" />
+                <Button Content="{wpf:Loc Desktop.Missed}" Width="80" Click="OnMissedClick" />
+            </StackPanel>
         </StackPanel>
 
         <TextBlock x:Name="StatusText"
