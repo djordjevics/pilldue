@@ -77,6 +77,29 @@ public class WpfProjectBoundaryTests
         Assert.DoesNotContain("RefillAsync", dialog, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void Coverage_screen_shows_today_query_values()
+    {
+        var toolbar = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml");
+        Assert.Contains("Desktop.Coverage", toolbar, StringComparison.Ordinal);
+        Assert.Contains("OnCoverageClick", toolbar, StringComparison.Ordinal);
+
+        var main = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml.cs");
+        Assert.Contains("new StockCoverageWindow(_app)", main, StringComparison.Ordinal);
+
+        var screen = ReadRepoFile("src/Pilldue.UI.Wpf/StockCoverageWindow.xaml.cs");
+        Assert.Contains("GetStockCoverageAsync", screen, StringComparison.Ordinal);
+        Assert.Contains("ListShortBeforeNextRefillAsync", screen, StringComparison.Ordinal);
+        Assert.Contains("ListNeedExtraForSecondRefillAsync", screen, StringComparison.Ordinal);
+        Assert.Contains("DateOnly.FromDateTime(DateTime.Today)", screen, StringComparison.Ordinal);
+        Assert.Contains("result.PillsShort", screen, StringComparison.Ordinal);
+        Assert.Contains("result.PackagesToBuy", screen, StringComparison.Ordinal);
+        Assert.Contains("result.ExtraPackages", screen, StringComparison.Ordinal);
+        Assert.DoesNotContain("RefillCalendarRules", screen, StringComparison.Ordinal);
+        Assert.DoesNotContain("StockCoverageQuery", screen, StringComparison.Ordinal);
+        Assert.DoesNotContain("ExtraPackagesQuery", screen, StringComparison.Ordinal);
+    }
+
     private static string ReadRepoFile(string relativePath) =>
         File.ReadAllText(RepoPath(relativePath));
 
