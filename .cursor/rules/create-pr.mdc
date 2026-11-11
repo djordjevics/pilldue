@@ -44,8 +44,11 @@ Full Repository Path: <absolute repository path>
 Diff: branch changes
 ```
 
+Read the validator verdict on each finding in the Bugbot result. A finding is cleared when the validator marks it OK (false positive, not a bug, or dismissed).
+
 - No findings → push and open the PR.
-- Findings → show them and wait. Do not auto-fix. Continue only if the user says to proceed, or after they ask for fixes, you commit, and Bugbot is run again.
+- Every reported finding is cleared → show the findings and the validator verdict, then push and open the PR. Do not wait.
+- Any finding the validator does not mark OK, or a finding with no validator verdict → show them and wait. Do not auto-fix. Continue only if the user says to proceed, or after they ask for fixes, you commit, and Bugbot is run again.
 - If Bugbot fails, ask whether to proceed without it. Do not skip it silently.
 - Note the Bugbot result in the PR body.
 
@@ -64,7 +67,7 @@ Use `Closes #<id>` only when every acceptance criterion is met. Otherwise use `R
 ## Notes
 
 - Build and tests were not run locally; CI validates.
-- Bugbot: <no findings | proceeded with N findings after user confirmation>
+- Bugbot: <no findings | validator marked N findings OK | proceeded with N findings after user confirmation>
 
 Mention a migration or a docs update when this branch has one.
 
