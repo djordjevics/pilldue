@@ -75,6 +75,12 @@ public partial class MainWindow : Window
         }
     }
 
+    private void OnCoverageClick(object sender, RoutedEventArgs e)
+    {
+        var dialog = new StockCoverageWindow(_app) { Owner = this };
+        dialog.ShowDialog();
+    }
+
     private async void OnRefillClick(object sender, RoutedEventArgs e)
     {
         if (MedicationsGrid.SelectedItem is not Medication selected)
