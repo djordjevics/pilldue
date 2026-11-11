@@ -87,6 +87,65 @@ public partial class MainWindow : Window
         dialog.ShowDialog();
     }
 
+    private async void OnSkipClick(object sender, RoutedEventArgs e)
+    {
+        if (MedicationsGrid.SelectedItem is not Medication selected)
+        {
+            MessageBox.Show(
+                this,
+                UiLocalizer.Get("Desktop.SelectFirst"),
+                UiLocalizer.Get("Skip.Title"),
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+            return;
+        }
+
+        var dialog = new SkipDoseWindow(selected) { Owner = this };
+        if (dialog.ShowDialog() != true || dialog.PillsReturned < 1)
+        {
+            return;
+        }
+
+        try
+        {
+            var before = selected.CurrentStockPills;
+            await _app.SkipDoseAsync(selected.Id, dialog.PillsReturned, dialog.Date);
+            await RefreshAsync();
+            var after = (MedicationsGrid.ItemsSource as IEnumerable<Medication>)
+                ?.FirstOrDefault(medication => medication.Id == selected.Id)
+                ?.CurrentStockPills ?? before;
+            StatusText.Text = UiLocalizer.Format("Skip.Done", selected.Name, before, after, dialog.PillsReturned);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, UiLocalizer.Get("Skip.Title"), MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private async void OnMissedClick(object sender, RoutedEventArgs e)
+    {
+        var selected = MedicationsGrid.SelectedItem as Medication;
+        var dialog = new MissedDoseWindow(_app, selected) { Owner = this };
+        dialog.ShowDialog();
+        if (!dialog.Flagged || selected is null || dialog.FlaggedDate is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await RefreshAsync();
+            StatusText.Text = UiLocalizer.Format(
+                "Missed.Flagged",
+                selected.Name,
+                dialog.FlaggedDate.Value.ToString("yyyy-MM-dd"));
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, UiLocalizer.Get("Missed.Title"), MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
     private async void OnRefillClick(object sender, RoutedEventArgs e)
     {
         if (MedicationsGrid.SelectedItem is not Medication selected)
