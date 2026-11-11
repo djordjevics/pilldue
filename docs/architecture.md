@@ -66,7 +66,7 @@ flowchart TB
 - Ports and entities live in **Business** (plus in-memory fakes for tests)
 - English and Serbian Latin UI catalogs live in **Business** (`UiLocalizer`). The WPF screen project does not reference Spectre.Console
 - **Data** implements ports with **EF Core + SQLite** (and config file for app settings) and exposes `PilldueComposition` for the host
-- **UI.Wpf** is the WPF screen library. It references Business only and calls `IPilldueApp` for list, add, edit, refill, remove, stock coverage, skip dose, and missed dose. It does not reference Data, EF Core, SQLite, or SQL
+- **UI.Wpf** is the WPF screen library. It references Business only and calls `IPilldueApp` for list, add, edit, refill, remove, stock coverage, skip dose, missed dose, and the refill calendar. It does not reference Data, EF Core, SQLite, or SQL
 - **UI.Desktop** is the Windows WPF composition root: opens the session with `PilldueComposition` and passes `IPilldueApp` into the WPF screens
 
 Shared planning formulas live in `RefillCalendarRules` (day clamp, packages-to-buy, inclusive last-covered rule, prescription end = start + duration months). Full query implementations are tracked in business issues C1–C9.

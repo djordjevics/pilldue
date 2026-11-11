@@ -101,6 +101,27 @@ public class WpfProjectBoundaryTests
     }
 
     [Fact]
+    public void Calendar_screen_shows_dates_from_get_calendar()
+    {
+        var toolbar = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml");
+        Assert.Contains("Desktop.Calendar", toolbar, StringComparison.Ordinal);
+        Assert.Contains("OnCalendarClick", toolbar, StringComparison.Ordinal);
+
+        var main = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml.cs");
+        Assert.Contains("new CalendarWindow(_app)", main, StringComparison.Ordinal);
+
+        var screen = ReadRepoFile("src/Pilldue.UI.Wpf/CalendarWindow.xaml.cs");
+        Assert.Contains("GetCalendarAsync", screen, StringComparison.Ordinal);
+        Assert.Contains("DateOnly.FromDateTime(DateTime.Today)", screen, StringComparison.Ordinal);
+        Assert.Contains("entry.FirstRefillDate", screen, StringComparison.Ordinal);
+        Assert.Contains("entry.SecondRefillDate", screen, StringComparison.Ordinal);
+        Assert.Contains("entry.StockOutDates", screen, StringComparison.Ordinal);
+        Assert.Contains("entry.PrescriptionEndDate", screen, StringComparison.Ordinal);
+        Assert.DoesNotContain("CalendarProjection", screen, StringComparison.Ordinal);
+        Assert.DoesNotContain("RefillCalendarRules", screen, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void Skip_and_missed_dose_go_through_the_app()
     {
         var toolbar = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml");

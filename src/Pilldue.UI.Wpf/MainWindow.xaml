@@ -25,7 +25,8 @@
             <StackPanel Orientation="Horizontal">
                 <Button Content="{wpf:Loc Desktop.Coverage}" Width="108" Margin="0,0,8,0" Click="OnCoverageClick" />
                 <Button Content="{wpf:Loc Desktop.Skip}" Width="72" Margin="0,0,8,0" Click="OnSkipClick" />
-                <Button Content="{wpf:Loc Desktop.Missed}" Width="80" Click="OnMissedClick" />
+                <Button Content="{wpf:Loc Desktop.Missed}" Width="80" Margin="0,0,8,0" Click="OnMissedClick" />
+                <Button Content="{wpf:Loc Desktop.Calendar}" Width="88" Click="OnCalendarClick" />
             </StackPanel>
         </StackPanel>
 

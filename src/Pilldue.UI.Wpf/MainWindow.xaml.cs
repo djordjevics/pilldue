@@ -81,6 +81,12 @@ public partial class MainWindow : Window
         dialog.ShowDialog();
     }
 
+    private void OnCalendarClick(object sender, RoutedEventArgs e)
+    {
+        var dialog = new CalendarWindow(_app) { Owner = this };
+        dialog.ShowDialog();
+    }
+
     private async void OnSkipClick(object sender, RoutedEventArgs e)
     {
         if (MedicationsGrid.SelectedItem is not Medication selected)
