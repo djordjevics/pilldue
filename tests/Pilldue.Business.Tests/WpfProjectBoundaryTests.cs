@@ -1,4 +1,4 @@
-namespace Pilldue.UI.Tests;
+namespace Pilldue.Business.Tests;
 
 public class WpfProjectBoundaryTests
 {
@@ -36,15 +36,6 @@ public class WpfProjectBoundaryTests
         Assert.Contains("AddMedicationAsync", screen, StringComparison.Ordinal);
         Assert.Contains("RefillAsync", screen, StringComparison.Ordinal);
         Assert.Contains("RemoveMedicationAsync", screen, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void Terminal_ui_still_references_business_only()
-    {
-        var csproj = ReadRepoFile("src/Pilldue.UI/Pilldue.UI.csproj");
-        Assert.Contains("Pilldue.Business", csproj, StringComparison.Ordinal);
-        Assert.Contains("Spectre.Console", csproj, StringComparison.Ordinal);
-        Assert.DoesNotContain("Pilldue.Data", csproj, StringComparison.Ordinal);
     }
 
     private static string ReadRepoFile(string relativePath) =>

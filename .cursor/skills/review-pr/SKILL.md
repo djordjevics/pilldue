@@ -45,8 +45,8 @@ Read [checklist.md](checklist.md) after routing. Always also read `.cursor/rules
 |--------------|-----------|
 | `src/Pilldue.Business/` | `model-separation` |
 | `src/Pilldue.Data/` | `model-separation`, `migrations` |
-| `src/Pilldue.UI/`, `src/Pilldue.UI.Wpf/`, `src/Pilldue.Business/Localization/` | `localization-both-resx`, `model-separation` |
-| `src/Pilldue.App/`, `src/Pilldue.UI.Desktop/` | `layer-structure` |
+| `src/Pilldue.UI.Wpf/`, `src/Pilldue.Business/Localization/` | `localization-both-resx`, `model-separation` |
+| `src/Pilldue.UI.Desktop/` | `layer-structure` |
 | `tests/` | `testing` |
 | `Localization` keys in `UiLocalizer.cs` | `localization-both-resx` |
 
@@ -60,7 +60,7 @@ Do not load every `.mdc`. Skip generic bug hunting unless it breaks a house rule
 
 | ID | Severity | Location | In diff? | Rule | Finding |
 |----|----------|----------|----------|------|---------|
-| 1 | Blocker | src/Pilldue.UI/Foo.cs:42 | yes | layer-structure | ... |
+| 1 | Blocker | src/Pilldue.UI.Wpf/Foo.cs:42 | yes | layer-structure | ... |
 ```
 
 - Severity: Blocker, Warning, or Nit
@@ -86,7 +86,7 @@ gh api repos/{owner}/{repo}/pulls/{n}/reviews --method POST --input payload.json
   "event": "COMMENT",
   "body": "Standards review summary…",
   "comments": [
-    { "path": "src/Pilldue.UI/Foo.cs", "line": 42, "side": "RIGHT", "body": "…" }
+    { "path": "src/Pilldue.UI.Wpf/Foo.cs", "line": 42, "side": "RIGHT", "body": "…" }
   ]
 }
 ```

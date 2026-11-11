@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Pilldue — project context
 
-Personal local medication refill tracker. .NET 10, Spectre.Console, WPF host, EF Core + SQLite.
+Personal local medication refill tracker. .NET 10, WPF host, EF Core + SQLite.
 
 ## Product
 
@@ -21,14 +21,12 @@ Personal local medication refill tracker. .NET 10, Spectre.Console, WPF host, EF
 |------|---------|
 | `src/Pilldue.Business` | Domain, ports, planning, in-memory fakes, UI catalogs. No EF. |
 | `src/Pilldue.Data` | EF Core + SQLite, migrations, config file, `PilldueComposition` |
-| `src/Pilldue.UI` | Spectre screens. Business only. |
 | `src/Pilldue.UI.Wpf` | WPF screens. Business only. |
-| `src/Pilldue.App` | Terminal host |
 | `src/Pilldue.UI.Desktop` | WPF host (Windows). Composition root for the desktop screens. |
-| `tests/` | Business, Data, UI, Integration |
+| `tests/` | Business, Data, Integration |
 | `docs/` | Human docs |
 
-**Direction:** App → UI + Data. Desktop → Data + UI.Wpf + Business. UI → Business. UI.Wpf → Business. Data → Business. Screen projects must not reference Data. UI catalogs live in Business (`UiLocalizer`).
+**Direction:** Desktop → Data + UI.Wpf + Business. UI.Wpf → Business. Data → Business. The screen project must not reference Data. UI catalogs live in Business (`UiLocalizer`).
 
 ## Non-negotiables
 

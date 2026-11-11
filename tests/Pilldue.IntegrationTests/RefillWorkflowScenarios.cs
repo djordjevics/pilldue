@@ -4,7 +4,7 @@ namespace Pilldue.IntegrationTests;
 
 /// <summary>
 /// End-to-end scenarios: perform several Business actions, then assert outcomes.
-/// No Spectre.Console / UI — drive <see cref="PilldueApp"/> like a scripted user session.
+/// No UI — drive <see cref="PilldueApp"/> like a scripted user session.
 /// Uses in-memory ports (EF repositories land in B3–B5); SQLite schema is covered elsewhere.
 /// </summary>
 public class RefillWorkflowScenarios

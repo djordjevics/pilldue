@@ -1,17 +1,17 @@
 ---
 description: New UI strings go in both UiLocalizer catalogs — English and Serbian Latin
-globs: src/Pilldue.Business/Localization/**/*.cs,src/Pilldue.UI/**/*.cs,src/Pilldue.UI.Wpf/**/*.cs,tests/Pilldue.UI.Tests/**/*.cs
+globs: src/Pilldue.Business/Localization/**/*.cs,src/Pilldue.UI.Wpf/**/*.cs,tests/Pilldue.Business.Tests/UiLocalizerTests.cs
 alwaysApply: false
 ---
 
 # Localization: English and Serbian
 
-UI copy is not `.resx`. Catalogs are the `English` and `Serbian` dictionaries in `src/Pilldue.Business/Localization/UiLocalizer.cs`. Both the terminal and WPF screens call that type. The catalogs live in Business so WPF does not reference Spectre.Console.
+UI copy is not `.resx`. Catalogs are the `English` and `Serbian` dictionaries in `src/Pilldue.Business/Localization/UiLocalizer.cs`. WPF screens call that type. The catalogs live in Business so the screen project does not reference Spectre.Console.
 
 - Language codes: `en` and `sr` (`AppConfig.EnglishLanguage`, `AppConfig.SerbianLanguage`). Serbian culture is `sr-Latn`.
 - Add every new key to **both** dictionaries in the same change.
 - Screens call `UiLocalizer.Get` or `Format`. Do not hardcode English in menus, prompts, or errors.
 - Serbian values are Serbian Latin. Do not leave English words in the Serbian catalog except acronyms and proper nouns.
-- `tests/Pilldue.UI.Tests` must keep failing when a key exists in only one catalog. Extend that test if you add a third catalog; do not bypass it.
+- `tests/Pilldue.Business.Tests` must keep failing when a key exists in only one catalog. Extend that test if you add a third catalog; do not bypass it.
 
 Stored language is `AppConfig.UiLanguage` (`en`, `sr`, or empty to detect the OS). Empty detection already maps Serbian OS culture to `sr` and everything else to `en`.
