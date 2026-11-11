@@ -22,12 +22,12 @@ dotnet run --project src/Pilldue.UI.Desktop
 
 ## Local files
 
-The database and the language config live in one profile folder:
+The database and the settings config live in one profile folder:
 
 `%UserProfile%/Pilldue/`
 
 - `pilldue.db` — medications and history
-- `config.json` — UI language
+- `config.json` — UI language and theme
 
 On Windows that is `C:\Users\<you>\Pilldue\`. The WPF host uses this folder through `PilldueComposition` (`SqliteDatabasePaths` is the only default). Schema is applied with EF Core migrations (`PilldueDbBootstrap.MigrateAsync`).
 

@@ -14,12 +14,16 @@ public partial class App : Application
     {
         base.OnStartup(e);
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
-        UiLocalizer.Apply(new AppConfig());
+        var defaults = new AppConfig();
+        UiLocalizer.Apply(defaults);
+        WpfTheme.Apply(defaults);
 
         try
         {
             _session = await PilldueComposition.CreateDefaultSessionAsync();
-            UiLocalizer.Apply(await _session.App.GetConfigAsync());
+            var config = await _session.App.GetConfigAsync();
+            UiLocalizer.Apply(config);
+            WpfTheme.Apply(config);
 
             var window = new MainWindow(_session.App);
             MainWindow = window;

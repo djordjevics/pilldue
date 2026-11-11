@@ -20,4 +20,4 @@ There is no Request / DTO / Response / AutoMapper stack. Do not add one.
 
 A new persisted field is a property on the Business type, then EF configuration and a migration in Data, then the port method if a use case needs it. UI reaches it through `IPilldueApp` or an existing Business service.
 
-Config (UI language) is a JSON file via `IAppConfigStore`, not an EF table.
+Config (UI language and theme) is a JSON file via `IAppConfigStore`, not an EF table.

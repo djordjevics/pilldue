@@ -87,6 +87,26 @@ public partial class MainWindow : Window
         dialog.ShowDialog();
     }
 
+    private async void OnSettingsClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var config = await _app.GetConfigAsync();
+            var dialog = new SettingsWindow(_app, config) { Owner = this };
+            if (dialog.ShowDialog() != true)
+            {
+                return;
+            }
+
+            ApplyLocalizedText();
+            await RefreshAsync();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, UiLocalizer.Get("Desktop.Settings"), MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
     private async void OnSkipClick(object sender, RoutedEventArgs e)
     {
         if (MedicationsGrid.SelectedItem is not Medication selected)
@@ -211,6 +231,25 @@ public partial class MainWindow : Window
         {
             MessageBox.Show(this, ex.Message, UiLocalizer.Get("Med.RemoveTitle"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
+    }
+
+    private void ApplyLocalizedText()
+    {
+        RefreshButton.Content = UiLocalizer.Get("Desktop.Refresh");
+        AddButton.Content = UiLocalizer.Get("Desktop.Add");
+        EditButton.Content = UiLocalizer.Get("Desktop.Edit");
+        RefillButton.Content = UiLocalizer.Get("Desktop.Refill");
+        RemoveButton.Content = UiLocalizer.Get("Desktop.Remove");
+        CoverageButton.Content = UiLocalizer.Get("Desktop.Coverage");
+        SkipButton.Content = UiLocalizer.Get("Desktop.Skip");
+        MissedButton.Content = UiLocalizer.Get("Desktop.Missed");
+        CalendarButton.Content = UiLocalizer.Get("Desktop.Calendar");
+        SettingsButton.Content = UiLocalizer.Get("Desktop.Settings");
+        MedicationsGrid.Columns[0].Header = UiLocalizer.Get("List.ColName");
+        MedicationsGrid.Columns[1].Header = UiLocalizer.Get("List.ColStock");
+        MedicationsGrid.Columns[2].Header = UiLocalizer.Get("Desktop.ColDose");
+        MedicationsGrid.Columns[3].Header = UiLocalizer.Get("Desktop.ColInterval");
+        MedicationsGrid.Columns[4].Header = UiLocalizer.Get("List.ColPackage");
     }
 
     private async Task RefreshAsync()

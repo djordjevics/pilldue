@@ -12,27 +12,24 @@ public sealed class InMemoryAppConfigStore : IAppConfigStore
     public InMemoryAppConfigStore(AppConfig config)
     {
         ArgumentNullException.ThrowIfNull(config);
-        _config = new AppConfig
-        {
-            UiLanguage = config.UiLanguage,
-        };
+        _config = Copy(config);
     }
 
     public Task<AppConfig> LoadAsync(CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(new AppConfig
-        {
-            UiLanguage = _config.UiLanguage,
-        });
+        return Task.FromResult(Copy(_config));
     }
 
     public Task SaveAsync(AppConfig config, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(config);
-        _config = new AppConfig
-        {
-            UiLanguage = config.UiLanguage,
-        };
+        _config = Copy(config);
         return Task.CompletedTask;
     }
+
+    private static AppConfig Copy(AppConfig config) => new()
+    {
+        UiLanguage = config.UiLanguage,
+        UiTheme = AppConfig.NormalizeTheme(config.UiTheme),
+    };
 }

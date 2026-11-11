@@ -16,17 +16,18 @@
                            FontWeight="SemiBold"
                            VerticalAlignment="Center"
                            Margin="0,0,16,0" />
-                <Button Content="{wpf:Loc Desktop.Refresh}" Width="88" Margin="0,0,8,0" Click="OnRefreshClick" />
-                <Button Content="{wpf:Loc Desktop.Add}" Width="72" Margin="0,0,8,0" Click="OnAddClick" />
-                <Button Content="{wpf:Loc Desktop.Edit}" Width="80" Margin="0,0,8,0" Click="OnEditClick" />
-                <Button Content="{wpf:Loc Desktop.Refill}" Width="72" Margin="0,0,8,0" Click="OnRefillClick" />
-                <Button Content="{wpf:Loc Desktop.Remove}" Width="88" Click="OnRemoveClick" />
+                <Button x:Name="RefreshButton" Content="{wpf:Loc Desktop.Refresh}" Width="88" Margin="0,0,8,0" Click="OnRefreshClick" />
+                <Button x:Name="AddButton" Content="{wpf:Loc Desktop.Add}" Width="72" Margin="0,0,8,0" Click="OnAddClick" />
+                <Button x:Name="EditButton" Content="{wpf:Loc Desktop.Edit}" Width="80" Margin="0,0,8,0" Click="OnEditClick" />
+                <Button x:Name="RefillButton" Content="{wpf:Loc Desktop.Refill}" Width="72" Margin="0,0,8,0" Click="OnRefillClick" />
+                <Button x:Name="RemoveButton" Content="{wpf:Loc Desktop.Remove}" Width="88" Click="OnRemoveClick" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <Button Content="{wpf:Loc Desktop.Coverage}" Width="108" Margin="0,0,8,0" Click="OnCoverageClick" />
-                <Button Content="{wpf:Loc Desktop.Skip}" Width="72" Margin="0,0,8,0" Click="OnSkipClick" />
-                <Button Content="{wpf:Loc Desktop.Missed}" Width="80" Margin="0,0,8,0" Click="OnMissedClick" />
-                <Button Content="{wpf:Loc Desktop.Calendar}" Width="88" Click="OnCalendarClick" />
+                <Button x:Name="CoverageButton" Content="{wpf:Loc Desktop.Coverage}" Width="108" Margin="0,0,8,0" Click="OnCoverageClick" />
+                <Button x:Name="SkipButton" Content="{wpf:Loc Desktop.Skip}" Width="72" Margin="0,0,8,0" Click="OnSkipClick" />
+                <Button x:Name="MissedButton" Content="{wpf:Loc Desktop.Missed}" Width="80" Margin="0,0,8,0" Click="OnMissedClick" />
+                <Button x:Name="CalendarButton" Content="{wpf:Loc Desktop.Calendar}" Width="88" Margin="0,0,8,0" Click="OnCalendarClick" />
+                <Button x:Name="SettingsButton" Content="{wpf:Loc Desktop.Settings}" MinWidth="88" Click="OnSettingsClick" />
             </StackPanel>
         </StackPanel>
 

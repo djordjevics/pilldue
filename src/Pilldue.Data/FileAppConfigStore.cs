@@ -5,7 +5,7 @@ namespace Pilldue.Data;
 
 /// <summary>
 /// JSON file implementation of <see cref="IAppConfigStore"/>. Separate from EF/SQLite.
-/// Missing file yields an empty language (detect from OS at startup).
+/// Missing file yields an empty language (detect from OS at startup) and the system theme.
 /// </summary>
 public sealed class FileAppConfigStore : IAppConfigStore
 {
@@ -34,7 +34,13 @@ public sealed class FileAppConfigStore : IAppConfigStore
         var config = await JsonSerializer.DeserializeAsync<AppConfig>(stream, JsonOptions, cancellationToken)
             .ConfigureAwait(false);
 
-        return config ?? CreateDefault();
+        if (config is null)
+        {
+            return CreateDefault();
+        }
+
+        config.UiTheme = AppConfig.NormalizeTheme(config.UiTheme);
+        return config;
     }
 
     public async Task SaveAsync(AppConfig config, CancellationToken cancellationToken = default)
@@ -47,13 +53,20 @@ public sealed class FileAppConfigStore : IAppConfigStore
             Directory.CreateDirectory(directory);
         }
 
+        var stored = new AppConfig
+        {
+            UiLanguage = config.UiLanguage,
+            UiTheme = AppConfig.NormalizeTheme(config.UiTheme),
+        };
+
         await using var stream = File.Create(_path);
-        await JsonSerializer.SerializeAsync(stream, config, JsonOptions, cancellationToken)
+        await JsonSerializer.SerializeAsync(stream, stored, JsonOptions, cancellationToken)
             .ConfigureAwait(false);
     }
 
     private static AppConfig CreateDefault() => new()
     {
         UiLanguage = string.Empty,
+        UiTheme = AppConfig.ThemeSystem,
     };
 }
