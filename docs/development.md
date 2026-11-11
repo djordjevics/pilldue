@@ -59,7 +59,7 @@ User-facing copy for the WPF screens lives in `src/Pilldue.Business/Localization
 
 1. Add the same key to **both** `English` and `Serbian` dictionaries.
 2. Call `UiLocalizer.Get("Your.Key")` / `Format(...)` from UI screens (never hardcode English in menus/prompts).
-3. Language is stored as `AppConfig.UiLanguage` (`en` / `sr`, empty = detect OS) via the JSON config file (`%UserProfile%/Pilldue/config.json`). Changing language in the menu applies immediately; no reinstall needed.
+3. Language is stored as `AppConfig.UiLanguage` (`en` / `sr`, empty = detect OS) and theme as `AppConfig.UiTheme` (`light` / `dark` / `system`, default `system`) in `%UserProfile%/Pilldue/config.json`. The WPF Settings window saves both and applies them immediately.
 
 `tests/Pilldue.Business.Tests` asserts every English key exists in Serbian.
 

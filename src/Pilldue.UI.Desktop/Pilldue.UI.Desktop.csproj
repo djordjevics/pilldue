@@ -7,6 +7,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <RootNamespace>Pilldue.UI.Desktop</RootNamespace>
+    <!-- Built-in fluent ThemeMode is still marked experimental (WPF0001). -->
+    <NoWarn>$(NoWarn);WPF0001</NoWarn>
     <ApplicationIcon />
   </PropertyGroup>
 

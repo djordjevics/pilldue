@@ -79,6 +79,7 @@ public class SqliteDatabasePathsTests
             Assert.Equal("LegacyMed", listed.Name);
             var config = await moved.App.GetConfigAsync();
             Assert.Equal(AppConfig.SerbianLanguage, config.UiLanguage);
+            Assert.Equal(AppConfig.ThemeSystem, config.UiTheme);
         }
         finally
         {

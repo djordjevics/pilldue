@@ -222,6 +222,11 @@ public static class UiLocalizer
         ["Desktop.RefillConfirm"] = "Log refill of {0} package(s) for {1} today?",
         ["Desktop.AddInvalid"] = "Check numeric fields and use yyyy-MM-dd for the prescription start.",
         ["Desktop.StartupFailed"] = "Could not start Pilldue:\n{0}",
+        ["Desktop.Settings"] = "Settings",
+        ["Settings.Theme"] = "Theme",
+        ["Settings.System"] = "System",
+        ["Settings.Light"] = "Light",
+        ["Settings.Dark"] = "Dark",
     };
 
     private static readonly Dictionary<string, string> Serbian = new()
@@ -378,5 +383,10 @@ public static class UiLocalizer
         ["Desktop.RefillConfirm"] = "Evidentirati dopunu od {0} pakovanje/a za {1} danas?",
         ["Desktop.AddInvalid"] = "Proverite brojeve i koristite yyyy-MM-dd za pocetak recepta.",
         ["Desktop.StartupFailed"] = "Nije moguce pokrenuti Pilldue:\n{0}",
+        ["Desktop.Settings"] = "Podesavanja",
+        ["Settings.Theme"] = "Tema",
+        ["Settings.System"] = "Sistem",
+        ["Settings.Light"] = "Svetla",
+        ["Settings.Dark"] = "Tamna",
     };
 }

@@ -154,6 +154,42 @@ public class WpfProjectBoundaryTests
         Assert.DoesNotContain("CurrentStockPills", list, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void Settings_window_saves_language_and_theme_and_cancel_does_not()
+    {
+        var toolbar = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml");
+        Assert.Contains("Desktop.Settings", toolbar, StringComparison.Ordinal);
+        Assert.Contains("OnSettingsClick", toolbar, StringComparison.Ordinal);
+
+        var main = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml.cs");
+        Assert.Contains("new SettingsWindow(_app, config)", main, StringComparison.Ordinal);
+        Assert.Contains("dialog.ShowDialog() != true", main, StringComparison.Ordinal);
+        Assert.Contains("ApplyLocalizedText()", main, StringComparison.Ordinal);
+
+        var dialog = ReadRepoFile("src/Pilldue.UI.Wpf/SettingsWindow.xaml.cs");
+        Assert.Contains("SaveConfigAsync", dialog, StringComparison.Ordinal);
+        Assert.Contains("DialogResult = false", dialog, StringComparison.Ordinal);
+        Assert.Contains("string.Empty", dialog, StringComparison.Ordinal);
+        Assert.Contains("AppConfig.EnglishLanguage", dialog, StringComparison.Ordinal);
+        Assert.Contains("AppConfig.SerbianLanguage", dialog, StringComparison.Ordinal);
+        Assert.Contains("AppConfig.ThemeLight", dialog, StringComparison.Ordinal);
+        Assert.Contains("AppConfig.ThemeDark", dialog, StringComparison.Ordinal);
+        Assert.Contains("AppConfig.ThemeSystem", dialog, StringComparison.Ordinal);
+        Assert.Contains("UiLocalizer.Apply", dialog, StringComparison.Ordinal);
+        Assert.Contains("WpfTheme.Apply", dialog, StringComparison.Ordinal);
+        Assert.DoesNotContain("SaveConfigAsync", dialog.Split("OnSaveClick")[0], StringComparison.Ordinal);
+
+        var theme = ReadRepoFile("src/Pilldue.UI.Wpf/WpfTheme.cs");
+        Assert.Contains("ThemeMode.Light", theme, StringComparison.Ordinal);
+        Assert.Contains("ThemeMode.Dark", theme, StringComparison.Ordinal);
+        Assert.Contains("ThemeMode.System", theme, StringComparison.Ordinal);
+
+        var host = ReadRepoFile("src/Pilldue.UI.Desktop/App.xaml.cs");
+        Assert.Contains("WpfTheme.Apply", host, StringComparison.Ordinal);
+        var appXaml = ReadRepoFile("src/Pilldue.UI.Desktop/App.xaml");
+        Assert.Contains("ThemeMode=\"System\"", appXaml, StringComparison.Ordinal);
+    }
+
     private static string ReadRepoFile(string relativePath) =>
         File.ReadAllText(RepoPath(relativePath));
 

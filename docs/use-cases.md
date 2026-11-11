@@ -6,7 +6,8 @@ Personal local refill tracker. One instance per person. No multi-user, no dose r
 
 | Key | Default | Storage |
 |-----|---------|---------|
-| UI language | OS culture (`en` / `sr`) | Config file next to the app |
+| UI language | OS culture when unset; `en` or `sr` when chosen | Config file next to the database |
+| UI theme | System (Windows app theme). Light and Dark stay fixed until changed | Same config file |
 
 ## Medication definition
 
