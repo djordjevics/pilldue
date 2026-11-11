@@ -58,6 +58,25 @@ public class WpfProjectBoundaryTests
         Assert.DoesNotContain("IPilldueApp", editor, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void Refill_asks_for_a_package_count_and_cancels_without_writing()
+    {
+        var screen = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml.cs");
+        Assert.Contains("new RefillWindow(selected)", screen, StringComparison.Ordinal);
+        Assert.Contains("dialog.ShowDialog() != true || dialog.PackageCount < 1", screen, StringComparison.Ordinal);
+        Assert.Contains(
+            "RefillAsync(selected.Id, dialog.PackageCount, DateOnly.FromDateTime(DateTime.Today))",
+            screen,
+            StringComparison.Ordinal);
+        Assert.DoesNotContain("PrescribedPackageCount > 0 ? selected.PrescribedPackageCount : 1", screen, StringComparison.Ordinal);
+
+        var dialog = ReadRepoFile("src/Pilldue.UI.Wpf/RefillWindow.xaml.cs");
+        Assert.Contains("count < 1", dialog, StringComparison.Ordinal);
+        Assert.Contains("DialogResult = false", dialog, StringComparison.Ordinal);
+        Assert.DoesNotContain("IPilldueApp", dialog, StringComparison.Ordinal);
+        Assert.DoesNotContain("RefillAsync", dialog, StringComparison.Ordinal);
+    }
+
     private static string ReadRepoFile(string relativePath) =>
         File.ReadAllText(RepoPath(relativePath));
 
