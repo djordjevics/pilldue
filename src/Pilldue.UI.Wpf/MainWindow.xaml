@@ -17,6 +17,7 @@
                        Margin="0,0,16,0" />
             <Button Content="{wpf:Loc Desktop.Refresh}" Width="88" Margin="0,0,8,0" Click="OnRefreshClick" />
             <Button Content="{wpf:Loc Desktop.Add}" Width="72" Margin="0,0,8,0" Click="OnAddClick" />
+            <Button Content="{wpf:Loc Desktop.Edit}" Width="80" Margin="0,0,8,0" Click="OnEditClick" />
             <Button Content="{wpf:Loc Desktop.Refill}" Width="72" Margin="0,0,8,0" Click="OnRefillClick" />
             <Button Content="{wpf:Loc Desktop.Remove}" Width="88" Click="OnRemoveClick" />
         </StackPanel>
