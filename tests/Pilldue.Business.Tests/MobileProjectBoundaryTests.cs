@@ -49,8 +49,14 @@ public class MobileProjectBoundaryTests
         Assert.Contains("Microsoft.Maui.Storage.FileSystem.Current.AppDataDirectory", combined, StringComparison.Ordinal);
         Assert.Contains("SqliteDatabasePaths.FileName", combined, StringComparison.Ordinal);
         Assert.Contains("SqliteDatabasePaths.ConfigFileName", combined, StringComparison.Ordinal);
-        Assert.Contains("new StartupPage(_session.App)", combined, StringComparison.Ordinal);
+        Assert.Contains("new StartupPage(session.App)", combined, StringComparison.Ordinal);
+        Assert.Contains("_closing", combined, StringComparison.Ordinal);
         Assert.DoesNotContain("CreateDefaultSessionAsync", combined, StringComparison.Ordinal);
+        var sceneDelegate = ReadRepoFile("src/Pilldue.UI.MobileHost/Platforms/iOS/SceneDelegate.cs");
+        Assert.Contains("[Register(\"SceneDelegate\")]", sceneDelegate, StringComparison.Ordinal);
+        Assert.Contains("MauiUISceneDelegate", sceneDelegate, StringComparison.Ordinal);
+        var plist = ReadRepoFile("src/Pilldue.UI.MobileHost/Platforms/iOS/Info.plist");
+        Assert.Contains("SceneDelegate", plist, StringComparison.Ordinal);
         Assert.DoesNotContain("UserProfile", combined, StringComparison.Ordinal);
         Assert.DoesNotContain("LocalApplicationData", combined, StringComparison.Ordinal);
         Assert.DoesNotContain("Environment.SpecialFolder", combined, StringComparison.Ordinal);

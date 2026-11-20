@@ -7,7 +7,9 @@ namespace Pilldue.UI.MobileHost;
 
 public partial class App : Application
 {
+    private readonly object _sessionGate = new();
     private PilldueSession? _session;
+    private bool _closing;
 
     public App()
     {
@@ -34,13 +36,39 @@ public partial class App : Application
             var appData = Microsoft.Maui.Storage.FileSystem.Current.AppDataDirectory;
             var databasePath = Path.Combine(appData, SqliteDatabasePaths.FileName);
             var configPath = Path.Combine(appData, SqliteDatabasePaths.ConfigFileName);
-            _session = await PilldueComposition.CreateSessionAsync(databasePath, configPath);
-            var config = await _session.App.GetConfigAsync();
+            var session = await PilldueComposition.CreateSessionAsync(databasePath, configPath);
+            var config = await session.App.GetConfigAsync();
+
+            var adopted = false;
+            lock (_sessionGate)
+            {
+                if (_closing)
+                {
+                    adopted = false;
+                }
+                else
+                {
+                    _session = session;
+                    adopted = true;
+                }
+            }
+
+            if (!adopted)
+            {
+                await session.DisposeAsync();
+                return;
+            }
+
             UiLocalizer.Apply(config);
-            window.Page = new StartupPage(_session.App);
+            window.Page = new StartupPage(session.App);
         }
         catch (Exception ex)
         {
+            if (IsClosing)
+            {
+                return;
+            }
+
             window.Page = new ContentPage
             {
                 Content = new Label
@@ -52,12 +80,30 @@ public partial class App : Application
         }
     }
 
+    private bool IsClosing
+    {
+        get
+        {
+            lock (_sessionGate)
+            {
+                return _closing;
+            }
+        }
+    }
+
     private async void OnWindowDestroying(object? sender, EventArgs e)
     {
-        if (_session is not null)
+        PilldueSession? session;
+        lock (_sessionGate)
         {
-            await _session.DisposeAsync();
+            _closing = true;
+            session = _session;
             _session = null;
+        }
+
+        if (session is not null)
+        {
+            await session.DisposeAsync();
         }
     }
 }
