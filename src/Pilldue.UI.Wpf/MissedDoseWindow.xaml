@@ -7,8 +7,7 @@
         Width="560"
         MinHeight="320"
         MinWidth="420"
-        WindowStartupLocation="CenterOwner"
-        Loaded="OnLoaded">
+        WindowStartupLocation="CenterOwner">
     <DockPanel Margin="16">
         <TextBlock DockPanel.Dock="Top"
                    Text="{wpf:Loc Missed.Hint}"
@@ -21,18 +20,27 @@
             <Button Content="{wpf:Loc Missed.Flag}"
                     Width="140"
                     Margin="0,0,8,0"
-                    Click="OnFlagClick" />
+                    Command="{Binding FlagCommand}" />
             <Button Content="{wpf:Loc Common.Back}"
                     Width="88"
                     IsCancel="True" />
         </StackPanel>
         <DockPanel>
-            <TextBlock x:Name="EmptyText"
-                       DockPanel.Dock="Top"
+            <TextBlock DockPanel.Dock="Top"
                        Text="{wpf:Loc Missed.ListEmpty}"
-                       Visibility="Collapsed"
-                       Margin="0,0,0,8" />
-            <DataGrid x:Name="MissedGrid"
+                       Margin="0,0,0,8">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsEmpty}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <DataGrid ItemsSource="{Binding Rows}"
                       AutoGenerateColumns="False"
                       IsReadOnly="True"
                       HeadersVisibility="Column"
