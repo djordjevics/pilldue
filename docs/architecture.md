@@ -66,8 +66,8 @@ flowchart TB
 - Ports and entities live in **Business** (plus in-memory fakes for tests)
 - English and Serbian Latin UI catalogs live in **Business** (`UiLocalizer`). The WPF screen project does not reference Spectre.Console
 - **Data** implements ports with **EF Core + SQLite** (and config file for app settings) and exposes `PilldueComposition` for the host
-- **UI.Wpf** is the WPF screen library. It references Business only and calls `IPilldueApp` for list, add, edit, refill, remove, stock coverage, skip dose, missed dose, the refill calendar, and settings (language and theme). It does not reference Data, EF Core, SQLite, or SQL
-- **UI.Desktop** is the Windows WPF composition root: opens the session with `PilldueComposition` and passes `IPilldueApp` into the WPF screens
+- **UI.Wpf** is the WPF screen library. It references Business only. Screens bind to view models, and each window code-behind only calls `InitializeComponent`. View models call `IPilldueApp` for list, add, edit, refill, remove, stock coverage, skip dose, missed dose, the refill calendar, and settings (language and theme). Dialogs and message boxes go through a UI interaction type in this project so view models do not reference `Window`. It does not reference Data, EF Core, SQLite, or SQL
+- **UI.Desktop** is the Windows WPF composition root: opens the session with `PilldueComposition`, builds the main view model and the UI interaction type, and applies `UiLocalizer` and `WpfTheme`. It does not own screen logic
 
 Shared planning formulas live in `RefillCalendarRules` (day clamp, packages-to-buy, inclusive last-covered rule, prescription end = start + duration months). Full query implementations are tracked in business issues C1–C9.
 
@@ -77,6 +77,7 @@ Shared planning formulas live in `RefillCalendarRules` (day clamp, packages-to-b
 tests/
   Pilldue.Data.Tests/
   Pilldue.Business.Tests/
+  Pilldue.UI.Wpf.Tests/       # view-model behavior; does not open a window
   Pilldue.IntegrationTests/   # multi-step actions → assert; no UI
 ```
 

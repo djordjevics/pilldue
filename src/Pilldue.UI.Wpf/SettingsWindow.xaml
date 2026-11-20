@@ -6,7 +6,11 @@
         Width="440"
         SizeToContent="Height"
         WindowStartupLocation="CenterOwner"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        wpf:DialogCloser.CloseResult="{Binding CloseResult, Mode=OneWay}">
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="{Binding CancelCommand}" />
+    </Window.InputBindings>
     <Grid Margin="16">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="120" />
@@ -19,14 +23,24 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0" Text="{wpf:Loc Lang.Title}" Margin="0,0,8,12" VerticalAlignment="Center" />
-        <ComboBox x:Name="LanguageBox" Grid.Row="0" Grid.Column="1" Margin="0,0,0,12" />
+        <ComboBox Grid.Row="0"
+                  Grid.Column="1"
+                  Margin="0,0,0,12"
+                  ItemsSource="{Binding Languages}"
+                  SelectedItem="{Binding SelectedLanguage}"
+                  DisplayMemberPath="Label" />
 
         <TextBlock Grid.Row="1" Grid.Column="0" Text="{wpf:Loc Settings.Theme}" Margin="0,0,8,12" VerticalAlignment="Center" />
-        <ComboBox x:Name="ThemeBox" Grid.Row="1" Grid.Column="1" Margin="0,0,0,12" />
+        <ComboBox Grid.Row="1"
+                  Grid.Column="1"
+                  Margin="0,0,0,12"
+                  ItemsSource="{Binding Themes}"
+                  SelectedItem="{Binding SelectedTheme}"
+                  DisplayMemberPath="Label" />
 
         <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="{wpf:Loc Common.Cancel}" Width="88" Margin="0,0,8,0" IsCancel="True" Click="OnCancelClick" />
-            <Button Content="{wpf:Loc Desktop.Save}" Width="88" IsDefault="True" Click="OnSaveClick" />
+            <Button Content="{wpf:Loc Common.Cancel}" Width="88" Margin="0,0,8,0" Command="{Binding CancelCommand}" />
+            <Button Content="{wpf:Loc Desktop.Save}" Width="88" IsDefault="True" Command="{Binding SaveCommand}" />
         </StackPanel>
     </Grid>
 </Window>

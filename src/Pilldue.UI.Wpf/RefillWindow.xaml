@@ -6,7 +6,11 @@
         Height="210"
         Width="380"
         WindowStartupLocation="CenterOwner"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        wpf:DialogCloser.CloseResult="{Binding CloseResult, Mode=OneWay}">
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="{Binding CancelCommand}" />
+    </Window.InputBindings>
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -16,17 +20,16 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TextBlock x:Name="MedicationText"
-                   Grid.Row="0"
+        <TextBlock Grid.Row="0"
                    FontWeight="SemiBold"
-                   Margin="0,0,0,12" />
+                   Margin="0,0,0,12"
+                   Text="{Binding MedicationName}" />
 
         <TextBlock Grid.Row="1"
                    Text="{wpf:Loc Refill.Packages}"
                    Margin="0,0,0,8" />
 
-        <TextBox x:Name="PackageCountBox"
-                 Grid.Row="2" />
+        <TextBox Grid.Row="2" Text="{Binding PackageCountText, UpdateSourceTrigger=PropertyChanged}" />
 
         <StackPanel Grid.Row="4"
                     Orientation="Horizontal"
@@ -34,12 +37,11 @@
             <Button Content="{wpf:Loc Common.Cancel}"
                     Width="88"
                     Margin="0,0,8,0"
-                    IsCancel="True"
-                    Click="OnCancelClick" />
+                    Command="{Binding CancelCommand}" />
             <Button Content="{wpf:Loc Refill.Title}"
                     Width="120"
                     IsDefault="True"
-                    Click="OnConfirmClick" />
+                    Command="{Binding ConfirmCommand}" />
         </StackPanel>
     </Grid>
 </Window>
