@@ -15,20 +15,22 @@ public sealed class WpfUiInteraction : IUiInteraction
     public void ShowMessage(string message, string title, UiMessageKind kind)
     {
         var image = ToImage(kind);
-        if (_owner is null)
+        var owner = PromptOwner(null);
+        if (owner is null)
         {
             MessageBox.Show(message, title, MessageBoxButton.OK, image);
             return;
         }
 
-        MessageBox.Show(_owner, message, title, MessageBoxButton.OK, image);
+        MessageBox.Show(owner, message, title, MessageBoxButton.OK, image);
     }
 
     public bool Confirm(string message, string title)
     {
-        var result = _owner is null
+        var owner = PromptOwner(null);
+        var result = owner is null
             ? MessageBox.Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Warning)
-            : MessageBox.Show(_owner, message, title, MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            : MessageBox.Show(owner, message, title, MessageBoxButton.YesNo, MessageBoxImage.Warning);
         return result == MessageBoxResult.Yes;
     }
 
@@ -61,7 +63,7 @@ public sealed class WpfUiInteraction : IUiInteraction
         ArgumentNullException.ThrowIfNull(window);
         ArgumentNullException.ThrowIfNull(viewModel);
         window.DataContext = viewModel;
-        var owner = ActiveWindow(window) ?? _owner;
+        var owner = PromptOwner(window);
         if (owner is not null)
         {
             window.Owner = owner;
@@ -71,10 +73,12 @@ public sealed class WpfUiInteraction : IUiInteraction
     }
 
     /// <summary>
-    /// A dialog opened from another dialog (the missed-dose list opening the flag dialog)
-    /// is owned by that active window. The main window stays the owner for the first dialog.
+    /// A prompt opened while another dialog is active is owned by that window,
+    /// so it stays in front of the modal. The main window is the fallback.
     /// </summary>
-    private static Window? ActiveWindow(Window dialog)
+    private Window? PromptOwner(Window? dialog) => ActiveWindow(dialog) ?? _owner;
+
+    private static Window? ActiveWindow(Window? dialog)
     {
         var application = Application.Current;
         if (application is null)
