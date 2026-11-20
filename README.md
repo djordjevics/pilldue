@@ -4,7 +4,7 @@ WPF medication tracker: log your therapy schedule and know when each med needs a
 
 ## Status
 
-**.NET 10** + **WPF** + **EF Core / SQLite**. Layers: **Data / Business / WPF**. Default DB: `%UserProfile%/Pilldue/pilldue.db` (`config.json` in the same folder).
+**.NET 10** + **WPF and .NET MAUI (Android and iOS)** + **EF Core / SQLite**. Layers: **Data / Business / WPF / MAUI**. WPF database: `%UserProfile%/Pilldue/pilldue.db`. The MAUI host stores `pilldue.db` in the device app data directory.
 
 **v1:** monthly refill day from prescription start, package-based stock, prescription end ~6 months, skip-dose stock bump, calendar. See [use cases](docs/use-cases.md).
 

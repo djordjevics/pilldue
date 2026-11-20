@@ -25,8 +25,8 @@ Pilldue helps you track medications against a **monthly refill day**, package-ba
 
 | Topic | Choice |
 |-------|--------|
-| Delivery | Local small published exe |
-| UI | WPF (`Pilldue.UI.Desktop`) |
+| Delivery | Local WPF exe on Windows; .NET MAUI app on Android and iOS |
+| UI | WPF (`Pilldue.UI.Desktop`) and .NET MAUI (`Pilldue.UI.MobileHost`) |
 | Persistence | **SQLite via EF Core** (migrations for schema) |
 | Config | File (UI language and theme) — not EF |
 | .NET | .NET 10 (`net10.0`) |
@@ -39,7 +39,9 @@ Pilldue helps you track medications against a **monthly refill day**, package-ba
 - Do **not** use Dapper or hand-rolled ADO for v1.
 - Config file stays a simple file store (JSON or similar), separate from EF.
 
-**Default SQLite path:** `%UserProfile%/Pilldue/pilldue.db`, with `config.json` in the same folder (see `SqliteDatabasePaths`). The WPF host opens that location through `PilldueComposition`. On startup, if the profile folder has no database and `%LocalAppData%/Pilldue/pilldue.db` exists, that database and `config.json` are moved. Design-time `pilldue-design.db` stays out of the user folder. Tables: `medications`, `refill_events`, `skip_dose_events`, `missed_dose_events`.
+**Default SQLite path (WPF):** `%UserProfile%/Pilldue/pilldue.db`, with `config.json` in the same folder (see `SqliteDatabasePaths`). The WPF host opens that location through `PilldueComposition.CreateDefaultSessionAsync`. On startup, if the profile folder has no database and `%LocalAppData%/Pilldue/pilldue.db` exists, that database and `config.json` are moved. Design-time `pilldue-design.db` stays out of the user folder. Tables: `medications`, `refill_events`, `skip_dose_events`, `missed_dose_events`.
+
+**Mobile SQLite path:** `Pilldue.UI.MobileHost` does not use the Windows profile or LocalAppData folders. It calls `PilldueComposition.CreateSessionAsync` with `pilldue.db` and `config.json` under `FileSystem.Current.AppDataDirectory` on the device.
 
 ## Solution layout and dependencies
 
@@ -48,8 +50,10 @@ Pilldue.slnx
 src/
   Pilldue.Business/    # domain, ports, pure logic, app services, shared UI catalogs
   Pilldue.Data/        # EF Core + SQLite (migrations) + config file + composition helpers
-  Pilldue.UI.Wpf/      # WPF screens (Business only)
-  Pilldue.UI.Desktop/  # WPF host / composition root (Windows-only)
+  Pilldue.UI.Wpf/         # WPF screens (Business only)
+  Pilldue.UI.Desktop/     # WPF host / composition root (Windows-only)
+  Pilldue.UI.Mobile/      # MAUI screens (Business only; Android and iOS)
+  Pilldue.UI.MobileHost/  # MAUI host / composition root (Android and iOS)
 ```
 
 Target dependency direction:
@@ -59,15 +63,21 @@ flowchart TB
   Desktop[Pilldue.UI.Desktop] --> Data[Pilldue.Data]
   Desktop --> Wpf[Pilldue.UI.Wpf]
   Desktop --> Business[Pilldue.Business]
+  MobileHost[Pilldue.UI.MobileHost] --> Data
+  MobileHost --> Mobile[Pilldue.UI.Mobile]
+  MobileHost --> Business
   Wpf --> Business
+  Mobile --> Business
   Data --> Business
 ```
 
 - Ports and entities live in **Business** (plus in-memory fakes for tests)
-- English and Serbian Latin UI catalogs live in **Business** (`UiLocalizer`). The WPF screen project does not reference Spectre.Console
-- **Data** implements ports with **EF Core + SQLite** (and config file for app settings) and exposes `PilldueComposition` for the host
+- English and Serbian Latin UI catalogs live in **Business** (`UiLocalizer`). Screen projects do not reference Spectre.Console
+- **Data** implements ports with **EF Core + SQLite** (and config file for app settings) and exposes `PilldueComposition` for hosts
 - **UI.Wpf** is the WPF screen library. It references Business only and calls `IPilldueApp` for list, add, edit, refill, remove, stock coverage, skip dose, missed dose, the refill calendar, and settings (language and theme). It does not reference Data, EF Core, SQLite, or SQL
-- **UI.Desktop** is the Windows WPF composition root: opens the session with `PilldueComposition` and passes `IPilldueApp` into the WPF screens
+- **UI.Desktop** is the Windows WPF composition root: opens the session with `PilldueComposition.CreateDefaultSessionAsync` and passes `IPilldueApp` into the WPF screens
+- **UI.Mobile** is the MAUI screen library for Android and iOS. It references Business only and receives `IPilldueApp`. It does not reference Data, EF Core, SQLite, or SQL
+- **UI.MobileHost** is the Android and iOS composition root: opens the session with `PilldueComposition.CreateSessionAsync` (app data directory) and passes `IPilldueApp` into the MAUI screens. It does not call `CreateDefaultSessionAsync`
 
 Shared planning formulas live in `RefillCalendarRules` (day clamp, packages-to-buy, inclusive last-covered rule, prescription end = start + duration months). Full query implementations are tracked in business issues C1–C9.
 

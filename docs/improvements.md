@@ -59,20 +59,21 @@ Refill already offers Cancel before it writes. Edit medication uses the same fie
 
 Fix: abandon Add (and Edit) before any save and return to the main menu.
 
-## 6. Android app on the shared business/data layer
+## 6. Android and iOS together on the shared business/data layer
 
-- [ ] Open
+- [~] In progress (#76). The MAUI host is in place (#99). Parent #76 is not done.
 
-Yes, this is doable. Keep `Pilldue.Business` and `Pilldue.Data` (EF Core + SQLite) as the shared core, and add a .NET MAUI app for Android and iOS that calls `IPilldueApp` the same way the WPF host does.
+Decision: Android and iOS ship together from one .NET MAUI host. Screens stay off the database project. The database file is created in the app data directory on the device.
 
 ```
-Pilldue.UI.Desktop    WPF host (existing)
-Pilldue.UI.Wpf        WPF screens (existing)
-Pilldue.UI.Mobile     .NET MAUI (Android and iOS)
-Pilldue.Business      domain, ports, planning, app service
-Pilldue.Data          EF Core + SQLite + config file
+Pilldue.UI.MobileHost   MAUI composition root (net10.0-android, net10.0-ios)
+Pilldue.UI.Mobile       MAUI screens (Business only; receives IPilldueApp)
+Pilldue.UI.Desktop      WPF host (existing)
+Pilldue.UI.Wpf          WPF screens (existing)
+Pilldue.Business        domain, ports, planning, app service
+Pilldue.Data            EF Core + SQLite + config file + composition
 ```
 
-The mobile shell is a separate project. SQLite still lives on the device; install via sideload or a store later. Same personal-local product: one DB per phone, no cloud sync in this idea.
+`Pilldue.UI.MobileHost` calls `PilldueComposition.CreateSessionAsync` with `pilldue.db` and `config.json` under `FileSystem.Current.AppDataDirectory`. It does not call `CreateDefaultSessionAsync`. That helper stays the Windows profile folder for the WPF host.
 
-Every UI shares `PilldueComposition`. Android and iOS ship together (#76).
+SQLite still lives on the device; install via sideload or a store later. Same personal-local product: one DB per phone, no cloud sync. Medication list, add, edit, refill, calendar, and settings screens are still open (#100–#106).

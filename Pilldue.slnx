@@ -4,6 +4,8 @@
     <Project Path="src/Pilldue.Data/Pilldue.Data.csproj" />
     <Project Path="src/Pilldue.UI.Wpf/Pilldue.UI.Wpf.csproj" />
     <Project Path="src/Pilldue.UI.Desktop/Pilldue.UI.Desktop.csproj" />
+    <Project Path="src/Pilldue.UI.Mobile/Pilldue.UI.Mobile.csproj" />
+    <Project Path="src/Pilldue.UI.MobileHost/Pilldue.UI.MobileHost.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Pilldue.Business.Tests/Pilldue.Business.Tests.csproj" />

@@ -12,11 +12,15 @@ alwaysApply: false
 | `Pilldue.Data` | `PilldueDbContext`, EF mapping, migrations, SQLite paths, config file, `PilldueComposition` |
 | `Pilldue.UI.Wpf` | WPF screens. Calls `IPilldueApp`. References `Pilldue.Business` only |
 | `Pilldue.UI.Desktop` | WPF composition root. Opens the session with `PilldueComposition` and passes `IPilldueApp` into the screens |
+| `Pilldue.UI.Mobile` | MAUI screens (Android and iOS). Receives `IPilldueApp`. References `Pilldue.Business` only |
+| `Pilldue.UI.MobileHost` | MAUI composition root (Android and iOS). Opens the session with `PilldueComposition.CreateSessionAsync` under the device app data directory and passes `IPilldueApp` into the screens |
 
 **Direction**
 
 - `Pilldue.UI.Wpf` → Business. The screen project does not reference Data, EF, SQLite, or SQL.
-- `Pilldue.UI.Wpf` does not reference Spectre.Console. It reads the English and Serbian catalogs from Business.
+- `Pilldue.UI.Mobile` → Business. The screen project does not reference Data, EF, SQLite, or SQL.
+- Screen projects do not reference Spectre.Console. They read the English and Serbian catalogs from Business.
 - Data → Business. Data implements ports. Business does not reference EF or `Pilldue.Data`.
-- `Pilldue.UI.Desktop` may reference Data to compose the app. It references `Pilldue.UI.Wpf` for screens and does not own them.
+- `Pilldue.UI.Desktop` may reference Data to compose the app. It references `Pilldue.UI.Wpf` for screens and does not own them. It keeps opening `%UserProfile%/Pilldue` through `CreateDefaultSessionAsync`.
+- `Pilldue.UI.MobileHost` may reference Data to compose the app. It references `Pilldue.UI.Mobile` for screens and does not own them. It calls `CreateSessionAsync` with paths under `FileSystem.Current.AppDataDirectory`. It does not call `CreateDefaultSessionAsync` or use `%UserProfile%\Pilldue` / `%LocalAppData%\Pilldue`.
 - Refill math stays in Business (`RefillCalendarRules` and planning types). Do not reimplement it in UI or Data.
