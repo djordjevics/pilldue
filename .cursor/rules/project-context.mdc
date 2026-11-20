@@ -50,6 +50,7 @@ One issue per worktree (`ticket-worktree`). Use a cheaper model for helpers, thi
 | Where code goes | `layer-structure`, `model-separation` |
 | SQLite schema | `migrations` |
 | UI strings | `localization-both-resx` |
+| WPF screen changes | `wpf-mvvm` |
 | Tests | `testing` |
 | Open PR | `create-pr` (explicit `@create-pr` + issue id, from that worktree) |
 | Review a PR | `review-pr` (explicit `@review-pr` + PR number) |

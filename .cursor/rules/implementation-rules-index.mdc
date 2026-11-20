@@ -15,6 +15,7 @@ alwaysApply: false
 | **migrations** | SQLite EF migrations via `dotnet ef`; safe changes for existing local databases |
 | **localization-both-resx** | English and Serbian Latin keys, both catalogs in `UiLocalizer` |
 | **testing** | Which test project owns domain, EF, UI strings, and multi-step flows |
+| **wpf-mvvm** | View models and bindings in `Pilldue.UI.Wpf`; window code-behind only calls `InitializeComponent` |
 | **concise-responses** | Short technical replies |
 | **refactoring-and-rules** | Update rules when a refactor changes a convention |
 | **issue-tracking** | Always-on: GitHub Issues plus one Project (Backlog → Ready → In Progress → Done) |
