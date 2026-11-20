@@ -31,39 +31,43 @@ public partial class App : Application
     {
         UiLocalizer.Apply(new AppConfig());
 
+        PilldueSession? session = null;
+        var handedOff = false;
         try
         {
             var appData = Microsoft.Maui.Storage.FileSystem.Current.AppDataDirectory;
             var databasePath = Path.Combine(appData, SqliteDatabasePaths.FileName);
             var configPath = Path.Combine(appData, SqliteDatabasePaths.ConfigFileName);
-            var session = await PilldueComposition.CreateSessionAsync(databasePath, configPath);
+            session = await PilldueComposition.CreateSessionAsync(databasePath, configPath);
             var config = await session.App.GetConfigAsync();
 
-            var adopted = false;
             lock (_sessionGate)
             {
-                if (_closing)
-                {
-                    adopted = false;
-                }
-                else
+                if (!_closing)
                 {
                     _session = session;
-                    adopted = true;
+                    handedOff = true;
                 }
             }
 
-            if (!adopted)
+            if (!handedOff)
             {
                 await session.DisposeAsync();
+                session = null;
                 return;
             }
 
             UiLocalizer.Apply(config);
             window.Page = new StartupPage(session.App);
+            session = null;
         }
         catch (Exception ex)
         {
+            if (session is not null && !handedOff)
+            {
+                await session.DisposeAsync();
+            }
+
             if (IsClosing)
             {
                 return;
