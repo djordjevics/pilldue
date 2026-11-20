@@ -8,7 +8,7 @@ alwaysApply: false
 
 | Project | Put here |
 |---------|----------|
-| `tests/Pilldue.Business.Tests` | Domain rules, planning, services with in-memory ports, `UiLocalizer` key parity, and the WPF project boundary |
+| `tests/Pilldue.Business.Tests` | Domain rules, planning, services with in-memory ports, `UiLocalizer` key parity, and the WPF and MAUI project boundaries |
 | `tests/Pilldue.Data.Tests` | EF repositories, config file, composition, schema |
 | `tests/Pilldue.UI.Wpf.Tests` | View-model behavior for the WPF screens. Does not open a window |
 | `tests/Pilldue.IntegrationTests` | Multi-step flows (add med, refill, skip). No UI |

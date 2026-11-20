@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Pilldue — project context
 
-Personal local medication refill tracker. .NET 10, WPF host, EF Core + SQLite.
+Personal local medication refill tracker. .NET 10, WPF host and .NET MAUI host (Android and iOS), EF Core + SQLite.
 
 ## Product
 
@@ -22,11 +22,13 @@ Personal local medication refill tracker. .NET 10, WPF host, EF Core + SQLite.
 | `src/Pilldue.Business` | Domain, ports, planning, in-memory fakes, UI catalogs. No EF. |
 | `src/Pilldue.Data` | EF Core + SQLite, migrations, config file, `PilldueComposition` |
 | `src/Pilldue.UI.Wpf` | WPF screens. Business only. |
-| `src/Pilldue.UI.Desktop` | WPF host (Windows). Composition root for the desktop screens. |
+| `src/Pilldue.UI.Desktop` | WPF host (Windows). Composition root for the desktop screens. References Data. |
+| `src/Pilldue.UI.Mobile` | MAUI screens (Android and iOS). Business only. |
+| `src/Pilldue.UI.MobileHost` | MAUI host (Android and iOS). Composition root. May reference Data to compose. |
 | `tests/` | Business, Data, Integration |
 | `docs/` | Human docs |
 
-**Direction:** Desktop → Data + UI.Wpf + Business. UI.Wpf → Business. Data → Business. The screen project must not reference Data. UI catalogs live in Business (`UiLocalizer`).
+**Direction:** Desktop → Data + UI.Wpf + Business. UI.Wpf → Business. MobileHost → Data + UI.Mobile + Business. UI.Mobile → Business. Data → Business. Screen projects must not reference Data. UI catalogs live in Business (`UiLocalizer`). The WPF host keeps `%UserProfile%/Pilldue`. The MAUI host uses the device app data directory.
 
 ## Non-negotiables
 

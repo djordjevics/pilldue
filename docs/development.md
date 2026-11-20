@@ -29,11 +29,13 @@ When structure or decisions change, update the relevant files under `docs/` and 
 
 ## Layering
 
-DIP: **UI.Wpf → Business**, **Data → Business**. `Pilldue.UI.Desktop` references Data to compose the app, builds the main view model, and passes `IPilldueApp` into `Pilldue.UI.Wpf`. Persistence stays inside Data. The screen project does not reference Data. Window code-behind only calls `InitializeComponent`.
+DIP: **UI.Wpf → Business**, **UI.Mobile → Business**, **Data → Business**. `Pilldue.UI.Desktop` references Data to compose the app, builds the main view model, and passes `IPilldueApp` into `Pilldue.UI.Wpf`. `Pilldue.UI.MobileHost` references Data to compose the app and passes `IPilldueApp` into `Pilldue.UI.Mobile`. Persistence stays inside Data. Screen projects do not reference Data. Window code-behind only calls `InitializeComponent`.
 
 **SQLite access:** EF Core only (migrations for schema). No Dapper/ADO in v1. Config file I/O is separate from EF.
 
-Default DB path: `%UserProfile%/Pilldue/pilldue.db`, with `config.json` beside it (`SqliteDatabasePaths`). The WPF host reaches it through `PilldueComposition`. Apply schema with `PilldueDbBootstrap.MigrateAsync` on startup. A database left at `%LocalAppData%/Pilldue/pilldue.db` is moved on startup when the profile folder has none.
+WPF DB path: `%UserProfile%/Pilldue/pilldue.db`, with `config.json` beside it (`SqliteDatabasePaths`). The WPF host reaches it through `PilldueComposition.CreateDefaultSessionAsync`. Apply schema with `PilldueDbBootstrap.MigrateAsync` on startup. A database left at `%LocalAppData%/Pilldue/pilldue.db` is moved on that WPF startup when the profile folder has none.
+
+The MAUI host does not use those Windows folders. It calls `CreateSessionAsync` with `pilldue.db` and `config.json` under the device app data directory.
 
 In-memory port implementations live in Business for tests and early UI composition.
 
@@ -50,17 +52,23 @@ In-memory port implementations live in Business for tests and early UI compositi
 dotnet test Pilldue.slnx
 ```
 
+`dotnet test Pilldue.slnx` builds the MAUI projects too, so it needs the .NET MAUI workload. Business tests do not open SQLite and do not need that workload:
+
+```bash
+dotnet test tests/Pilldue.Business.Tests
+```
+
 Integration tests drive Business (+ Data) like a scripted session: add med, skip dose, log refill, then assert stock / refill-by / history. They do not open the WPF window.
 
 Pending feature tests use `[Fact(Skip = "...")]` until implemented so CI stays green.
 
 ## UI strings (i18n)
 
-User-facing copy for the WPF screens lives in `src/Pilldue.Business/Localization/UiLocalizer.cs` (English + Serbian Latin catalogs).
+User-facing copy for the WPF and MAUI screens lives in `src/Pilldue.Business/Localization/UiLocalizer.cs` (English + Serbian Latin catalogs).
 
 1. Add the same key to **both** `English` and `Serbian` dictionaries.
 2. Call `UiLocalizer.Get("Your.Key")` / `Format(...)` from UI screens (never hardcode English in menus/prompts).
-3. Language is stored as `AppConfig.UiLanguage` (`en` / `sr`, empty = detect OS) and theme as `AppConfig.UiTheme` (`light` / `dark` / `system`, default `system`) in `%UserProfile%/Pilldue/config.json`. The WPF settings view model saves both through `SaveConfigAsync` and applies `UiLocalizer` and `WpfTheme` immediately. Cancel leaves them unchanged. Captions on the already open main window are observable properties so a saved language change updates them.
+3. Language is stored as `AppConfig.UiLanguage` (`en` / `sr`, empty = detect OS) and theme as `AppConfig.UiTheme` (`light` / `dark` / `system`, default `system`) in `config.json`. The WPF host keeps that file in `%UserProfile%/Pilldue/`. The MAUI host keeps it in the device app data directory. The WPF settings view model saves both through `SaveConfigAsync` and applies `UiLocalizer` and `WpfTheme` immediately. Cancel leaves them unchanged. Captions on the already open main window are observable properties so a saved language change updates them.
 
 `tests/Pilldue.Business.Tests` asserts every English key exists in Serbian.
 
@@ -69,6 +77,14 @@ User-facing copy for the WPF screens lives in `src/Pilldue.Business/Localization
 ```bash
 dotnet build Pilldue.slnx
 dotnet run --project src/Pilldue.UI.Desktop
+```
+
+The solution includes `Pilldue.UI.Mobile` and `Pilldue.UI.MobileHost` (`net10.0-android` and `net10.0-ios`). Building those projects needs the .NET MAUI workload. The WPF host still builds on its own:
+
+```bash
+dotnet build src/Pilldue.UI.Desktop
+dotnet build src/Pilldue.UI.MobileHost -f net10.0-android
+dotnet build src/Pilldue.UI.MobileHost -f net10.0-ios
 ```
 
 Publish a small exe when ready to distribute:
