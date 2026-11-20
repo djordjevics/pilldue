@@ -89,7 +89,7 @@ public partial class BulkRefillViewModel : DialogViewModel
         {
             RefilledCount += ex.SavedCount;
             Changed = true;
-            ClearSavedPackageCounts(ex.SavedCount);
+            ClearSavedPackageCounts(lines, ex.SavedCount);
             IsBusy = false;
             _interaction.ShowMessage(
                 UiLocalizer.Format("BulkRefill.Partial", ex.SavedCount, ex.Message),
@@ -137,23 +137,28 @@ public partial class BulkRefillViewModel : DialogViewModel
         return true;
     }
 
-    private void ClearSavedPackageCounts(int savedCount)
+    private void ClearSavedPackageCounts(IReadOnlyList<BulkRefillLine> submitted, int savedCount)
     {
-        var remaining = savedCount;
-        foreach (var row in Rows)
+        var savedIds = new HashSet<Guid>();
+        foreach (var line in submitted)
         {
-            if (remaining == 0)
+            if (savedIds.Count == savedCount)
             {
                 break;
             }
 
-            if (!int.TryParse(row.PackageCountText, out var count) || count < 1)
+            if (line.PackageCount >= 1)
             {
-                continue;
+                savedIds.Add(line.MedicationId);
             }
+        }
 
-            row.PackageCountText = "0";
-            remaining--;
+        foreach (var row in Rows)
+        {
+            if (savedIds.Contains(row.MedicationId))
+            {
+                row.PackageCountText = "0";
+            }
         }
     }
 }

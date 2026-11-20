@@ -53,6 +53,7 @@
                   HeadersVisibility="Column"
                   CanUserAddRows="False"
                   CanUserDeleteRows="False"
+                  IsReadOnly="{Binding IsBusy}"
                   SelectionMode="Single">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="{wpf:Loc List.ColName}"
