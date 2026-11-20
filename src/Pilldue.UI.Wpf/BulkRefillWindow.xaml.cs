@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using Pilldue.Business;
@@ -10,6 +11,7 @@ public partial class BulkRefillWindow : Window
     private readonly IPilldueApp _app;
     private readonly List<BulkRefillRow> _rows = new();
     private bool _confirming;
+    private bool _allowClose;
 
     public bool Changed { get; private set; }
 
@@ -44,8 +46,22 @@ public partial class BulkRefillWindow : Window
 
     private void OnCancelClick(object sender, RoutedEventArgs e)
     {
+        if (_confirming)
+        {
+            return;
+        }
+
+        _allowClose = true;
         DialogResult = false;
         Close();
+    }
+
+    private void OnClosing(object? sender, CancelEventArgs e)
+    {
+        if (_confirming && !_allowClose)
+        {
+            e.Cancel = true;
+        }
     }
 
     private async void OnConfirmClick(object sender, RoutedEventArgs e)
@@ -75,6 +91,7 @@ public partial class BulkRefillWindow : Window
             var saved = await BulkRefillPass.ApplyAsync(_app, lines);
             RefilledCount += saved;
             Changed = RefilledCount > 0;
+            _allowClose = true;
             DialogResult = true;
             Close();
         }
