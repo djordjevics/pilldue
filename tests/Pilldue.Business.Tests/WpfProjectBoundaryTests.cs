@@ -78,6 +78,39 @@ public class WpfProjectBoundaryTests
     }
 
     [Fact]
+    public void Bulk_refill_is_a_separate_screen_that_uses_the_app()
+    {
+        var toolbar = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml");
+        Assert.Contains("Desktop.BulkRefill", toolbar, StringComparison.Ordinal);
+        Assert.Contains("OnBulkRefillClick", toolbar, StringComparison.Ordinal);
+        Assert.Contains("OnRefillClick", toolbar, StringComparison.Ordinal);
+
+        var main = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml.cs");
+        Assert.Contains("new BulkRefillWindow(_app)", main, StringComparison.Ordinal);
+        Assert.Contains("new RefillWindow(selected)", main, StringComparison.Ordinal);
+        Assert.Contains(
+            "RefillAsync(selected.Id, dialog.PackageCount, DateOnly.FromDateTime(DateTime.Today))",
+            main,
+            StringComparison.Ordinal);
+
+        var xaml = ReadRepoFile("src/Pilldue.UI.Wpf/BulkRefillWindow.xaml");
+        Assert.Contains("BulkRefill.Title", xaml, StringComparison.Ordinal);
+        Assert.Contains("BulkRefill.Packages", xaml, StringComparison.Ordinal);
+        Assert.Contains("OnCancelClick", xaml, StringComparison.Ordinal);
+        Assert.Contains("OnConfirmClick", xaml, StringComparison.Ordinal);
+
+        var dialog = ReadRepoFile("src/Pilldue.UI.Wpf/BulkRefillWindow.xaml.cs");
+        Assert.Contains("IPilldueApp", dialog, StringComparison.Ordinal);
+        Assert.Contains("ListMedicationsAsync", dialog, StringComparison.Ordinal);
+        Assert.Contains("BulkRefillPass.StartingPackageCount", dialog, StringComparison.Ordinal);
+        Assert.Contains("BulkRefillPass.ApplyAsync(_app, lines)", dialog, StringComparison.Ordinal);
+        Assert.Contains("DialogResult = false", dialog, StringComparison.Ordinal);
+        Assert.DoesNotContain("ApplyAsync", dialog.Split("OnConfirmClick")[0], StringComparison.Ordinal);
+        Assert.DoesNotContain("IMedicationRepository", dialog, StringComparison.Ordinal);
+        Assert.DoesNotContain("IRefillEventRepository", dialog, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void Coverage_screen_shows_today_query_values()
     {
         var toolbar = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml");

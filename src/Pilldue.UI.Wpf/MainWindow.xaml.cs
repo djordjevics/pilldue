@@ -197,6 +197,21 @@ public partial class MainWindow : Window
         }
     }
 
+    private async void OnBulkRefillClick(object sender, RoutedEventArgs e)
+    {
+        var dialog = new BulkRefillWindow(_app) { Owner = this };
+        var confirmed = dialog.ShowDialog() == true;
+        if (dialog.Changed)
+        {
+            await RefreshAsync();
+        }
+
+        if (confirmed && dialog.RefilledCount > 0)
+        {
+            StatusText.Text = UiLocalizer.Format("BulkRefill.Done", dialog.RefilledCount);
+        }
+    }
+
     private async void OnRemoveClick(object sender, RoutedEventArgs e)
     {
         if (MedicationsGrid.SelectedItem is not Medication selected)
@@ -239,6 +254,7 @@ public partial class MainWindow : Window
         AddButton.Content = UiLocalizer.Get("Desktop.Add");
         EditButton.Content = UiLocalizer.Get("Desktop.Edit");
         RefillButton.Content = UiLocalizer.Get("Desktop.Refill");
+        BulkRefillButton.Content = UiLocalizer.Get("Desktop.BulkRefill");
         RemoveButton.Content = UiLocalizer.Get("Desktop.Remove");
         CoverageButton.Content = UiLocalizer.Get("Desktop.Coverage");
         SkipButton.Content = UiLocalizer.Get("Desktop.Skip");

@@ -20,6 +20,7 @@
                 <Button x:Name="AddButton" Content="{wpf:Loc Desktop.Add}" Width="72" Margin="0,0,8,0" Click="OnAddClick" />
                 <Button x:Name="EditButton" Content="{wpf:Loc Desktop.Edit}" Width="80" Margin="0,0,8,0" Click="OnEditClick" />
                 <Button x:Name="RefillButton" Content="{wpf:Loc Desktop.Refill}" Width="72" Margin="0,0,8,0" Click="OnRefillClick" />
+                <Button x:Name="BulkRefillButton" Content="{wpf:Loc Desktop.BulkRefill}" MinWidth="120" Margin="0,0,8,0" Click="OnBulkRefillClick" />
                 <Button x:Name="RemoveButton" Content="{wpf:Loc Desktop.Remove}" Width="88" Click="OnRemoveClick" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
