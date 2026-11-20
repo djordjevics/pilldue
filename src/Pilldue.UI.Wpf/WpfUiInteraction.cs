@@ -61,12 +61,36 @@ public sealed class WpfUiInteraction : IUiInteraction
         ArgumentNullException.ThrowIfNull(window);
         ArgumentNullException.ThrowIfNull(viewModel);
         window.DataContext = viewModel;
-        if (_owner is not null)
+        var owner = ActiveWindow(window) ?? _owner;
+        if (owner is not null)
         {
-            window.Owner = _owner;
+            window.Owner = owner;
         }
 
         return window.ShowDialog();
+    }
+
+    /// <summary>
+    /// A dialog opened from another dialog (the missed-dose list opening the flag dialog)
+    /// is owned by that active window. The main window stays the owner for the first dialog.
+    /// </summary>
+    private static Window? ActiveWindow(Window dialog)
+    {
+        var application = Application.Current;
+        if (application is null)
+        {
+            return null;
+        }
+
+        foreach (Window open in application.Windows)
+        {
+            if (open.IsActive && !ReferenceEquals(open, dialog))
+            {
+                return open;
+            }
+        }
+
+        return null;
     }
 
     private static MessageBoxImage ToImage(UiMessageKind kind) => kind switch
