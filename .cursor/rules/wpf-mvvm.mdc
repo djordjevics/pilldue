@@ -1,0 +1,36 @@
+---
+description: WPF screens use view models and bindings; code-behind only initializes the view
+globs: src/Pilldue.UI.Wpf/**/*,src/Pilldue.UI.Desktop/**/*
+alwaysApply: false
+---
+
+# WPF MVVM
+
+Screen behavior in `Pilldue.UI.Wpf` lives on view models and bindings. #117 moves the existing click-handler windows. Do not rewrite them in a drive-by edit.
+
+## Where it lives
+
+- View models stay in `Pilldue.UI.Wpf`. Do not add a project.
+- Business and Data do not reference WPF or `CommunityToolkit.Mvvm`. Do not change `IPilldueApp` signatures.
+- Reference `CommunityToolkit.Mvvm` only from `Pilldue.UI.Wpf`. Use `ObservableObject`, `ObservableProperty`, and `RelayCommand`. Do not add a signals library or a second notification mechanism.
+- `WpfTheme` stays in `Pilldue.UI.Wpf`.
+
+## Window
+
+A window code-behind file only calls `InitializeComponent`. The partial class stays because WPF generates the other half. Commands, validation, and dialog results live on the view model. View models call `IPilldueApp`.
+
+Dialogs and message boxes go through a UI interaction type in `Pilldue.UI.Wpf`, so view models do not reference `Window`. Cancel closes without saving.
+
+## Host
+
+`Application` startup in `Pilldue.UI.Desktop` stays the composition root. It builds the main view model and the interaction type, applies `UiLocalizer` and `WpfTheme`, and does not own screen logic.
+
+## Language and theme
+
+Settings save language and theme through `SaveConfigAsync`, then apply `UiLocalizer` and `WpfTheme`. Cancel does not save.
+
+Captions that must change on the already open main window after a language save are observable properties. `{wpf:Loc}` stays for text created after the language is applied.
+
+## Tests
+
+View-model behavior tests go in a WPF test project. `Pilldue.Business.Tests` keeps the project-boundary checks and does not reference WPF. Integration tests still do not open the UI.

@@ -15,5 +15,6 @@ alwaysApply: false
 Run `dotnet test Pilldue.slnx` when the user asks for verification. Do not start a full test run as part of opening a PR (`create-pr`).
 
 - Business tests must not open SQLite.
-- Integration tests may use a temp database and `MigrateAsync`.
+- WPF view-model behavior tests go in a WPF test project (`wpf-mvvm`). `Pilldue.Business.Tests` keeps the project-boundary checks and does not reference WPF.
+- Integration tests may use a temp database and `MigrateAsync`. Integration tests do not open the UI.
 - A skipped `[Fact(Skip = "...")]` is for a behavior that is specified and not built yet. Do not skip a test to hide a failure.
