@@ -25,7 +25,13 @@ public partial class App : Application
             UiLocalizer.Apply(config);
             WpfTheme.Apply(config);
 
-            var window = new MainWindow(_session.App);
+            var interaction = new WpfUiInteraction();
+            var viewModel = new MainViewModel(_session.App, interaction);
+            var window = new MainWindow
+            {
+                DataContext = viewModel,
+            };
+            interaction.SetOwner(window);
             MainWindow = window;
             ShutdownMode = ShutdownMode.OnMainWindowClose;
             window.Show();

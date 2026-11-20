@@ -10,6 +10,7 @@
   <Folder Name="/tests/">
     <Project Path="tests/Pilldue.Business.Tests/Pilldue.Business.Tests.csproj" />
     <Project Path="tests/Pilldue.Data.Tests/Pilldue.Data.Tests.csproj" />
+    <Project Path="tests/Pilldue.UI.Wpf.Tests/Pilldue.UI.Wpf.Tests.csproj" />
     <Project Path="tests/Pilldue.IntegrationTests/Pilldue.IntegrationTests.csproj" />
   </Folder>
 </Solution>

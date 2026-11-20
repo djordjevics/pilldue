@@ -29,7 +29,7 @@ When structure or decisions change, update the relevant files under `docs/` and 
 
 ## Layering
 
-DIP: **UI.Wpf → Business**, **UI.Mobile → Business**, **Data → Business**. `Pilldue.UI.Desktop` references Data to compose the app and passes `IPilldueApp` into `Pilldue.UI.Wpf`. `Pilldue.UI.MobileHost` references Data to compose the app and passes `IPilldueApp` into `Pilldue.UI.Mobile`. Persistence stays inside Data. Screen projects do not reference Data.
+DIP: **UI.Wpf → Business**, **UI.Mobile → Business**, **Data → Business**. `Pilldue.UI.Desktop` references Data to compose the app, builds the main view model, and passes `IPilldueApp` into `Pilldue.UI.Wpf`. `Pilldue.UI.MobileHost` references Data to compose the app and passes `IPilldueApp` into `Pilldue.UI.Mobile`. Persistence stays inside Data. Screen projects do not reference Data. Window code-behind only calls `InitializeComponent`.
 
 **SQLite access:** EF Core only (migrations for schema). No Dapper/ADO in v1. Config file I/O is separate from EF.
 
@@ -44,7 +44,8 @@ In-memory port implementations live in Business for tests and early UI compositi
 | Project | Role |
 |---------|------|
 | `tests/Pilldue.Data.Tests` | Unit tests for SQLite / persistence |
-| `tests/Pilldue.Business.Tests` | Unit tests for domain / application services |
+| `tests/Pilldue.Business.Tests` | Unit tests for domain / application services, including the WPF project boundary |
+| `tests/Pilldue.UI.Wpf.Tests` | View-model behavior for the WPF screens. Does not open a window |
 | `tests/Pilldue.IntegrationTests` | Multi-step scenarios (actions → assert results), no UI |
 
 ```bash
@@ -67,7 +68,7 @@ User-facing copy for the WPF and MAUI screens lives in `src/Pilldue.Business/Loc
 
 1. Add the same key to **both** `English` and `Serbian` dictionaries.
 2. Call `UiLocalizer.Get("Your.Key")` / `Format(...)` from UI screens (never hardcode English in menus/prompts).
-3. Language is stored as `AppConfig.UiLanguage` (`en` / `sr`, empty = detect OS) and theme as `AppConfig.UiTheme` (`light` / `dark` / `system`, default `system`) in `config.json`. The WPF host keeps that file in `%UserProfile%/Pilldue/`. The MAUI host keeps it in the device app data directory. The WPF Settings window saves both and applies them immediately.
+3. Language is stored as `AppConfig.UiLanguage` (`en` / `sr`, empty = detect OS) and theme as `AppConfig.UiTheme` (`light` / `dark` / `system`, default `system`) in `config.json`. The WPF host keeps that file in `%UserProfile%/Pilldue/`. The MAUI host keeps it in the device app data directory. The WPF settings view model saves both through `SaveConfigAsync` and applies `UiLocalizer` and `WpfTheme` immediately. Cancel leaves them unchanged. Captions on the already open main window are observable properties so a saved language change updates them.
 
 `tests/Pilldue.Business.Tests` asserts every English key exists in Serbian.
 
