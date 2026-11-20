@@ -47,6 +47,8 @@ User logs a refill with **N packages** (recorded as **today**) →
 
 Record a refill history entry (today’s date, med, package count).
 
+**Several medications in one pass** (desktop). This is separate from the one-medication refill. The window lists medications and shows a package count for each, starting at the prescribed package count, or 1 when that count is 0. Set a count to 0 to leave that medication out. Confirming records **today** for each medication whose count is at least 1: stock increases by count × package size, and one refill history row is stored. A count below 0 is rejected and nothing in that pass is written. Confirming when every count is 0 writes nothing. Cancel writes nothing. Each included medication is its own refill. If a later refill fails, refills already saved in that pass stay saved. The window says how many were saved and sets those counts to 0, so confirming again does not refill them a second time. There is no date other than today.
+
 ## Flow 3 — Calendar
 
 From **today** through the **latest second refill** among medications:

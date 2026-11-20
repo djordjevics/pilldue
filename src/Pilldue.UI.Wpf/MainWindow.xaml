@@ -19,6 +19,7 @@
                 <Button Content="{Binding AddCaption}" Width="72" Margin="0,0,8,0" Command="{Binding AddCommand}" />
                 <Button Content="{Binding EditCaption}" Width="80" Margin="0,0,8,0" Command="{Binding EditCommand}" />
                 <Button Content="{Binding RefillCaption}" Width="72" Margin="0,0,8,0" Command="{Binding RefillCommand}" />
+                <Button Content="{Binding BulkRefillCaption}" MinWidth="120" Margin="0,0,8,0" Command="{Binding BulkRefillCommand}" />
                 <Button Content="{Binding RemoveCaption}" Width="88" Command="{Binding RemoveCommand}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">

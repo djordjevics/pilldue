@@ -46,6 +46,9 @@ public partial class MainViewModel : ObservableObject
     private string _refillCaption = string.Empty;
 
     [ObservableProperty]
+    private string _bulkRefillCaption = string.Empty;
+
+    [ObservableProperty]
     private string _removeCaption = string.Empty;
 
     [ObservableProperty]
@@ -159,6 +162,30 @@ public partial class MainViewModel : ObservableObject
         catch (Exception ex)
         {
             _interaction.ShowMessage(ex.Message, UiLocalizer.Get("Refill.Title"), UiMessageKind.Error);
+        }
+    }
+
+    [RelayCommand]
+    private async Task BulkRefillAsync()
+    {
+        var dialog = new BulkRefillViewModel(_app, _interaction);
+        try
+        {
+            await dialog.LoadAsync();
+            _interaction.ShowBulkRefill(dialog);
+            if (dialog.Changed)
+            {
+                await RefreshAsync();
+            }
+
+            if (dialog.RefilledCount > 0)
+            {
+                StatusText = UiLocalizer.Format("BulkRefill.Done", dialog.RefilledCount);
+            }
+        }
+        catch (Exception ex)
+        {
+            _interaction.ShowMessage(ex.Message, UiLocalizer.Get("BulkRefill.Title"), UiMessageKind.Error);
         }
     }
 
@@ -291,6 +318,7 @@ public partial class MainViewModel : ObservableObject
         AddCaption = UiLocalizer.Get("Desktop.Add");
         EditCaption = UiLocalizer.Get("Desktop.Edit");
         RefillCaption = UiLocalizer.Get("Desktop.Refill");
+        BulkRefillCaption = UiLocalizer.Get("Desktop.BulkRefill");
         RemoveCaption = UiLocalizer.Get("Desktop.Remove");
         CoverageCaption = UiLocalizer.Get("Desktop.Coverage");
         SkipCaption = UiLocalizer.Get("Desktop.Skip");

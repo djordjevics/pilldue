@@ -1,0 +1,69 @@
+<Window x:Class="Pilldue.UI.Wpf.BulkRefillWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wpf="clr-namespace:Pilldue.UI.Wpf"
+        Title="{wpf:Loc BulkRefill.Title}"
+        Height="480"
+        Width="520"
+        MinHeight="320"
+        MinWidth="420"
+        WindowStartupLocation="CenterOwner"
+        wpf:DialogCloser.CloseResult="{Binding CloseResult, Mode=OneWay}"
+        wpf:DialogCloser.CancelClose="{Binding IsBusy}">
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="{Binding DismissCommand}" />
+    </Window.InputBindings>
+    <DockPanel Margin="16">
+        <TextBlock DockPanel.Dock="Top"
+                   Text="{wpf:Loc BulkRefill.Hint}"
+                   TextWrapping="Wrap"
+                   Margin="0,0,0,12" />
+
+        <StackPanel DockPanel.Dock="Bottom"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,12,0,0">
+            <Button Content="{wpf:Loc Common.Cancel}"
+                    Width="88"
+                    Margin="0,0,8,0"
+                    Command="{Binding DismissCommand}" />
+            <Button Content="{wpf:Loc BulkRefill.Title}"
+                    MinWidth="140"
+                    IsDefault="True"
+                    Command="{Binding ConfirmCommand}" />
+        </StackPanel>
+
+        <TextBlock DockPanel.Dock="Top"
+                   Text="{wpf:Loc BulkRefill.Empty}"
+                   Margin="0,0,0,8">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsEmpty}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+
+        <DataGrid ItemsSource="{Binding Rows}"
+                  AutoGenerateColumns="False"
+                  HeadersVisibility="Column"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="{Binding IsBusy}"
+                  SelectionMode="Single">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="{wpf:Loc List.ColName}"
+                                    Binding="{Binding Name}"
+                                    IsReadOnly="True"
+                                    Width="*" />
+                <DataGridTextColumn Header="{wpf:Loc BulkRefill.Packages}"
+                                    Binding="{Binding PackageCountText, UpdateSourceTrigger=PropertyChanged}"
+                                    Width="140" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</Window>

@@ -34,6 +34,7 @@ public class WpfProjectBoundaryTests
             new[]
             {
                 "AddMedicationWindow.xaml.cs",
+                "BulkRefillWindow.xaml.cs",
                 "CalendarWindow.xaml.cs",
                 "FlagMissedDoseWindow.xaml.cs",
                 "MainWindow.xaml.cs",

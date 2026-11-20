@@ -40,6 +40,9 @@ public sealed class WpfUiInteraction : IUiInteraction
     public bool ShowRefill(RefillViewModel viewModel) =>
         Show(new RefillWindow(), viewModel) == true;
 
+    public bool ShowBulkRefill(BulkRefillViewModel viewModel) =>
+        Show(new BulkRefillWindow(), viewModel) == true;
+
     public bool ShowSkipDose(SkipDoseViewModel viewModel) =>
         Show(new SkipDoseWindow(), viewModel) == true;
 

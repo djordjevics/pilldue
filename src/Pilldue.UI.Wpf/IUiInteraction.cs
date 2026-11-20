@@ -20,6 +20,8 @@ public interface IUiInteraction
 
     bool ShowRefill(RefillViewModel viewModel);
 
+    bool ShowBulkRefill(BulkRefillViewModel viewModel);
+
     bool ShowSkipDose(SkipDoseViewModel viewModel);
 
     void ShowStockCoverage(StockCoverageViewModel viewModel);

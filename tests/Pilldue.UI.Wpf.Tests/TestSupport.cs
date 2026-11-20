@@ -90,6 +90,11 @@ internal sealed class FakeUiInteraction : IUiInteraction
     public bool ShowRefill(RefillViewModel viewModel) =>
         Refill?.Invoke(viewModel) ?? false;
 
+    public bool ShowBulkRefill(BulkRefillViewModel viewModel) =>
+        BulkRefill?.Invoke(viewModel) ?? false;
+
+    public Func<BulkRefillViewModel, bool>? BulkRefill { get; set; }
+
     public bool ShowSkipDose(SkipDoseViewModel viewModel) =>
         Skip?.Invoke(viewModel) ?? false;
 
