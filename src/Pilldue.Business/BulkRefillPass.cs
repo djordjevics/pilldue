@@ -39,13 +39,36 @@ public static class BulkRefillPass
                 continue;
             }
 
-            await app.RefillAsync(line.MedicationId, line.PackageCount, today, cancellationToken)
-                .ConfigureAwait(false);
+            try
+            {
+                await app.RefillAsync(line.MedicationId, line.PackageCount, today, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (Exception ex) when (saved > 0)
+            {
+                throw new BulkRefillInterruptedException(saved, ex);
+            }
+
             saved++;
         }
 
         return saved;
     }
+}
+
+/// <summary>
+/// A later refill in the pass failed. <see cref="SavedCount"/> refills before it are already stored.
+/// </summary>
+public sealed class BulkRefillInterruptedException : Exception
+{
+    public BulkRefillInterruptedException(int savedCount, Exception inner)
+        : base(inner.Message, inner)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(savedCount);
+        SavedCount = savedCount;
+    }
+
+    public int SavedCount { get; }
 }
 
 /// <summary>One medication in a bulk refill pass.</summary>

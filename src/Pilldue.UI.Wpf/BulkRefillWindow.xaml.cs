@@ -73,10 +73,22 @@ public partial class BulkRefillWindow : Window
         try
         {
             var saved = await BulkRefillPass.ApplyAsync(_app, lines);
-            RefilledCount = saved;
-            Changed = saved > 0;
+            RefilledCount += saved;
+            Changed = RefilledCount > 0;
             DialogResult = true;
             Close();
+        }
+        catch (BulkRefillInterruptedException ex)
+        {
+            RefilledCount += ex.SavedCount;
+            Changed = true;
+            ClearSavedPackageCounts(ex.SavedCount);
+            MessageBox.Show(
+                this,
+                UiLocalizer.Format("BulkRefill.Partial", ex.SavedCount, ex.Message),
+                UiLocalizer.Get("BulkRefill.Title"),
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
         }
         catch (ArgumentOutOfRangeException)
         {
@@ -89,10 +101,7 @@ public partial class BulkRefillWindow : Window
         }
         catch (Exception ex)
         {
-            Changed = lines.Any(line => line.PackageCount >= 1);
             MessageBox.Show(this, ex.Message, UiLocalizer.Get("BulkRefill.Title"), MessageBoxButton.OK, MessageBoxImage.Error);
-            DialogResult = false;
-            Close();
         }
         finally
         {
@@ -120,6 +129,29 @@ public partial class BulkRefillWindow : Window
         }
 
         return true;
+    }
+
+    private void ClearSavedPackageCounts(int savedCount)
+    {
+        var remaining = savedCount;
+        foreach (var row in _rows)
+        {
+            if (remaining == 0)
+            {
+                break;
+            }
+
+            if (!int.TryParse(row.PackageCountText, out var count) || count < 1)
+            {
+                continue;
+            }
+
+            row.PackageCountText = "0";
+            remaining--;
+        }
+
+        MedicationsGrid.ItemsSource = null;
+        MedicationsGrid.ItemsSource = _rows;
     }
 
     private sealed class BulkRefillRow

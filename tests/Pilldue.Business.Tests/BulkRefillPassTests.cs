@@ -112,11 +112,13 @@ public class BulkRefillPassTests
         var second = await app.AddMedicationAsync(NewMedication("Beta", packageSize: 30, stock: 8));
         var today = DateOnly.FromDateTime(DateTime.Today);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => BulkRefillPass.ApplyAsync(spy, new[]
+        var interrupted = await Assert.ThrowsAsync<BulkRefillInterruptedException>(() => BulkRefillPass.ApplyAsync(spy, new[]
         {
             new BulkRefillLine { MedicationId = first.Id, PackageCount = 2 },
             new BulkRefillLine { MedicationId = second.Id, PackageCount = 1 },
         }));
+        Assert.Equal(1, interrupted.SavedCount);
+        Assert.IsType<InvalidOperationException>(interrupted.InnerException);
 
         var call = Assert.Single(spy.Refills);
         Assert.Equal((first.Id, 2, today), call);

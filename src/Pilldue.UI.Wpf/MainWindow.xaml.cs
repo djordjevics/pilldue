@@ -200,13 +200,13 @@ public partial class MainWindow : Window
     private async void OnBulkRefillClick(object sender, RoutedEventArgs e)
     {
         var dialog = new BulkRefillWindow(_app) { Owner = this };
-        var confirmed = dialog.ShowDialog() == true;
+        _ = dialog.ShowDialog() == true;
         if (dialog.Changed)
         {
             await RefreshAsync();
         }
 
-        if (confirmed && dialog.RefilledCount > 0)
+        if (dialog.RefilledCount > 0)
         {
             StatusText.Text = UiLocalizer.Format("BulkRefill.Done", dialog.RefilledCount);
         }
