@@ -7,13 +7,12 @@
         Width="860"
         MinHeight="360"
         MinWidth="640"
-        WindowStartupLocation="CenterOwner"
-        Loaded="OnLoaded">
+        WindowStartupLocation="CenterOwner">
     <DockPanel Margin="16">
-        <TextBlock x:Name="RangeText"
-                   DockPanel.Dock="Top"
+        <TextBlock DockPanel.Dock="Top"
                    TextWrapping="Wrap"
-                   Margin="0,0,0,8" />
+                   Margin="0,0,0,8"
+                   Text="{Binding RangeText}" />
         <TextBlock DockPanel.Dock="Top"
                    Text="{wpf:Loc Cal.RestockNote}"
                    TextWrapping="Wrap"
@@ -25,12 +24,21 @@
                 Margin="0,12,0,0"
                 IsCancel="True" />
         <DockPanel>
-            <TextBlock x:Name="EmptyText"
-                       DockPanel.Dock="Top"
+            <TextBlock DockPanel.Dock="Top"
                        Text="{wpf:Loc Cal.Empty}"
-                       Visibility="Collapsed"
-                       Margin="0,0,0,8" />
-            <DataGrid x:Name="CalendarGrid"
+                       Margin="0,0,0,8">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsEmpty}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <DataGrid ItemsSource="{Binding Rows}"
                       AutoGenerateColumns="False"
                       IsReadOnly="True"
                       HeadersVisibility="Column"

@@ -7,12 +7,11 @@
         Width="840"
         MinHeight="400"
         MinWidth="640"
-        WindowStartupLocation="CenterOwner"
-        Loaded="OnLoaded">
+        WindowStartupLocation="CenterOwner">
     <DockPanel Margin="16">
-        <TextBlock x:Name="AsOfText"
-                   DockPanel.Dock="Top"
-                   Margin="0,0,0,12" />
+        <TextBlock DockPanel.Dock="Top"
+                   Margin="0,0,0,12"
+                   Text="{Binding AsOfText}" />
         <Button DockPanel.Dock="Bottom"
                 Content="{wpf:Loc Common.Back}"
                 Width="88"
@@ -22,12 +21,21 @@
         <TabControl>
             <TabItem Header="{wpf:Loc Plan.Coverage}">
                 <DockPanel Margin="0,8,0,0">
-                    <TextBlock x:Name="CoverageEmpty"
-                               DockPanel.Dock="Top"
+                    <TextBlock DockPanel.Dock="Top"
                                Text="{wpf:Loc Plan.EmptyMeds}"
-                               Visibility="Collapsed"
-                               Margin="0,0,0,8" />
-                    <DataGrid x:Name="CoverageGrid"
+                               Margin="0,0,0,8">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsCoverageEmpty}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <DataGrid ItemsSource="{Binding CoverageRows}"
                               AutoGenerateColumns="False"
                               IsReadOnly="True"
                               HeadersVisibility="Column"
@@ -46,13 +54,22 @@
             </TabItem>
             <TabItem Header="{wpf:Loc Plan.Short}">
                 <DockPanel Margin="0,8,0,0">
-                    <TextBlock x:Name="ShortEmpty"
-                               DockPanel.Dock="Top"
+                    <TextBlock DockPanel.Dock="Top"
                                Text="{wpf:Loc Plan.ShortEmpty}"
-                               Visibility="Collapsed"
                                TextWrapping="Wrap"
-                               Margin="0,0,0,8" />
-                    <DataGrid x:Name="ShortGrid"
+                               Margin="0,0,0,8">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsShortEmpty}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <DataGrid ItemsSource="{Binding ShortRows}"
                               AutoGenerateColumns="False"
                               IsReadOnly="True"
                               HeadersVisibility="Column"
@@ -69,13 +86,22 @@
             </TabItem>
             <TabItem Header="{wpf:Loc Plan.Extra}">
                 <DockPanel Margin="0,8,0,0">
-                    <TextBlock x:Name="ExtraEmpty"
-                               DockPanel.Dock="Top"
+                    <TextBlock DockPanel.Dock="Top"
                                Text="{wpf:Loc Plan.ExtraEmpty}"
-                               Visibility="Collapsed"
                                TextWrapping="Wrap"
-                               Margin="0,0,0,8" />
-                    <DataGrid x:Name="ExtraGrid"
+                               Margin="0,0,0,8">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsExtraEmpty}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <DataGrid ItemsSource="{Binding ExtraRows}"
                               AutoGenerateColumns="False"
                               IsReadOnly="True"
                               HeadersVisibility="Column"

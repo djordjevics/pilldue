@@ -6,8 +6,7 @@
         Height="520"
         Width="840"
         MinHeight="360"
-        MinWidth="720"
-        Loaded="OnLoaded">
+        MinWidth="720">
     <DockPanel Margin="16">
         <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
             <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
@@ -16,29 +15,35 @@
                            FontWeight="SemiBold"
                            VerticalAlignment="Center"
                            Margin="0,0,16,0" />
-                <Button x:Name="RefreshButton" Content="{wpf:Loc Desktop.Refresh}" Width="88" Margin="0,0,8,0" Click="OnRefreshClick" />
-                <Button x:Name="AddButton" Content="{wpf:Loc Desktop.Add}" Width="72" Margin="0,0,8,0" Click="OnAddClick" />
-                <Button x:Name="EditButton" Content="{wpf:Loc Desktop.Edit}" Width="80" Margin="0,0,8,0" Click="OnEditClick" />
-                <Button x:Name="RefillButton" Content="{wpf:Loc Desktop.Refill}" Width="72" Margin="0,0,8,0" Click="OnRefillClick" />
-                <Button x:Name="BulkRefillButton" Content="{wpf:Loc Desktop.BulkRefill}" MinWidth="120" Margin="0,0,8,0" Click="OnBulkRefillClick" />
-                <Button x:Name="RemoveButton" Content="{wpf:Loc Desktop.Remove}" Width="88" Click="OnRemoveClick" />
+                <Button Content="{Binding RefreshCaption}" Width="88" Margin="0,0,8,0" Command="{Binding RefreshCommand}" />
+                <Button Content="{Binding AddCaption}" Width="72" Margin="0,0,8,0" Command="{Binding AddCommand}" />
+                <Button Content="{Binding EditCaption}" Width="80" Margin="0,0,8,0" Command="{Binding EditCommand}" />
+                <Button Content="{Binding RefillCaption}" Width="72" Margin="0,0,8,0" Command="{Binding RefillCommand}" />
+                <Button Content="{Binding BulkRefillCaption}" MinWidth="120" Margin="0,0,8,0" Command="{Binding BulkRefillCommand}" />
+                <Button Content="{Binding RemoveCaption}" Width="88" Command="{Binding RemoveCommand}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <Button x:Name="CoverageButton" Content="{wpf:Loc Desktop.Coverage}" Width="108" Margin="0,0,8,0" Click="OnCoverageClick" />
-                <Button x:Name="SkipButton" Content="{wpf:Loc Desktop.Skip}" Width="72" Margin="0,0,8,0" Click="OnSkipClick" />
-                <Button x:Name="MissedButton" Content="{wpf:Loc Desktop.Missed}" Width="80" Margin="0,0,8,0" Click="OnMissedClick" />
-                <Button x:Name="CalendarButton" Content="{wpf:Loc Desktop.Calendar}" Width="88" Margin="0,0,8,0" Click="OnCalendarClick" />
-                <Button x:Name="SettingsButton" Content="{wpf:Loc Desktop.Settings}" MinWidth="88" Click="OnSettingsClick" />
+                <Button Content="{Binding CoverageCaption}" Width="108" Margin="0,0,8,0" Command="{Binding CoverageCommand}" />
+                <Button Content="{Binding SkipCaption}" Width="72" Margin="0,0,8,0" Command="{Binding SkipCommand}" />
+                <Button Content="{Binding MissedCaption}" Width="80" Margin="0,0,8,0" Command="{Binding MissedCommand}" />
+                <Button Content="{Binding CalendarCaption}" Width="88" Margin="0,0,8,0" Command="{Binding CalendarCommand}" />
+                <Button Content="{Binding SettingsCaption}" MinWidth="88" Command="{Binding SettingsCommand}" />
             </StackPanel>
         </StackPanel>
 
-        <TextBlock x:Name="StatusText"
-                   DockPanel.Dock="Bottom"
+        <TextBlock DockPanel.Dock="Bottom"
                    Margin="0,12,0,0"
                    Foreground="Gray"
-                   TextWrapping="Wrap" />
+                   TextWrapping="Wrap"
+                   Text="{Binding StatusText}" />
 
-        <DataGrid x:Name="MedicationsGrid"
+        <DataGrid ItemsSource="{Binding Medications}"
+                  SelectedItem="{Binding SelectedMedication}"
+                  wpf:MedicationColumnHeaders.Name="{Binding NameHeader}"
+                  wpf:MedicationColumnHeaders.Stock="{Binding StockHeader}"
+                  wpf:MedicationColumnHeaders.Dose="{Binding DoseHeader}"
+                  wpf:MedicationColumnHeaders.Interval="{Binding IntervalHeader}"
+                  wpf:MedicationColumnHeaders.Package="{Binding PackageHeader}"
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
                   SelectionMode="Single"
@@ -46,11 +51,11 @@
                   CanUserAddRows="False"
                   CanUserDeleteRows="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="{wpf:Loc List.ColName}" Binding="{Binding Name}" Width="*" />
-                <DataGridTextColumn Header="{wpf:Loc List.ColStock}" Binding="{Binding CurrentStockPills}" Width="80" />
-                <DataGridTextColumn Header="{wpf:Loc Desktop.ColDose}" Binding="{Binding DailyDosagePills}" Width="70" />
-                <DataGridTextColumn Header="{wpf:Loc Desktop.ColInterval}" Binding="{Binding DoseIntervalDays}" Width="110" />
-                <DataGridTextColumn Header="{wpf:Loc List.ColPackage}" Binding="{Binding PackageSizePills}" Width="100" />
+                <DataGridTextColumn Binding="{Binding Name}" Width="*" />
+                <DataGridTextColumn Binding="{Binding CurrentStockPills}" Width="80" />
+                <DataGridTextColumn Binding="{Binding DailyDosagePills}" Width="70" />
+                <DataGridTextColumn Binding="{Binding DoseIntervalDays}" Width="110" />
+                <DataGridTextColumn Binding="{Binding PackageSizePills}" Width="100" />
             </DataGrid.Columns>
         </DataGrid>
     </DockPanel>

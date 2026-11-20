@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace Pilldue.Business.Tests;
 
 public class WpfProjectBoundaryTests
@@ -25,208 +27,123 @@ public class WpfProjectBoundaryTests
     }
 
     [Fact]
-    public void Desktop_host_opens_the_session_and_passes_the_app()
+    public void Window_code_behind_only_calls_InitializeComponent()
+    {
+        var windows = WindowCodeBehindFiles();
+        Assert.Equal(
+            new[]
+            {
+                "AddMedicationWindow.xaml.cs",
+                "BulkRefillWindow.xaml.cs",
+                "CalendarWindow.xaml.cs",
+                "FlagMissedDoseWindow.xaml.cs",
+                "MainWindow.xaml.cs",
+                "MissedDoseWindow.xaml.cs",
+                "RefillWindow.xaml.cs",
+                "SettingsWindow.xaml.cs",
+                "SkipDoseWindow.xaml.cs",
+                "StockCoverageWindow.xaml.cs",
+            },
+            windows.Select(Path.GetFileName).OrderBy(name => name, StringComparer.Ordinal).ToArray());
+
+        foreach (var file in windows)
+        {
+            var text = File.ReadAllText(file);
+            var xaml = File.ReadAllText(file[..^3]);
+            Assert.Matches(ConstructorOnly, text);
+            Assert.Equal(2, text.Count(character => character == '{'));
+            Assert.DoesNotContain("IPilldueApp", text, StringComparison.Ordinal);
+            Assert.DoesNotContain("MessageBox", text, StringComparison.Ordinal);
+            Assert.DoesNotContain("RoutedEventArgs", text, StringComparison.Ordinal);
+            Assert.DoesNotContain("Click=", xaml, StringComparison.Ordinal);
+            Assert.DoesNotContain("Loaded=", xaml, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
+    public void Desktop_host_builds_the_main_view_model_and_does_not_own_screen_logic()
     {
         var host = ReadRepoFile("src/Pilldue.UI.Desktop/App.xaml.cs");
         Assert.Contains("PilldueComposition.CreateDefaultSessionAsync", host, StringComparison.Ordinal);
-        Assert.Contains("new MainWindow(_session.App)", host, StringComparison.Ordinal);
-
-        var screen = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml.cs");
-        Assert.Contains("ListMedicationsAsync", screen, StringComparison.Ordinal);
-        Assert.Contains("AddMedicationAsync", screen, StringComparison.Ordinal);
-        Assert.Contains("UpdateMedicationAsync", screen, StringComparison.Ordinal);
-        Assert.Contains("RefillAsync", screen, StringComparison.Ordinal);
-        Assert.Contains("RemoveMedicationAsync", screen, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void Edit_keeps_the_selected_medication_id_and_rejects_invalid_input()
-    {
-        var toolbar = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml");
-        Assert.Contains("Desktop.Edit", toolbar, StringComparison.Ordinal);
-        Assert.Contains("OnEditClick", toolbar, StringComparison.Ordinal);
-
-        var screen = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml.cs");
-        Assert.Contains("new AddMedicationWindow(selected)", screen, StringComparison.Ordinal);
-        Assert.Contains("dialog.ShowDialog() != true", screen, StringComparison.Ordinal);
-        Assert.Contains("UpdateMedicationAsync", screen, StringComparison.Ordinal);
-
-        var editor = ReadRepoFile("src/Pilldue.UI.Wpf/AddMedicationWindow.xaml.cs");
-        Assert.Contains("saved.Id = _existing.Id", editor, StringComparison.Ordinal);
-        Assert.Contains("DialogResult = false", editor, StringComparison.Ordinal);
-        Assert.Contains("Desktop.AddInvalid", editor, StringComparison.Ordinal);
-        Assert.DoesNotContain("IPilldueApp", editor, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void Refill_asks_for_a_package_count_and_cancels_without_writing()
-    {
-        var screen = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml.cs");
-        Assert.Contains("new RefillWindow(selected)", screen, StringComparison.Ordinal);
-        Assert.Contains("dialog.ShowDialog() != true || dialog.PackageCount < 1", screen, StringComparison.Ordinal);
-        Assert.Contains(
-            "RefillAsync(selected.Id, dialog.PackageCount, DateOnly.FromDateTime(DateTime.Today))",
-            screen,
-            StringComparison.Ordinal);
-        Assert.DoesNotContain("PrescribedPackageCount > 0 ? selected.PrescribedPackageCount : 1", screen, StringComparison.Ordinal);
-
-        var dialog = ReadRepoFile("src/Pilldue.UI.Wpf/RefillWindow.xaml.cs");
-        Assert.Contains("count < 1", dialog, StringComparison.Ordinal);
-        Assert.Contains("DialogResult = false", dialog, StringComparison.Ordinal);
-        Assert.DoesNotContain("IPilldueApp", dialog, StringComparison.Ordinal);
-        Assert.DoesNotContain("RefillAsync", dialog, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void Bulk_refill_is_a_separate_screen_that_uses_the_app()
-    {
-        var toolbar = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml");
-        Assert.Contains("Desktop.BulkRefill", toolbar, StringComparison.Ordinal);
-        Assert.Contains("OnBulkRefillClick", toolbar, StringComparison.Ordinal);
-        Assert.Contains("OnRefillClick", toolbar, StringComparison.Ordinal);
-
-        var main = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml.cs");
-        Assert.Contains("new BulkRefillWindow(_app)", main, StringComparison.Ordinal);
-        Assert.Contains("new RefillWindow(selected)", main, StringComparison.Ordinal);
-        Assert.Contains(
-            "RefillAsync(selected.Id, dialog.PackageCount, DateOnly.FromDateTime(DateTime.Today))",
-            main,
-            StringComparison.Ordinal);
-
-        var xaml = ReadRepoFile("src/Pilldue.UI.Wpf/BulkRefillWindow.xaml");
-        Assert.Contains("BulkRefill.Title", xaml, StringComparison.Ordinal);
-        Assert.Contains("BulkRefill.Packages", xaml, StringComparison.Ordinal);
-        Assert.Contains("OnCancelClick", xaml, StringComparison.Ordinal);
-        Assert.Contains("OnConfirmClick", xaml, StringComparison.Ordinal);
-
-        var dialog = ReadRepoFile("src/Pilldue.UI.Wpf/BulkRefillWindow.xaml.cs");
-        Assert.Contains("IPilldueApp", dialog, StringComparison.Ordinal);
-        Assert.Contains("ListMedicationsAsync", dialog, StringComparison.Ordinal);
-        Assert.Contains("BulkRefillPass.StartingPackageCount", dialog, StringComparison.Ordinal);
-        Assert.Contains("BulkRefillPass.ApplyAsync(_app, lines)", dialog, StringComparison.Ordinal);
-        Assert.Contains("DialogResult = false", dialog, StringComparison.Ordinal);
-        Assert.DoesNotContain("ApplyAsync", dialog.Split("OnConfirmClick")[0], StringComparison.Ordinal);
-        Assert.DoesNotContain("IMedicationRepository", dialog, StringComparison.Ordinal);
-        Assert.DoesNotContain("IRefillEventRepository", dialog, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void Coverage_screen_shows_today_query_values()
-    {
-        var toolbar = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml");
-        Assert.Contains("Desktop.Coverage", toolbar, StringComparison.Ordinal);
-        Assert.Contains("OnCoverageClick", toolbar, StringComparison.Ordinal);
-
-        var main = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml.cs");
-        Assert.Contains("new StockCoverageWindow(_app)", main, StringComparison.Ordinal);
-
-        var screen = ReadRepoFile("src/Pilldue.UI.Wpf/StockCoverageWindow.xaml.cs");
-        Assert.Contains("GetStockCoverageAsync", screen, StringComparison.Ordinal);
-        Assert.Contains("ListShortBeforeNextRefillAsync", screen, StringComparison.Ordinal);
-        Assert.Contains("ListNeedExtraForSecondRefillAsync", screen, StringComparison.Ordinal);
-        Assert.Contains("DateOnly.FromDateTime(DateTime.Today)", screen, StringComparison.Ordinal);
-        Assert.Contains("result.PillsShort", screen, StringComparison.Ordinal);
-        Assert.Contains("result.PackagesToBuy", screen, StringComparison.Ordinal);
-        Assert.Contains("result.ExtraPackages", screen, StringComparison.Ordinal);
-        Assert.DoesNotContain("RefillCalendarRules", screen, StringComparison.Ordinal);
-        Assert.DoesNotContain("StockCoverageQuery", screen, StringComparison.Ordinal);
-        Assert.DoesNotContain("ExtraPackagesQuery", screen, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void Calendar_screen_shows_dates_from_get_calendar()
-    {
-        var toolbar = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml");
-        Assert.Contains("Desktop.Calendar", toolbar, StringComparison.Ordinal);
-        Assert.Contains("OnCalendarClick", toolbar, StringComparison.Ordinal);
-
-        var main = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml.cs");
-        Assert.Contains("new CalendarWindow(_app)", main, StringComparison.Ordinal);
-
-        var screen = ReadRepoFile("src/Pilldue.UI.Wpf/CalendarWindow.xaml.cs");
-        Assert.Contains("GetCalendarAsync", screen, StringComparison.Ordinal);
-        Assert.Contains("DateOnly.FromDateTime(DateTime.Today)", screen, StringComparison.Ordinal);
-        Assert.Contains("entry.FirstRefillDate", screen, StringComparison.Ordinal);
-        Assert.Contains("entry.SecondRefillDate", screen, StringComparison.Ordinal);
-        Assert.Contains("entry.StockOutDates", screen, StringComparison.Ordinal);
-        Assert.Contains("entry.PrescriptionEndDate", screen, StringComparison.Ordinal);
-        Assert.DoesNotContain("CalendarProjection", screen, StringComparison.Ordinal);
-        Assert.DoesNotContain("RefillCalendarRules", screen, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void Skip_and_missed_dose_go_through_the_app()
-    {
-        var toolbar = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml");
-        Assert.Contains("Desktop.Skip", toolbar, StringComparison.Ordinal);
-        Assert.Contains("OnSkipClick", toolbar, StringComparison.Ordinal);
-        Assert.Contains("Desktop.Missed", toolbar, StringComparison.Ordinal);
-        Assert.Contains("OnMissedClick", toolbar, StringComparison.Ordinal);
-
-        var main = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml.cs");
-        Assert.Contains("new SkipDoseWindow(selected)", main, StringComparison.Ordinal);
-        Assert.Contains("dialog.ShowDialog() != true || dialog.PillsReturned < 1", main, StringComparison.Ordinal);
-        Assert.Contains("SkipDoseAsync(selected.Id, dialog.PillsReturned, dialog.Date)", main, StringComparison.Ordinal);
-        Assert.Contains("new MissedDoseWindow(_app, selected)", main, StringComparison.Ordinal);
-
-        var skip = ReadRepoFile("src/Pilldue.UI.Wpf/SkipDoseWindow.xaml.cs");
-        Assert.Contains("count < 1", skip, StringComparison.Ordinal);
-        Assert.Contains("DialogResult = false", skip, StringComparison.Ordinal);
-        Assert.DoesNotContain("IPilldueApp", skip, StringComparison.Ordinal);
-        Assert.DoesNotContain("SkipDoseAsync", skip, StringComparison.Ordinal);
-
-        var flag = ReadRepoFile("src/Pilldue.UI.Wpf/FlagMissedDoseWindow.xaml.cs");
-        Assert.Contains("DialogResult = false", flag, StringComparison.Ordinal);
-        Assert.DoesNotContain("IPilldueApp", flag, StringComparison.Ordinal);
-        Assert.DoesNotContain("FlagMissedDoseAsync", flag, StringComparison.Ordinal);
-
-        var list = ReadRepoFile("src/Pilldue.UI.Wpf/MissedDoseWindow.xaml.cs");
-        Assert.Contains("ListMissedDosesAsync", list, StringComparison.Ordinal);
-        Assert.Contains("FlagMissedDoseAsync", list, StringComparison.Ordinal);
-        Assert.Contains("flag.ShowDialog() != true", list, StringComparison.Ordinal);
-        Assert.DoesNotContain("CurrentStockPills", list, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void Settings_window_saves_language_and_theme_and_cancel_does_not()
-    {
-        var toolbar = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml");
-        Assert.Contains("Desktop.Settings", toolbar, StringComparison.Ordinal);
-        Assert.Contains("OnSettingsClick", toolbar, StringComparison.Ordinal);
-
-        var main = ReadRepoFile("src/Pilldue.UI.Wpf/MainWindow.xaml.cs");
-        Assert.Contains("new SettingsWindow(_app, config)", main, StringComparison.Ordinal);
-        Assert.Contains("dialog.ShowDialog() != true", main, StringComparison.Ordinal);
-        Assert.Contains("ApplyLocalizedText()", main, StringComparison.Ordinal);
-
-        var dialog = ReadRepoFile("src/Pilldue.UI.Wpf/SettingsWindow.xaml.cs");
-        Assert.Contains("SaveConfigAsync", dialog, StringComparison.Ordinal);
-        Assert.Contains("DialogResult = false", dialog, StringComparison.Ordinal);
-        Assert.Contains("string.Empty", dialog, StringComparison.Ordinal);
-        Assert.Contains("AppConfig.EnglishLanguage", dialog, StringComparison.Ordinal);
-        Assert.Contains("AppConfig.SerbianLanguage", dialog, StringComparison.Ordinal);
-        Assert.Contains("AppConfig.ThemeLight", dialog, StringComparison.Ordinal);
-        Assert.Contains("AppConfig.ThemeDark", dialog, StringComparison.Ordinal);
-        Assert.Contains("AppConfig.ThemeSystem", dialog, StringComparison.Ordinal);
-        Assert.Contains("UiLocalizer.Apply", dialog, StringComparison.Ordinal);
-        Assert.Contains("WpfTheme.Apply", dialog, StringComparison.Ordinal);
-        Assert.DoesNotContain("SaveConfigAsync", dialog.Split("OnSaveClick")[0], StringComparison.Ordinal);
+        Assert.Contains("UiLocalizer.Apply", host, StringComparison.Ordinal);
+        Assert.Contains("WpfTheme.Apply", host, StringComparison.Ordinal);
+        Assert.Contains("new WpfUiInteraction()", host, StringComparison.Ordinal);
+        Assert.Contains("new MainViewModel(_session.App, interaction)", host, StringComparison.Ordinal);
+        Assert.Contains("new MainWindow", host, StringComparison.Ordinal);
+        Assert.DoesNotContain("ListMedicationsAsync", host, StringComparison.Ordinal);
+        Assert.DoesNotContain("AddMedicationAsync", host, StringComparison.Ordinal);
+        Assert.DoesNotContain("SaveConfigAsync", host, StringComparison.Ordinal);
+        Assert.DoesNotContain("RefillAsync", host, StringComparison.Ordinal);
 
         var theme = ReadRepoFile("src/Pilldue.UI.Wpf/WpfTheme.cs");
         Assert.Contains("ThemeMode.Light", theme, StringComparison.Ordinal);
         Assert.Contains("ThemeMode.Dark", theme, StringComparison.Ordinal);
         Assert.Contains("ThemeMode.System", theme, StringComparison.Ordinal);
 
-        var host = ReadRepoFile("src/Pilldue.UI.Desktop/App.xaml.cs");
-        Assert.Contains("WpfTheme.Apply", host, StringComparison.Ordinal);
         var appXaml = ReadRepoFile("src/Pilldue.UI.Desktop/App.xaml");
         Assert.Contains("ThemeMode=\"System\"", appXaml, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void Mvvm_toolkit_is_referenced_only_from_the_wpf_screen_project()
+    {
+        var repo = RepoRoot();
+        var projects = Directory.EnumerateFiles(repo, "*.csproj", SearchOption.AllDirectories)
+            .Where(path => !IsBuildOutput(path))
+            .ToList();
+        Assert.Contains(projects, path => path.EndsWith("Pilldue.UI.Wpf.csproj", StringComparison.OrdinalIgnoreCase));
+
+        foreach (var project in projects)
+        {
+            var text = File.ReadAllText(project);
+            if (project.EndsWith("Pilldue.UI.Wpf.csproj", StringComparison.OrdinalIgnoreCase))
+            {
+                Assert.Contains("CommunityToolkit.Mvvm", text, StringComparison.Ordinal);
+                continue;
+            }
+
+            Assert.DoesNotContain("CommunityToolkit.Mvvm", text, StringComparison.Ordinal);
+        }
+
+        foreach (var relative in new[] { "src/Pilldue.Business", "src/Pilldue.Data" })
+        {
+            foreach (var file in Directory.EnumerateFiles(RepoPath(relative), "*", SearchOption.AllDirectories))
+            {
+                if (IsBuildOutput(file))
+                {
+                    continue;
+                }
+
+                var text = File.ReadAllText(file);
+                Assert.DoesNotContain("CommunityToolkit", text, StringComparison.Ordinal);
+                Assert.DoesNotContain("UseWPF", text, StringComparison.Ordinal);
+                Assert.DoesNotContain("PresentationFramework", text, StringComparison.Ordinal);
+                Assert.DoesNotContain("System.Windows", text, StringComparison.Ordinal);
+            }
+        }
+    }
+
+    private static List<string> WindowCodeBehindFiles() =>
+        Directory.EnumerateFiles(RepoPath("src/Pilldue.UI.Wpf"), "*Window.xaml.cs", SearchOption.AllDirectories)
+            .Where(path => !IsBuildOutput(path))
+            .OrderBy(path => path, StringComparer.Ordinal)
+            .ToList();
+
+    private static bool IsBuildOutput(string path) =>
+        path.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase)
+        || path.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase);
+
+    private static readonly Regex ConstructorOnly = new(
+        @"public \w+\(\)\s*\{\s*InitializeComponent\(\);\s*\}",
+        RegexOptions.CultureInvariant);
+
     private static string ReadRepoFile(string relativePath) =>
         File.ReadAllText(RepoPath(relativePath));
 
-    private static string RepoPath(string relativePath)
+    private static string RepoPath(string relativePath) =>
+        Path.Combine(RepoRoot(), relativePath.Replace('/', Path.DirectorySeparatorChar));
+
+    private static string RepoRoot()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
         while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "Pilldue.slnx")))
@@ -235,6 +152,6 @@ public class WpfProjectBoundaryTests
         }
 
         Assert.NotNull(dir);
-        return Path.Combine(dir.FullName, relativePath.Replace('/', Path.DirectorySeparatorChar));
+        return dir.FullName;
     }
 }

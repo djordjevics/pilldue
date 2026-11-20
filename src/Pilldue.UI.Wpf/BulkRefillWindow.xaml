@@ -8,8 +8,11 @@
         MinHeight="320"
         MinWidth="420"
         WindowStartupLocation="CenterOwner"
-        Loaded="OnLoaded"
-        Closing="OnClosing">
+        wpf:DialogCloser.CloseResult="{Binding CloseResult, Mode=OneWay}"
+        wpf:DialogCloser.CancelClose="{Binding IsBusy}">
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="{Binding DismissCommand}" />
+    </Window.InputBindings>
     <DockPanel Margin="16">
         <TextBlock DockPanel.Dock="Top"
                    Text="{wpf:Loc BulkRefill.Hint}"
@@ -23,21 +26,29 @@
             <Button Content="{wpf:Loc Common.Cancel}"
                     Width="88"
                     Margin="0,0,8,0"
-                    IsCancel="True"
-                    Click="OnCancelClick" />
+                    Command="{Binding DismissCommand}" />
             <Button Content="{wpf:Loc BulkRefill.Title}"
                     MinWidth="140"
                     IsDefault="True"
-                    Click="OnConfirmClick" />
+                    Command="{Binding ConfirmCommand}" />
         </StackPanel>
 
-        <TextBlock x:Name="EmptyText"
-                   DockPanel.Dock="Top"
+        <TextBlock DockPanel.Dock="Top"
                    Text="{wpf:Loc BulkRefill.Empty}"
-                   Visibility="Collapsed"
-                   Margin="0,0,0,8" />
+                   Margin="0,0,0,8">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsEmpty}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
 
-        <DataGrid x:Name="MedicationsGrid"
+        <DataGrid ItemsSource="{Binding Rows}"
                   AutoGenerateColumns="False"
                   HeadersVisibility="Column"
                   CanUserAddRows="False"
